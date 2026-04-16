@@ -171,8 +171,8 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Bottom Log Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background to-transparent">
+      {/* Bottom Log Button — sits above the bottom nav */}
+      <div className="fixed bottom-14 left-0 right-0 p-4 bg-gradient-to-t from-background via-background to-transparent z-20">
         <Button
           onClick={() => { setEditingMeal(null); setShowLogMeal(true); }}
           className="w-full h-14 rounded-2xl text-base font-bold shadow-lg"
