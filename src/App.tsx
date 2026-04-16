@@ -12,7 +12,7 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 function AppContent() {
-  const { session, profile, loading } = useAuth();
+  const { session, profile, loading, activeView } = useAuth();
 
   if (loading) {
     return (
@@ -27,7 +27,9 @@ function AppContent() {
 
   if (!session) return <Auth />;
   if (profile && !profile.setup_complete && profile.role !== 'parent') return <Setup />;
-  if (profile?.role === 'parent') return <ParentView />;
+  
+  // Use activeView to determine which screen to show
+  if (activeView === 'supporter') return <ParentView />;
   return <DaughterApp />;
 }
 

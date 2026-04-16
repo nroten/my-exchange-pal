@@ -17,9 +17,9 @@ const PRESET_MESSAGES = [
 ];
 
 export default function ParentView() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, hasTrackerRole, setActiveView } = useAuth();
   const [connection, setConnection] = useState<any>(null);
-  const [daughterProfile, setDaughterProfile] = useState<any>(null);
+  const [connectedProfile, setConnectedProfile] = useState<any>(null);
   const [targets, setTargets] = useState<ExchangeValues>({ ...EMPTY_EXCHANGES });
   const [todayTotals, setTodayTotals] = useState<ExchangeValues>({ ...EMPTY_EXCHANGES });
   const [meals, setMeals] = useState<any[]>([]);
@@ -32,7 +32,6 @@ export default function ParentView() {
   const fetchData = useCallback(async () => {
     if (!user) return;
 
-    // Find active connection
     const { data: conns } = await supabase.from('parent_connections')
       .select('*').eq('parent_user_id', user.id).eq('status', 'active');
 
@@ -47,7 +46,7 @@ export default function ParentView() {
       supabase.from('meal_logs').select('*').eq('user_id', conn.daughter_user_id).eq('log_date', today).order('created_at'),
     ]);
 
-    if (profileRes.data) setDaughterProfile(profileRes.data);
+    if (profileRes.data) setConnectedProfile(profileRes.data);
     if (targetsRes.data) {
       setTargets({
         starches: targetsRes.data.starches, fruits: targetsRes.data.fruits,
@@ -69,7 +68,6 @@ export default function ParentView() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // Weekly history for parent
   useEffect(() => {
     if (!connection || activeTab !== 'history') return;
     const fetchWeek = async () => {
@@ -116,21 +114,38 @@ export default function ParentView() {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
         <p className="text-muted-foreground text-center mb-4">
-          No connection found. Ask your daughter to generate a PIN in her Settings and sign up with it.
+          No connection found. Ask the person you're supporting to generate a PIN in their Settings and share it with you.
         </p>
-        <Button onClick={signOut} variant="outline" className="rounded-xl">Sign Out</Button>
+        <div className="flex gap-2">
+          {hasTrackerRole && (
+            <Button onClick={() => setActiveView('tracker')} variant="outline" className="rounded-xl">
+              Switch to Tracker 🏠
+            </Button>
+          )}
+          <Button onClick={signOut} variant="outline" className="rounded-xl">Sign Out</Button>
+        </div>
       </div>
     );
   }
 
-  const daughterName = daughterProfile?.display_name || 'your daughter';
+  const connectedName = connectedProfile?.display_name || 'your person';
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <div className="px-5 pt-6 pb-2">
-        <p className="text-sm text-muted-foreground">{today}</p>
-        <h1 className="text-lg font-bold">Viewing {daughterName}'s day 💜</h1>
+      <div className="px-5 pt-6 pb-2 flex items-center justify-between">
+        <div>
+          <p className="text-sm text-muted-foreground">{today}</p>
+          <h1 className="text-lg font-bold">Viewing {connectedName}'s day 💜</h1>
+        </div>
+        {hasTrackerRole && (
+          <button
+            onClick={() => setActiveView('tracker')}
+            className="text-xs bg-muted px-3 py-1.5 rounded-full font-semibold text-muted-foreground hover:text-primary transition-colors"
+          >
+            🏠 My tracking
+          </button>
+        )}
       </div>
 
       {/* Tabs */}
@@ -147,7 +162,6 @@ export default function ParentView() {
 
       {activeTab === 'today' && (
         <>
-          {/* Progress - framed as achievement */}
           <div className="px-5 mb-6">
             <div className="flex justify-between overflow-x-auto gap-2 pb-2">
               {EXCHANGE_CATEGORIES.map(cat => (
@@ -166,7 +180,6 @@ export default function ParentView() {
             </p>
           </div>
 
-          {/* Meal feed */}
           <div className="px-5 space-y-3">
             <h2 className="font-bold text-sm text-muted-foreground uppercase tracking-wide">Meals Today</h2>
             {meals.length === 0 && (

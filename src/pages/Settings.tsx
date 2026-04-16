@@ -7,14 +7,16 @@ import { EXCHANGE_CATEGORIES, CATEGORY_META, ExchangeValues, ExchangeCategory } 
 import { toast } from 'sonner';
 
 export default function Settings() {
-  const { user, profile, signOut, refreshProfile } = useAuth();
+  const { user, profile, signOut, refreshProfile, hasSupporterRole, refreshRoles } = useAuth();
   const [displayName, setDisplayName] = useState(profile?.display_name || '');
   const [targets, setTargets] = useState<ExchangeValues>({
     starches: 6, fruits: 3, vegetables: 5, proteins: 6, dairy: 3, fats: 4,
   });
   const [connections, setConnections] = useState<any[]>([]);
   const [pin, setPin] = useState('');
+  const [connectPin, setConnectPin] = useState('');
   const [showGuide, setShowGuide] = useState(false);
+  const [showAddSupporter, setShowAddSupporter] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -59,8 +61,7 @@ export default function Settings() {
     });
     if (error) { toast.error(error.message); return; }
     setPin(newPin);
-    toast.success('PIN generated! Share it with your parent.');
-    // Refresh connections
+    toast.success('PIN generated! Share it with your supporter.');
     const { data } = await supabase.from('parent_connections').select('*').eq('daughter_user_id', user.id);
     if (data) setConnections(data);
   };
@@ -70,6 +71,37 @@ export default function Settings() {
     toast.success('Access revoked');
     const { data } = await supabase.from('parent_connections').select('*').eq('daughter_user_id', user.id);
     if (data) setConnections(data);
+  };
+
+  const connectAsSupporter = async () => {
+    if (!user || !connectPin.trim()) return;
+    const { data: conn } = await supabase
+      .from('parent_connections')
+      .select('*')
+      .eq('pin_code', connectPin.trim())
+      .eq('status', 'pending')
+      .single();
+
+    if (!conn) {
+      toast.error('PIN not found or already used');
+      return;
+    }
+
+    if (conn.daughter_user_id === user.id) {
+      toast.error("You can't connect to yourself!");
+      return;
+    }
+
+    const { error } = await supabase.from('parent_connections').update({
+      parent_user_id: user.id,
+      status: 'active',
+    }).eq('id', conn.id);
+
+    if (error) { toast.error(error.message); return; }
+    toast.success('Connected! You can now view their progress 💜');
+    setConnectPin('');
+    setShowAddSupporter(false);
+    await refreshRoles();
   };
 
   const GUIDE_DATA: Record<ExchangeCategory, { desc: string; examples: string[] }> = {
@@ -118,25 +150,65 @@ export default function Settings() {
         <Button onClick={saveTargets} className="w-full rounded-xl mt-3">Save Targets</Button>
       </section>
 
-      {/* Parent connections */}
-      {profile?.role === 'daughter' && (
+      {/* Supporter connections (invite someone to view your progress) */}
+      <section className="mb-6">
+        <h2 className="font-semibold text-sm mb-2">My Supporters</h2>
+        {connections.filter(c => c.status === 'active').map(c => (
+          <div key={c.id} className="flex items-center justify-between bg-card border rounded-xl p-3 mb-2">
+            <span className="text-sm">Supporter connected ✅</span>
+            <button onClick={() => revokeConnection(c.id)} className="text-xs text-destructive">Revoke</button>
+          </div>
+        ))}
+        {pin && (
+          <div className="bg-secondary/20 border border-secondary/30 rounded-xl p-4 text-center mb-3">
+            <p className="text-sm text-muted-foreground mb-1">Share this PIN with your supporter</p>
+            <p className="text-3xl font-bold tracking-widest text-secondary">{pin}</p>
+          </div>
+        )}
+        <Button onClick={generatePin} variant="outline" className="w-full rounded-xl">
+          Invite a Supporter 🔗
+        </Button>
+      </section>
+
+      {/* Become a supporter (connect to someone else) */}
+      {!hasSupporterRole && (
         <section className="mb-6">
-          <h2 className="font-semibold text-sm mb-2">Connected Parents</h2>
-          {connections.filter(c => c.status === 'active').map(c => (
-            <div key={c.id} className="flex items-center justify-between bg-card border rounded-xl p-3 mb-2">
-              <span className="text-sm">Parent connected ✅</span>
-              <button onClick={() => revokeConnection(c.id)} className="text-xs text-destructive">Revoke</button>
+          <h2 className="font-semibold text-sm mb-2">Support Someone</h2>
+          <p className="text-xs text-muted-foreground mb-3">
+            Want to follow someone else's progress and send them encouragement? Enter their PIN to connect.
+          </p>
+          {showAddSupporter ? (
+            <div className="bg-card border rounded-xl p-4 space-y-3">
+              <Input
+                placeholder="Enter 6-digit PIN"
+                value={connectPin}
+                onChange={(e) => setConnectPin(e.target.value)}
+                className="rounded-xl text-center text-lg tracking-widest"
+                maxLength={6}
+              />
+              <div className="flex gap-2">
+                <Button onClick={connectAsSupporter} disabled={connectPin.length < 6} className="flex-1 rounded-xl">
+                  Connect 💜
+                </Button>
+                <Button onClick={() => setShowAddSupporter(false)} variant="outline" className="rounded-xl">
+                  Cancel
+                </Button>
+              </div>
             </div>
-          ))}
-          {pin && (
-            <div className="bg-secondary/20 border border-secondary/30 rounded-xl p-4 text-center mb-3">
-              <p className="text-sm text-muted-foreground mb-1">Share this PIN with your parent</p>
-              <p className="text-3xl font-bold tracking-widest text-secondary">{pin}</p>
-            </div>
+          ) : (
+            <Button onClick={() => setShowAddSupporter(true)} variant="outline" className="w-full rounded-xl">
+              Become a Supporter 💜
+            </Button>
           )}
-          <Button onClick={generatePin} variant="outline" className="w-full rounded-xl">
-            Generate Parent Link 🔗
-          </Button>
+        </section>
+      )}
+
+      {hasSupporterRole && (
+        <section className="mb-6">
+          <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-3">
+            <p className="text-sm font-medium text-secondary">💜 You're a supporter!</p>
+            <p className="text-xs text-muted-foreground mt-1">Switch to supporter view from the bottom navigation.</p>
+          </div>
         </section>
       )}
 

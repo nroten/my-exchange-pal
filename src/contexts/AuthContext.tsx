@@ -10,13 +10,20 @@ interface Profile {
   setup_complete: boolean;
 }
 
+type ActiveView = 'tracker' | 'supporter';
+
 interface AuthContextType {
   session: Session | null;
   user: User | null;
   profile: Profile | null;
   loading: boolean;
+  activeView: ActiveView;
+  hasTrackerRole: boolean;
+  hasSupporterRole: boolean;
+  setActiveView: (view: ActiveView) => void;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  refreshRoles: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,6 +32,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeView, setActiveView] = useState<ActiveView>('tracker');
+  const [hasSupporterRole, setHasSupporterRole] = useState(false);
 
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
@@ -33,6 +42,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .eq('user_id', userId)
       .single();
     setProfile(data);
+    return data;
+  };
+
+  const checkSupporterRole = async (userId: string) => {
+    const { data } = await supabase
+      .from('parent_connections')
+      .select('id')
+      .eq('parent_user_id', userId)
+      .eq('status', 'active')
+      .limit(1);
+    const isSupporter = !!(data && data.length > 0);
+    setHasSupporterRole(isSupporter);
+    return isSupporter;
   };
 
   const refreshProfile = async () => {
@@ -41,24 +63,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const refreshRoles = async () => {
+    if (session?.user?.id) {
+      await checkSupporterRole(session.user.id);
+    }
+  };
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
         if (session?.user) {
-          // Use setTimeout to avoid Supabase deadlock
-          setTimeout(() => fetchProfile(session.user.id), 0);
+          setTimeout(async () => {
+            const prof = await fetchProfile(session.user.id);
+            const isSupporter = await checkSupporterRole(session.user.id);
+            // Set initial view based on role
+            if (prof?.role === 'parent' && !prof?.setup_complete) {
+              setActiveView('supporter');
+            } else if (prof?.role === 'parent') {
+              setActiveView('supporter');
+            }
+          }, 0);
         } else {
           setProfile(null);
+          setHasSupporterRole(false);
         }
         setLoading(false);
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
-        fetchProfile(session.user.id);
+        const prof = await fetchProfile(session.user.id);
+        await checkSupporterRole(session.user.id);
+        if (prof?.role === 'parent') {
+          setActiveView('supporter');
+        }
       }
       setLoading(false);
     });
@@ -66,10 +107,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  const hasTrackerRole = profile?.role === 'daughter' || (profile?.role === 'parent' && profile?.setup_complete);
+
   const signOut = async () => {
     await supabase.auth.signOut();
     setProfile(null);
     setSession(null);
+    setHasSupporterRole(false);
+    setActiveView('tracker');
   };
 
   return (
@@ -78,8 +123,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user: session?.user ?? null,
       profile,
       loading,
+      activeView,
+      hasTrackerRole: profile?.role === 'daughter',
+      hasSupporterRole: hasSupporterRole || profile?.role === 'parent',
+      setActiveView,
       signOut,
       refreshProfile,
+      refreshRoles,
     }}>
       {children}
     </AuthContext.Provider>
