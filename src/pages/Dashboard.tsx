@@ -101,10 +101,13 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Greeting */}
-      <div className="px-5 pt-6 pb-4">
-        <p className="text-sm text-muted-foreground">{today}</p>
-        <p className="text-base font-semibold mt-1">{greeting}</p>
+      {/* Header with logo */}
+      <div className="px-5 pt-6 pb-4 flex items-start gap-3">
+        <img src="/logo-512.png" alt="My Nutrition Tracker" width={40} height={40} className="rounded-xl shrink-0" />
+        <div>
+          <p className="text-sm text-muted-foreground">{today}</p>
+          <p className="text-base font-semibold mt-1">{greeting}</p>
+        </div>
       </div>
 
       {/* Encouragement banner */}
