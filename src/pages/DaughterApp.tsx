@@ -1,0 +1,39 @@
+import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import Dashboard from './Dashboard';
+import History from './History';
+import Settings from './Settings';
+
+export default function DaughterApp() {
+  const [tab, setTab] = useState<'today' | 'history' | 'settings'>('today');
+
+  return (
+    <div className="max-w-lg mx-auto">
+      {tab === 'today' && <Dashboard />}
+      {tab === 'history' && <History />}
+      {tab === 'settings' && <Settings />}
+
+      {/* Bottom nav */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t z-30">
+        <div className="max-w-lg mx-auto flex">
+          {([
+            { key: 'today', label: 'Today', emoji: '🏠' },
+            { key: 'history', label: 'History', emoji: '📅' },
+            { key: 'settings', label: 'Settings', emoji: '⚙️' },
+          ] as const).map(item => (
+            <button
+              key={item.key}
+              onClick={() => setTab(item.key)}
+              className={`flex-1 py-3 flex flex-col items-center gap-0.5 text-xs font-medium transition-colors ${
+                tab === item.key ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <span className="text-lg">{item.emoji}</span>
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </nav>
+    </div>
+  );
+}
