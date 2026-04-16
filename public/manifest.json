@@ -1,0 +1,9 @@
+{
+  "name": "My Nutrition Tracker",
+  "short_name": "My Nutrition",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FDF8F5",
+  "theme_color": "#E8836B",
+  "icons": []
+}
