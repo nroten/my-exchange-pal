@@ -85,7 +85,7 @@ export default function Auth() {
                   : 'bg-muted text-muted-foreground'
               }`}
             >
-              I'm the daughter 💪
+              Tracking for myself 💪
             </button>
             <button
               type="button"
@@ -96,7 +96,7 @@ export default function Auth() {
                   : 'bg-muted text-muted-foreground'
               }`}
             >
-              I'm a parent 💜
+              I'm a supporter 💜
             </button>
           </div>
         )}
@@ -130,7 +130,7 @@ export default function Auth() {
           />
           {!isLogin && isParent && (
             <Input
-              placeholder="Enter 6-digit PIN from daughter"
+              placeholder="Enter 6-digit PIN from the person you're supporting"
               value={parentPin}
               onChange={(e) => setParentPin(e.target.value)}
               className="rounded-xl h-12"
