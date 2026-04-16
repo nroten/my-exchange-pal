@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import ProgressRing from '@/components/ProgressRing';
 import MealCard from '@/components/MealCard';
 import LogMeal from '@/components/LogMeal';
+import Celebration, { getRandomCelebration } from '@/components/Celebrations';
 import {
   EXCHANGE_CATEGORIES, CATEGORY_META, ExchangeValues,
   ExchangeCategory, EMPTY_EXCHANGES, MealFoodEntry,
@@ -28,7 +29,8 @@ export default function Dashboard() {
   const [showLogMeal, setShowLogMeal] = useState(false);
   const [editingMeal, setEditingMeal] = useState<any>(null);
   const [encouragement, setEncouragement] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'today' | 'history' | 'settings'>('today');
+  const [celebration, setCelebration] = useState<ReturnType<typeof getRandomCelebration> | null>(null);
+  const [prevCompletedCount, setPrevCompletedCount] = useState<number | null>(null);
 
   const fetchData = useCallback(async () => {
     if (!user) return;
@@ -40,15 +42,17 @@ export default function Dashboard() {
       supabase.from('encouragement_messages').select('*').eq('to_user_id', user.id).eq('is_dismissed', false).order('created_at', { ascending: false }).limit(1),
     ]);
 
+    let newTargets = { ...EMPTY_EXCHANGES };
     if (targetsRes.data) {
-      setTargets({
+      newTargets = {
         starches: targetsRes.data.starches,
         fruits: targetsRes.data.fruits,
         vegetables: targetsRes.data.vegetables,
         proteins: targetsRes.data.proteins,
         dairy: targetsRes.data.dairy,
         fats: targetsRes.data.fats,
-      });
+      };
+      setTargets(newTargets);
     }
 
     if (mealsRes.data) {
@@ -60,12 +64,23 @@ export default function Dashboard() {
         }
       }
       setTodayTotals(totals);
+
+      // Check if a new category was just completed → celebration!
+      const completedNow = EXCHANGE_CATEGORIES.filter(c => totals[c] >= newTargets[c] && newTargets[c] > 0).length;
+      if (prevCompletedCount !== null && completedNow > prevCompletedCount) {
+        if (completedNow === 6) {
+          setCelebration('stars'); // All goals = stars!
+        } else {
+          setCelebration(getRandomCelebration());
+        }
+      }
+      setPrevCompletedCount(completedNow);
     }
 
     if (msgRes.data && msgRes.data.length > 0) {
       setEncouragement(msgRes.data[0]);
     }
-  }, [user]);
+  }, [user, prevCompletedCount]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -89,10 +104,16 @@ export default function Dashboard() {
     if (!encouragement) return;
     await supabase.from('encouragement_messages').update({ is_dismissed: true }).eq('id', encouragement.id);
     setEncouragement(null);
+    // Show hearts when dismissing an encouragement message
+    setCelebration('hearts');
   };
 
   return (
     <div className="min-h-screen bg-background pb-36">
+      {celebration && (
+        <Celebration type={celebration} onDone={() => setCelebration(null)} />
+      )}
+
       {showLogMeal && (
         <LogMeal
           onClose={() => { setShowLogMeal(false); setEditingMeal(null); }}
