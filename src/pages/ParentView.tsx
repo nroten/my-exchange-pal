@@ -28,6 +28,7 @@ export default function ParentView() {
   const [weekOffset, setWeekOffset] = useState(0);
   const [weekData, setWeekData] = useState<Record<string, any[]>>({});
   const [activeTab, setActiveTab] = useState<'today' | 'history'>('today');
+  const [expandedDay, setExpandedDay] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     if (!user) return;
@@ -217,12 +218,65 @@ export default function ParentView() {
             {Object.keys(weekData).sort().map(day => {
               const dayMeals = weekData[day];
               const dateObj = new Date(day + 'T12:00:00');
+              const isExpanded = expandedDay === day;
+              const dayTotals = { ...EMPTY_EXCHANGES };
+              for (const m of dayMeals) {
+                for (const cat of EXCHANGE_CATEGORIES) {
+                  dayTotals[cat] += Number(m[`total_${cat}`]) || 0;
+                }
+              }
               return (
-                <div key={day} className="bg-card border rounded-xl p-3">
-                  <div className="font-semibold text-sm">
-                    {dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                  </div>
-                  <p className="text-xs text-muted-foreground">{dayMeals.length} meal{dayMeals.length !== 1 ? 's' : ''} logged</p>
+                <div key={day} className="bg-card border rounded-xl overflow-hidden">
+                  <button
+                    onClick={() => setExpandedDay(isExpanded ? null : day)}
+                    className="w-full p-3 flex items-center justify-between text-left hover:bg-muted/50 transition-colors"
+                    disabled={dayMeals.length === 0}
+                  >
+                    <div>
+                      <div className="font-semibold text-sm">
+                        {dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {dayMeals.length} meal{dayMeals.length !== 1 ? 's' : ''} logged
+                      </p>
+                    </div>
+                    {dayMeals.length > 0 && (
+                      <span className={`text-muted-foreground text-sm transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
+                        ▼
+                      </span>
+                    )}
+                  </button>
+
+                  {isExpanded && dayMeals.length > 0 && (
+                    <div className="px-3 pb-3 space-y-2 border-t pt-3">
+                      {/* Day totals */}
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {EXCHANGE_CATEGORIES.filter(c => dayTotals[c] > 0).map(c => (
+                          <span key={c} className="text-xs bg-muted px-2 py-0.5 rounded-full">
+                            {CATEGORY_META[c].emoji} {dayTotals[c]} / {targets[c]}
+                          </span>
+                        ))}
+                      </div>
+                      {/* Meals */}
+                      {dayMeals.map(meal => (
+                        <div key={meal.id} className="bg-muted/40 rounded-lg p-2.5">
+                          <div className="font-semibold text-xs mb-1">{meal.meal_label}</div>
+                          <div className="text-xs text-muted-foreground mb-1.5">
+                            {((meal.food_items as MealFoodEntry[]) || []).map((f, i) => (
+                              <span key={i}>{i > 0 ? ', ' : ''}{f.foodName}</span>
+                            ))}
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {EXCHANGE_CATEGORIES.filter(c => Number(meal[`total_${c}`]) > 0).map(c => (
+                              <span key={c} className="text-[10px] bg-background px-1.5 py-0.5 rounded-full">
+                                {meal[`total_${c}`]} {CATEGORY_META[c].label.toLowerCase()}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
