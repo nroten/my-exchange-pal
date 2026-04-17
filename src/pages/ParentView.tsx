@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import ProgressRing from '@/components/ProgressRing';
+import Settings from './Settings';
 import {
   EXCHANGE_CATEGORIES, CATEGORY_META, ExchangeValues,
   ExchangeCategory, EMPTY_EXCHANGES, MealFoodEntry,
@@ -27,7 +28,7 @@ export default function ParentView() {
   const [showComposer, setShowComposer] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0);
   const [weekData, setWeekData] = useState<Record<string, any[]>>({});
-  const [activeTab, setActiveTab] = useState<'today' | 'history'>('today');
+  const [activeTab, setActiveTab] = useState<'today' | 'history' | 'settings'>('today');
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
@@ -164,7 +165,13 @@ export default function ParentView() {
           onClick={() => setActiveTab('history')}
           className={`px-4 py-2 rounded-xl text-sm font-semibold ${activeTab === 'history' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
         >History</button>
+        <button
+          onClick={() => setActiveTab('settings')}
+          className={`px-4 py-2 rounded-xl text-sm font-semibold ${activeTab === 'settings' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
+        >⚙️ Settings</button>
       </div>
+
+      {activeTab === 'settings' && <Settings />}
 
       {activeTab === 'today' && (
         <>
