@@ -124,7 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       profile,
       loading,
       activeView,
-      hasTrackerRole: profile?.role === 'daughter',
+      hasTrackerRole: profile?.role === 'daughter' || (profile?.role === 'parent' && profile?.setup_complete === true),
       hasSupporterRole: hasSupporterRole || profile?.role === 'parent',
       setActiveView,
       signOut,

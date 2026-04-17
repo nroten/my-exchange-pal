@@ -134,19 +134,24 @@ export default function ParentView() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <div className="px-5 pt-6 pb-2 flex items-center justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">{today}</p>
-          <h1 className="text-lg font-bold">Viewing {connectedName}'s day 💜</h1>
-        </div>
-        {hasTrackerRole && (
+      {/* Sticky role switcher — always visible when user has both roles */}
+      {hasTrackerRole && (
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b px-5 py-2 flex items-center justify-between">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            💜 Supporter view
+          </span>
           <button
             onClick={() => setActiveView('tracker')}
-            className="text-xs bg-muted px-3 py-1.5 rounded-full font-semibold text-muted-foreground hover:text-primary transition-colors"
+            className="bg-primary text-primary-foreground rounded-full px-4 py-1.5 text-xs font-bold shadow-sm hover:opacity-90 transition-opacity"
           >
-            🏠 My tracking
+            🏠 Switch to my tracker →
           </button>
-        )}
+        </div>
+      )}
+
+      <div className="px-5 pt-6 pb-2">
+        <p className="text-sm text-muted-foreground">{today}</p>
+        <h1 className="text-lg font-bold">Viewing {connectedName}'s day 💜</h1>
       </div>
 
       {/* Tabs */}
