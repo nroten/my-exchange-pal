@@ -22,7 +22,7 @@ function getGreeting(name: string, progress: number, hour: number): string {
 }
 
 export default function Dashboard() {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, hasSupporterRole, setActiveView } = useAuth();
   const [targets, setTargets] = useState<ExchangeValues>({ ...EMPTY_EXCHANGES });
   const [todayTotals, setTodayTotals] = useState<ExchangeValues>({ ...EMPTY_EXCHANGES });
   const [meals, setMeals] = useState<any[]>([]);
@@ -125,10 +125,19 @@ export default function Dashboard() {
       {/* Header with logo */}
       <div className="px-5 pt-6 pb-4 flex items-start gap-3">
         <img src="/logo-512.png" alt="My Nutrition Tracker" width={40} height={40} className="rounded-xl shrink-0" />
-        <div>
+        <div className="flex-1 min-w-0">
           <p className="text-sm text-muted-foreground">{today}</p>
           <p className="text-base font-semibold mt-1">{greeting}</p>
         </div>
+        {hasSupporterRole && (
+          <button
+            onClick={() => setActiveView('supporter')}
+            className="shrink-0 bg-secondary/20 border border-secondary/40 text-secondary hover:bg-secondary/30 transition-colors rounded-full px-3 py-1.5 text-xs font-bold flex items-center gap-1"
+            title="Switch to supporter view"
+          >
+            💜 Supporter
+          </button>
+        )}
       </div>
 
       {/* Encouragement banner */}
