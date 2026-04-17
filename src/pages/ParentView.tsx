@@ -163,8 +163,32 @@ export default function ParentView() {
 
       {activeTab === 'today' && (
         <>
+          <div className="px-5 mb-3">
+            {(() => {
+              const completed = EXCHANGE_CATEGORIES.filter(c => targets[c] > 0 && todayTotals[c] >= targets[c]).length;
+              const overall = targets.starches > 0
+                ? EXCHANGE_CATEGORIES.reduce((s, c) => s + Math.min(todayTotals[c] / targets[c], 1), 0) / 6
+                : 0;
+              const pct = Math.round(overall * 100);
+              return (
+                <div className="bg-card border rounded-2xl p-3 flex items-center gap-3">
+                  <div className="text-3xl">{completed === 6 ? '🌟' : completed >= 3 ? '💪' : '🌱'}</div>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-baseline mb-1">
+                      <span className="text-sm font-bold">{completed} of 6 goals hit</span>
+                      <span className="text-xs text-muted-foreground">{pct}% of day</span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div className="h-full bg-primary rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+
           <div className="px-5 mb-6">
-            <div className="flex justify-between overflow-x-auto gap-2 pb-2">
+            <div className="grid grid-cols-3 gap-x-2 gap-y-4">
               {EXCHANGE_CATEGORIES.map(cat => (
                 <ProgressRing
                   key={cat}
@@ -176,9 +200,6 @@ export default function ParentView() {
                 />
               ))}
             </div>
-            <p className="text-center text-sm text-muted-foreground mt-2">
-              {EXCHANGE_CATEGORIES.filter(c => todayTotals[c] >= targets[c]).length} of 6 categories complete ✨
-            </p>
           </div>
 
           <div className="px-5 space-y-3">
