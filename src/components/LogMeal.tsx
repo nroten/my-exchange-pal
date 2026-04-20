@@ -97,11 +97,11 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   }, []);
 
   const addFood = (food: FoodItem) => {
-    // If same food already added, increment quantity
+    // If same food already added, increment quantity by 0.5
     const existingIdx = entries.findIndex(e => e.foodName === food.name);
     let next: MealFoodEntry[];
     if (existingIdx >= 0) {
-      next = entries.map((e, i) => i === existingIdx ? { ...e, quantity: e.quantity + 1 } : e);
+      next = entries.map((e, i) => i === existingIdx ? { ...e, quantity: e.quantity + 0.5 } : e);
     } else {
       const entry: MealFoodEntry = {
         foodName: food.name,
@@ -115,6 +115,20 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
     saveDraft(mealLabel, next);
     pushRecentFoodId(food.id);
     setRecentIds(getRecentFoodIds());
+  };
+
+  const adjustFoodQty = (food: FoodItem, delta: number) => {
+    const existingIdx = entries.findIndex(e => e.foodName === food.name);
+    if (existingIdx < 0) return;
+    const newQty = Math.round((entries[existingIdx].quantity + delta) * 2) / 2;
+    let next: MealFoodEntry[];
+    if (newQty <= 0) {
+      next = entries.filter((_, i) => i !== existingIdx);
+    } else {
+      next = entries.map((e, i) => i === existingIdx ? { ...e, quantity: newQty } : e);
+    }
+    setEntries(next);
+    saveDraft(mealLabel, next);
   };
 
   const addManual = () => {
