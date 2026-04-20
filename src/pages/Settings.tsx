@@ -178,6 +178,63 @@ export default function Settings() {
         <Button onClick={saveTargets} className="w-full rounded-xl mt-3">Save Targets</Button>
       </section>
 
+      {/* My Recipes */}
+      <section className="mb-6">
+        <h2 className="font-semibold text-sm mb-2">My Recipes 💜</h2>
+        <p className="text-xs text-muted-foreground mb-2">
+          Saved meals you can re-log with one tap from the meal logger.
+        </p>
+        {savedMeals.length === 0 ? (
+          <div className="bg-card border rounded-xl p-4 text-center text-sm text-muted-foreground">
+            <div className="text-2xl mb-1">🍽️</div>
+            No recipes saved yet. When logging a meal, tap "Save as recipe" to create one.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {savedMeals.map(sm => (
+              <div key={sm.id} className="bg-card border rounded-xl p-3">
+                {editingRecipeId === sm.id ? (
+                  <div className="flex gap-2">
+                    <Input
+                      value={editingRecipeName}
+                      onChange={(e) => setEditingRecipeName(e.target.value)}
+                      className="rounded-lg text-sm flex-1"
+                      autoFocus
+                    />
+                    <Button onClick={() => renameRecipe(sm.id)} size="sm" className="rounded-lg">Save</Button>
+                    <Button onClick={() => setEditingRecipeId(null)} variant="outline" size="sm" className="rounded-lg">×</Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm truncate">{sm.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {(sm.food_items as any[])?.length || 0} items
+                        {sm.default_meal_label && ` · ${sm.default_meal_label}`}
+                      </div>
+                    </div>
+                    <div className="flex gap-1 shrink-0">
+                      <button
+                        onClick={() => { setEditingRecipeId(sm.id); setEditingRecipeName(sm.name); }}
+                        className="text-xs text-primary font-semibold px-2 py-1"
+                      >
+                        Rename
+                      </button>
+                      <button
+                        onClick={() => deleteRecipe(sm.id)}
+                        className="text-xs text-destructive font-semibold px-2 py-1"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
       {/* Supporter connections (invite someone to view your progress) */}
       <section className="mb-6">
         <h2 className="font-semibold text-sm mb-2">My Supporters</h2>
