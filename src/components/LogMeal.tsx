@@ -322,7 +322,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
             {search.trim() && (
               <div className="p-4 pt-2">
                 {filteredFoods.length > 0 ? (
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-3">
                     {filteredFoods.map(renderFoodTile)}
                   </div>
                 ) : (
@@ -370,7 +370,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
                       <p className="text-xs text-muted-foreground mb-3">
                         {recentIds.length > 0 ? 'Your most-used foods. Tap to add.' : 'Common foods to get you started. Tap to add.'}
                       </p>
-                      <div className="grid grid-cols-4 gap-2">
+                      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-3">
                         {favoriteFoods.map(renderFoodTile)}
                       </div>
                     </>
@@ -421,7 +421,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
                       <p className="text-xs text-muted-foreground mb-3">
                         Tap a food to add 1 serving. Tap again to add more.
                       </p>
-                      <div className="grid grid-cols-4 gap-2">
+                      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-3">
                         {foodsByCategory[browseTab as ExchangeCategory].map(renderFoodTile)}
                       </div>
                     </>
