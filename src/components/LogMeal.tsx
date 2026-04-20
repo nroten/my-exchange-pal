@@ -253,12 +253,12 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
             {/* Inline −/+ stepper at bottom */}
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-card border-2 border-primary rounded-full shadow-md z-10">
               <button
-                onClick={(e) => { e.stopPropagation(); adjustFoodQty(food, -0.5); }}
+                onClick={(e) => { e.stopPropagation(); adjustFoodQty(food, -0.25); }}
                 className="w-6 h-6 rounded-full text-sm font-bold flex items-center justify-center hover:bg-muted active:scale-90 transition-transform"
                 aria-label="Decrease"
               >−</button>
               <button
-                onClick={(e) => { e.stopPropagation(); adjustFoodQty(food, 0.5); }}
+                onClick={(e) => { e.stopPropagation(); adjustFoodQty(food, 0.25); }}
                 className="w-6 h-6 rounded-full text-sm font-bold flex items-center justify-center hover:bg-muted active:scale-90 transition-transform"
                 aria-label="Increase"
               >+</button>
