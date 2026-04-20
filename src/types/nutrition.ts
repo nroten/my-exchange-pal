@@ -34,6 +34,8 @@ export interface FoodItem {
   serving: string;
   exchanges: Partial<ExchangeValues>;
   isCombination: boolean;
+  emoji: string;
+  primaryCategory: ExchangeCategory;
 }
 
 export interface MealFoodEntry {

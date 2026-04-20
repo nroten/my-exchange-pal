@@ -17,13 +17,17 @@ export default function Settings() {
   const [connectPin, setConnectPin] = useState('');
   const [showGuide, setShowGuide] = useState(false);
   const [showAddSupporter, setShowAddSupporter] = useState(false);
+  const [savedMeals, setSavedMeals] = useState<any[]>([]);
+  const [editingRecipeId, setEditingRecipeId] = useState<string | null>(null);
+  const [editingRecipeName, setEditingRecipeName] = useState('');
 
   useEffect(() => {
     if (!user) return;
     const fetch = async () => {
-      const [t, c] = await Promise.all([
+      const [t, c, sm] = await Promise.all([
         supabase.from('daily_targets').select('*').eq('user_id', user.id).single(),
         supabase.from('parent_connections').select('*').eq('daughter_user_id', user.id),
+        supabase.from('saved_meals').select('*').eq('user_id', user.id).order('updated_at', { ascending: false }),
       ]);
       if (t.data) {
         setTargets({
@@ -33,9 +37,33 @@ export default function Settings() {
         });
       }
       if (c.data) setConnections(c.data);
+      if (sm.data) setSavedMeals(sm.data);
     };
     fetch();
   }, [user]);
+
+  const refreshSavedMeals = async () => {
+    if (!user) return;
+    const { data } = await supabase.from('saved_meals').select('*').eq('user_id', user.id).order('updated_at', { ascending: false });
+    if (data) setSavedMeals(data);
+  };
+
+  const deleteRecipe = async (id: string) => {
+    const { error } = await supabase.from('saved_meals').delete().eq('id', id);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Recipe deleted');
+    refreshSavedMeals();
+  };
+
+  const renameRecipe = async (id: string) => {
+    if (!editingRecipeName.trim()) return;
+    const { error } = await supabase.from('saved_meals').update({ name: editingRecipeName.trim() }).eq('id', id);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Recipe renamed');
+    setEditingRecipeId(null);
+    setEditingRecipeName('');
+    refreshSavedMeals();
+  };
 
   const saveTargets = async () => {
     if (!user) return;
@@ -148,6 +176,63 @@ export default function Settings() {
           ))}
         </div>
         <Button onClick={saveTargets} className="w-full rounded-xl mt-3">Save Targets</Button>
+      </section>
+
+      {/* My Recipes */}
+      <section className="mb-6">
+        <h2 className="font-semibold text-sm mb-2">My Recipes 💜</h2>
+        <p className="text-xs text-muted-foreground mb-2">
+          Saved meals you can re-log with one tap from the meal logger.
+        </p>
+        {savedMeals.length === 0 ? (
+          <div className="bg-card border rounded-xl p-4 text-center text-sm text-muted-foreground">
+            <div className="text-2xl mb-1">🍽️</div>
+            No recipes saved yet. When logging a meal, tap "Save as recipe" to create one.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {savedMeals.map(sm => (
+              <div key={sm.id} className="bg-card border rounded-xl p-3">
+                {editingRecipeId === sm.id ? (
+                  <div className="flex gap-2">
+                    <Input
+                      value={editingRecipeName}
+                      onChange={(e) => setEditingRecipeName(e.target.value)}
+                      className="rounded-lg text-sm flex-1"
+                      autoFocus
+                    />
+                    <Button onClick={() => renameRecipe(sm.id)} size="sm" className="rounded-lg">Save</Button>
+                    <Button onClick={() => setEditingRecipeId(null)} variant="outline" size="sm" className="rounded-lg">×</Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm truncate">{sm.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {(sm.food_items as any[])?.length || 0} items
+                        {sm.default_meal_label && ` · ${sm.default_meal_label}`}
+                      </div>
+                    </div>
+                    <div className="flex gap-1 shrink-0">
+                      <button
+                        onClick={() => { setEditingRecipeId(sm.id); setEditingRecipeName(sm.name); }}
+                        className="text-xs text-primary font-semibold px-2 py-1"
+                      >
+                        Rename
+                      </button>
+                      <button
+                        onClick={() => deleteRecipe(sm.id)}
+                        className="text-xs text-destructive font-semibold px-2 py-1"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Supporter connections (invite someone to view your progress) */}
