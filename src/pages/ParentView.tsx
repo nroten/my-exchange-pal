@@ -135,20 +135,34 @@ export default function ParentView() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Sticky role switcher — always visible when user has both roles */}
-      {hasTrackerRole && (
-        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b px-5 py-2 flex items-center justify-between">
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            💜 Supporter view
-          </span>
+      {/* Sticky role switcher */}
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b px-5 py-2 flex items-center justify-between">
+        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          💜 Supporter view
+        </span>
+        {hasTrackerRole ? (
           <button
             onClick={() => setActiveView('tracker')}
             className="bg-primary text-primary-foreground rounded-full px-4 py-1.5 text-xs font-bold shadow-sm hover:opacity-90 transition-opacity"
           >
             🏠 Switch to my tracker →
           </button>
-        </div>
-      )}
+        ) : (
+          <button
+            onClick={async () => {
+              if (!user) return;
+              await supabase.from('profiles').update({ setup_complete: false }).eq('user_id', user.id);
+              await supabase.auth.refreshSession();
+              setActiveView('tracker');
+              window.location.reload();
+            }}
+            className="bg-primary text-primary-foreground rounded-full px-4 py-1.5 text-xs font-bold shadow-sm hover:opacity-90 transition-opacity"
+            title="Set up your own tracking"
+          >
+            🏠 Set up my tracker →
+          </button>
+        )}
+      </div>
 
       <div className="px-5 pt-6 pb-2">
         <p className="text-sm text-muted-foreground">{today}</p>
