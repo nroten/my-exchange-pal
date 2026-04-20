@@ -149,13 +149,7 @@ export default function ParentView() {
           </button>
         ) : (
           <button
-            onClick={async () => {
-              if (!user) return;
-              await supabase.from('profiles').update({ setup_complete: false }).eq('user_id', user.id);
-              await supabase.auth.refreshSession();
-              setActiveView('tracker');
-              window.location.reload();
-            }}
+            onClick={() => setActiveView('tracker')}
             className="bg-primary text-primary-foreground rounded-full px-4 py-1.5 text-xs font-bold shadow-sm hover:opacity-90 transition-opacity"
             title="Set up your own tracking"
           >
