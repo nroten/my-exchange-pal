@@ -420,7 +420,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
                   {EXCHANGE_CATEGORIES.includes(browseTab as ExchangeCategory) && (
                     <>
                       <p className="text-xs text-muted-foreground mb-3">
-                        Tap to add. Use −/+ to adjust by half servings (e.g. ½ avocado).
+                        Tap to add. Use −/+ to adjust by ¼ servings (e.g. ½ avocado, ¼ cup rice).
                       </p>
                       <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-3">
                         {foodsByCategory[browseTab as ExchangeCategory].map(renderFoodTile)}
