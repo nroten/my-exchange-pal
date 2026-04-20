@@ -27,9 +27,11 @@ function AppContent() {
 
   if (!session) return <Auth />;
   if (profile && !profile.setup_complete && profile.role !== 'parent') return <Setup />;
-  
+
   // Use activeView to determine which screen to show
   if (activeView === 'supporter') return <ParentView />;
+  // Parent in tracker view but hasn't set up their own targets yet → Setup
+  if (profile?.role === 'parent' && !profile.setup_complete) return <Setup />;
   return <DaughterApp />;
 }
 
