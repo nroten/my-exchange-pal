@@ -1,11 +1,11 @@
-import { useState, useMemo, useCallback } from 'react';
-import { FOOD_DATABASE } from '@/data/foodDatabase';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { FOOD_DATABASE, getRecentFoodIds, pushRecentFoodId } from '@/data/foodDatabase';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
   EXCHANGE_CATEGORIES, CATEGORY_META, MEAL_LABELS,
   MealLabel, MealFoodEntry, ExchangeValues, ExchangeCategory,
-  EMPTY_EXCHANGES, getDefaultMealLabel, sumExchanges,
+  EMPTY_EXCHANGES, getDefaultMealLabel, sumExchanges, FoodItem,
 } from '@/types/nutrition';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,6 +31,8 @@ function loadDraft(): { mealLabel: MealLabel; entries: MealFoodEntry[] } | null 
   } catch { return null; }
 }
 
+type BrowseTab = 'favorites' | ExchangeCategory | 'saved';
+
 export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps) {
   const { user } = useAuth();
   const draft = !editingMeal ? loadDraft() : null;
@@ -43,11 +45,23 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
     editingMeal?.food_items || draft?.entries || []
   );
   const [search, setSearch] = useState('');
+  const [browseTab, setBrowseTab] = useState<BrowseTab>('favorites');
   const [manualMode, setManualMode] = useState(false);
   const [manualExchanges, setManualExchanges] = useState<ExchangeValues>({ ...EMPTY_EXCHANGES });
   const [manualName, setManualName] = useState('');
   const [saving, setSaving] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [savedMeals, setSavedMeals] = useState<any[]>([]);
+  const [showSaveAsRecipe, setShowSaveAsRecipe] = useState(false);
+  const [recipeName, setRecipeName] = useState('');
+  const [recentIds, setRecentIds] = useState<string[]>(getRecentFoodIds());
+
+  // Load saved meals
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('saved_meals').select('*').eq('user_id', user.id).order('updated_at', { ascending: false })
+      .then(({ data }) => { if (data) setSavedMeals(data); });
+  }, [user]);
 
   // Save draft on changes
   const saveDraft = useCallback((label: MealLabel, items: MealFoodEntry[]) => {
@@ -59,20 +73,48 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   const filteredFoods = useMemo(() => {
     if (!search.trim()) return [];
     const q = search.toLowerCase();
-    return FOOD_DATABASE.filter(f => f.name.toLowerCase().includes(q)).slice(0, 15);
+    return FOOD_DATABASE.filter(f => f.name.toLowerCase().includes(q)).slice(0, 20);
   }, [search]);
 
-  const addFood = (food: typeof FOOD_DATABASE[0]) => {
-    const entry: MealFoodEntry = {
-      foodName: food.name,
-      serving: food.serving,
-      exchanges: food.exchanges,
-      quantity: 1,
+  const favoriteFoods = useMemo(() => {
+    if (recentIds.length === 0) {
+      // Fallback: a curated set of common foods
+      const curated = ['Apple (small)', 'Banana (small)', 'Whole Egg', 'Milk', 'Chicken Breast',
+        'Cooked Rice', 'White/Wheat Bread', 'Greek Yogurt', 'Broccoli', 'Avocado', 'Cheese (slice/1oz)', 'Berries'];
+      return curated.map(name => FOOD_DATABASE.find(f => f.name === name)).filter(Boolean) as FoodItem[];
+    }
+    return recentIds.map(id => FOOD_DATABASE.find(f => f.id === id)).filter(Boolean) as FoodItem[];
+  }, [recentIds]);
+
+  const foodsByCategory = useMemo(() => {
+    const map: Record<ExchangeCategory, FoodItem[]> = {
+      starches: [], fruits: [], vegetables: [], proteins: [], dairy: [], fats: [],
     };
-    const next = [...entries, entry];
+    for (const f of FOOD_DATABASE) {
+      map[f.primaryCategory].push(f);
+    }
+    return map;
+  }, []);
+
+  const addFood = (food: FoodItem) => {
+    // If same food already added, increment quantity
+    const existingIdx = entries.findIndex(e => e.foodName === food.name);
+    let next: MealFoodEntry[];
+    if (existingIdx >= 0) {
+      next = entries.map((e, i) => i === existingIdx ? { ...e, quantity: e.quantity + 1 } : e);
+    } else {
+      const entry: MealFoodEntry = {
+        foodName: food.name,
+        serving: food.serving,
+        exchanges: food.exchanges,
+        quantity: 1,
+      };
+      next = [...entries, entry];
+    }
     setEntries(next);
     saveDraft(mealLabel, next);
-    setSearch('');
+    pushRecentFoodId(food.id);
+    setRecentIds(getRecentFoodIds());
   };
 
   const addManual = () => {
@@ -93,6 +135,13 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
     setManualMode(false);
   };
 
+  const loadSavedMeal = (saved: any) => {
+    const items = (saved.food_items as MealFoodEntry[]) || [];
+    setEntries(items);
+    saveDraft(mealLabel, items);
+    toast.success(`Loaded "${saved.name}" 💜`);
+  };
+
   const removeEntry = (idx: number) => {
     const next = entries.filter((_, i) => i !== idx);
     setEntries(next);
@@ -106,6 +155,22 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   };
 
   const totals = sumExchanges(entries);
+
+  const saveAsRecipe = async () => {
+    if (!user || !recipeName.trim() || entries.length === 0) return;
+    const { error } = await supabase.from('saved_meals').insert({
+      user_id: user.id,
+      name: recipeName.trim(),
+      default_meal_label: mealLabel,
+      food_items: entries as any,
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Recipe "${recipeName}" saved! 💜`);
+    setRecipeName('');
+    setShowSaveAsRecipe(false);
+    const { data } = await supabase.from('saved_meals').select('*').eq('user_id', user.id).order('updated_at', { ascending: false });
+    if (data) setSavedMeals(data);
+  };
 
   const handleSave = async () => {
     if (!user) return;
@@ -145,6 +210,31 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
     }
   };
 
+  const renderFoodTile = (food: FoodItem) => {
+    const inMeal = entries.find(e => e.foodName === food.name);
+    return (
+      <button
+        key={food.id}
+        onClick={() => addFood(food)}
+        className={`relative aspect-square rounded-2xl border-2 flex flex-col items-center justify-center p-1 transition-all active:scale-95 ${
+          inMeal
+            ? 'bg-primary/10 border-primary shadow-md'
+            : 'bg-card border-border hover:border-primary/50'
+        }`}
+      >
+        <div className="text-3xl mb-0.5">{food.emoji}</div>
+        <div className="text-[10px] font-semibold text-center leading-tight line-clamp-2 px-0.5">
+          {food.name.replace(/\s*\(.*?\)/, '')}
+        </div>
+        {inMeal && (
+          <div className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md">
+            {inMeal.quantity}
+          </div>
+        )}
+      </button>
+    );
+  };
+
   return (
     <div className="fixed inset-0 bg-background z-40 flex flex-col overflow-hidden">
       {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
@@ -158,10 +248,10 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
         <div className="w-12" />
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto">
         {/* Step 1: Pick meal label */}
         {step === 1 && (
-          <div>
+          <div className="p-4">
             <p className="text-sm text-muted-foreground mb-4">What meal is this?</p>
             <div className="grid grid-cols-2 gap-3">
               {MEAL_LABELS.map(label => (
@@ -183,52 +273,139 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
 
         {/* Step 2: Add foods */}
         {step === 2 && (
-          <div>
-            <p className="text-sm text-muted-foreground mb-3">Add foods to your {mealLabel.toLowerCase()}</p>
+          <div className="flex flex-col">
+            {/* Search bar */}
+            <div className="p-4 pb-2 sticky top-0 bg-background z-10 border-b">
+              <Input
+                placeholder="🔍 Search foods..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="rounded-xl"
+              />
+            </div>
 
-            {!manualMode ? (
-              <>
-                <Input
-                  placeholder="Search for a food..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="rounded-xl mb-2"
-                  autoFocus
-                />
-                {filteredFoods.length > 0 && (
-                  <div className="bg-card border rounded-xl mb-4 max-h-52 overflow-y-auto">
-                    {filteredFoods.map(food => (
-                      <button
-                        key={food.id}
-                        onClick={() => addFood(food)}
-                        className="w-full text-left p-3 border-b last:border-b-0 hover:bg-muted transition-colors"
-                      >
-                        <div className="font-medium text-sm">{food.name}</div>
-                        <div className="text-xs text-muted-foreground flex gap-2 mt-0.5">
-                          <span>{food.serving}</span>
-                          <span>·</span>
-                          <span>
-                            {Object.entries(food.exchanges).map(([k, v]) =>
-                              `${v} ${CATEGORY_META[k as ExchangeCategory].label.toLowerCase()}`
-                            ).join(' + ')}
-                          </span>
-                          {food.isCombination && (
-                            <span className="text-primary font-medium">combo</span>
-                          )}
-                        </div>
-                      </button>
-                    ))}
+            {/* Search results */}
+            {search.trim() && (
+              <div className="p-4 pt-2">
+                {filteredFoods.length > 0 ? (
+                  <div className="grid grid-cols-4 gap-2">
+                    {filteredFoods.map(renderFoodTile)}
                   </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">No matches. Try the manual entry below.</p>
                 )}
-                <button
-                  onClick={() => setManualMode(true)}
-                  className="text-sm text-primary font-medium underline"
-                >
-                  Or enter exchanges manually
-                </button>
+              </div>
+            )}
+
+            {/* Browse tabs (when not searching) */}
+            {!search.trim() && !manualMode && (
+              <>
+                <div className="px-4 pt-3 pb-2 flex gap-1.5 overflow-x-auto sticky top-[68px] bg-background z-10 border-b">
+                  <button
+                    onClick={() => setBrowseTab('favorites')}
+                    className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap ${
+                      browseTab === 'favorites' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    ⭐ Favorites
+                  </button>
+                  <button
+                    onClick={() => setBrowseTab('saved')}
+                    className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap ${
+                      browseTab === 'saved' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    💜 My Recipes
+                  </button>
+                  {EXCHANGE_CATEGORIES.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setBrowseTab(cat)}
+                      className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap ${
+                        browseTab === cat ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                      }`}
+                    >
+                      {CATEGORY_META[cat].emoji} {CATEGORY_META[cat].label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="p-4">
+                  {browseTab === 'favorites' && (
+                    <>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        {recentIds.length > 0 ? 'Your most-used foods. Tap to add.' : 'Common foods to get you started. Tap to add.'}
+                      </p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {favoriteFoods.map(renderFoodTile)}
+                      </div>
+                    </>
+                  )}
+
+                  {browseTab === 'saved' && (
+                    <>
+                      <p className="text-xs text-muted-foreground mb-3">Your saved meals. Tap to load all foods at once.</p>
+                      {savedMeals.length === 0 ? (
+                        <div className="text-center py-8 text-sm text-muted-foreground">
+                          <div className="text-4xl mb-2">💜</div>
+                          <p>No saved meals yet.</p>
+                          <p className="text-xs mt-1">After adding foods, tap "Save as recipe" below.</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {savedMeals.map(sm => {
+                            const items = (sm.food_items as MealFoodEntry[]) || [];
+                            const emojis = items.slice(0, 4).map(it => {
+                              const fd = FOOD_DATABASE.find(f => f.name === it.foodName);
+                              return fd?.emoji || '🍽️';
+                            });
+                            return (
+                              <button
+                                key={sm.id}
+                                onClick={() => loadSavedMeal(sm)}
+                                className="w-full bg-card border rounded-2xl p-3 flex items-center gap-3 hover:border-primary transition-colors text-left"
+                              >
+                                <div className="text-2xl">{emojis.join(' ')}</div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-bold text-sm">{sm.name}</div>
+                                  <div className="text-xs text-muted-foreground truncate">
+                                    {items.length} item{items.length !== 1 ? 's' : ''}
+                                    {sm.default_meal_label && ` · ${sm.default_meal_label}`}
+                                  </div>
+                                </div>
+                                <div className="text-primary text-lg">+</div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {EXCHANGE_CATEGORIES.includes(browseTab as ExchangeCategory) && (
+                    <>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Tap a food to add 1 serving. Tap again to add more.
+                      </p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {foodsByCategory[browseTab as ExchangeCategory].map(renderFoodTile)}
+                      </div>
+                    </>
+                  )}
+
+                  <button
+                    onClick={() => setManualMode(true)}
+                    className="text-xs text-primary font-medium underline mt-4 block"
+                  >
+                    Or enter exchanges manually →
+                  </button>
+                </div>
               </>
-            ) : (
-              <div className="space-y-3">
+            )}
+
+            {/* Manual mode */}
+            {!search.trim() && manualMode && (
+              <div className="p-4 space-y-3">
                 <Input
                   placeholder="Food name (optional)"
                   value={manualName}
@@ -254,40 +431,71 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
                 <div className="flex gap-2">
                   <Button onClick={addManual} className="flex-1 rounded-xl">Add</Button>
                   <Button variant="outline" onClick={() => setManualMode(false)} className="rounded-xl">
-                    Back to search
+                    Back
                   </Button>
                 </div>
               </div>
             )}
 
-            {/* Current entries */}
+            {/* Current entries — sticky bottom summary */}
             {entries.length > 0 && (
-              <div className="mt-6">
-                <h3 className="font-semibold text-sm mb-2">Added foods</h3>
-                <div className="space-y-2">
-                  {entries.map((entry, idx) => (
-                    <div key={idx} className="bg-card border rounded-xl p-3 flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="text-sm font-medium">{entry.foodName}</div>
-                        <div className="text-xs text-muted-foreground">{entry.serving}</div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => updateQuantity(idx, entry.quantity - 0.5)}
-                          className="w-7 h-7 rounded-full bg-muted text-sm font-bold flex items-center justify-center"
-                        >−</button>
-                        <span className="text-sm font-bold w-6 text-center">{entry.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(idx, entry.quantity + 0.5)}
-                          className="w-7 h-7 rounded-full bg-muted text-sm font-bold flex items-center justify-center"
-                        >+</button>
-                        <button
-                          onClick={() => removeEntry(idx)}
-                          className="text-destructive text-xs ml-2"
-                        >✕</button>
-                      </div>
+              <div className="px-4 pb-4">
+                <div className="bg-muted/50 rounded-2xl p-3 mt-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-sm">In this meal ({entries.length})</h3>
+                    {!editingMeal && (
+                      <button
+                        onClick={() => setShowSaveAsRecipe(!showSaveAsRecipe)}
+                        className="text-xs text-primary font-semibold"
+                      >
+                        💜 Save as recipe
+                      </button>
+                    )}
+                  </div>
+
+                  {showSaveAsRecipe && (
+                    <div className="bg-card border rounded-xl p-2 mb-2 flex gap-2">
+                      <Input
+                        placeholder="Recipe name (e.g. My usual breakfast)"
+                        value={recipeName}
+                        onChange={(e) => setRecipeName(e.target.value)}
+                        className="rounded-lg text-sm flex-1"
+                      />
+                      <Button onClick={saveAsRecipe} disabled={!recipeName.trim()} size="sm" className="rounded-lg">
+                        Save
+                      </Button>
                     </div>
-                  ))}
+                  )}
+
+                  <div className="space-y-1.5">
+                    {entries.map((entry, idx) => {
+                      const fd = FOOD_DATABASE.find(f => f.name === entry.foodName);
+                      return (
+                        <div key={idx} className="bg-card border rounded-xl p-2 flex items-center gap-2">
+                          <div className="text-xl shrink-0">{fd?.emoji || '🍽️'}</div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium truncate">{entry.foodName}</div>
+                            <div className="text-xs text-muted-foreground truncate">{entry.serving}</div>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              onClick={() => updateQuantity(idx, entry.quantity - 0.5)}
+                              className="w-6 h-6 rounded-full bg-muted text-sm font-bold flex items-center justify-center"
+                            >−</button>
+                            <span className="text-sm font-bold w-6 text-center">{entry.quantity}</span>
+                            <button
+                              onClick={() => updateQuantity(idx, entry.quantity + 0.5)}
+                              className="w-6 h-6 rounded-full bg-muted text-sm font-bold flex items-center justify-center"
+                            >+</button>
+                            <button
+                              onClick={() => removeEntry(idx)}
+                              className="text-destructive text-xs ml-1 w-6 h-6"
+                            >✕</button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             )}
@@ -296,7 +504,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
 
         {/* Step 3: Summary */}
         {step === 3 && (
-          <div>
+          <div className="p-4">
             <p className="text-sm text-muted-foreground mb-4">Here's your {mealLabel.toLowerCase()} summary</p>
             <div className="bg-card border rounded-2xl p-4 mb-4">
               <h3 className="font-bold mb-3">This meal adds:</h3>
@@ -313,11 +521,15 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
               </div>
             </div>
             <div className="space-y-1.5">
-              {entries.map((entry, idx) => (
-                <div key={idx} className="text-sm text-muted-foreground">
-                  {entry.quantity > 1 ? `${entry.quantity}× ` : ''}{entry.foodName} ({entry.serving})
-                </div>
-              ))}
+              {entries.map((entry, idx) => {
+                const fd = FOOD_DATABASE.find(f => f.name === entry.foodName);
+                return (
+                  <div key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
+                    <span className="text-base">{fd?.emoji || '🍽️'}</span>
+                    <span>{entry.quantity > 1 ? `${entry.quantity}× ` : ''}{entry.foodName} ({entry.serving})</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
