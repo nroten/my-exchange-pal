@@ -9,7 +9,22 @@ export default function DaughterApp() {
   const [tab, setTab] = useState<'today' | 'history' | 'settings'>('today');
 
   return (
-    <div className="max-w-lg mx-auto">
+    <div className="max-w-lg mx-auto pb-20">
+      {/* Sticky role switcher (mirrors Supporter view) */}
+      {hasSupporterRole && (
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b px-5 py-2 flex items-center justify-between">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            🏠 Tracker view
+          </span>
+          <button
+            onClick={() => setActiveView('supporter')}
+            className="bg-secondary text-secondary-foreground rounded-full px-4 py-1.5 text-xs font-bold shadow-sm hover:opacity-90 transition-opacity"
+          >
+            💜 Switch to supporter →
+          </button>
+        </div>
+      )}
+
       {tab === 'today' && <Dashboard />}
       {tab === 'history' && <History />}
       {tab === 'settings' && <Settings />}
