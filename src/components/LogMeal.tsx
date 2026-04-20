@@ -97,11 +97,11 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   }, []);
 
   const addFood = (food: FoodItem) => {
-    // If same food already added, increment quantity by 0.5
+    // If same food already added, increment quantity by 0.25
     const existingIdx = entries.findIndex(e => e.foodName === food.name);
     let next: MealFoodEntry[];
     if (existingIdx >= 0) {
-      next = entries.map((e, i) => i === existingIdx ? { ...e, quantity: e.quantity + 0.5 } : e);
+      next = entries.map((e, i) => i === existingIdx ? { ...e, quantity: e.quantity + 0.25 } : e);
     } else {
       const entry: MealFoodEntry = {
         foodName: food.name,
@@ -120,7 +120,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   const adjustFoodQty = (food: FoodItem, delta: number) => {
     const existingIdx = entries.findIndex(e => e.foodName === food.name);
     if (existingIdx < 0) return;
-    const newQty = Math.round((entries[existingIdx].quantity + delta) * 2) / 2;
+    const newQty = Math.round((entries[existingIdx].quantity + delta) * 4) / 4;
     let next: MealFoodEntry[];
     if (newQty <= 0) {
       next = entries.filter((_, i) => i !== existingIdx);
@@ -163,7 +163,8 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   };
 
   const updateQuantity = (idx: number, qty: number) => {
-    const next = entries.map((e, i) => i === idx ? { ...e, quantity: Math.max(0.5, qty) } : e);
+    const rounded = Math.round(qty * 4) / 4;
+    const next = entries.map((e, i) => i === idx ? { ...e, quantity: Math.max(0.25, rounded) } : e);
     setEntries(next);
     saveDraft(mealLabel, next);
   };
@@ -253,12 +254,12 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
             {/* Inline −/+ stepper at bottom */}
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-card border-2 border-primary rounded-full shadow-md z-10">
               <button
-                onClick={(e) => { e.stopPropagation(); adjustFoodQty(food, -0.5); }}
+                onClick={(e) => { e.stopPropagation(); adjustFoodQty(food, -0.25); }}
                 className="w-6 h-6 rounded-full text-sm font-bold flex items-center justify-center hover:bg-muted active:scale-90 transition-transform"
                 aria-label="Decrease"
               >−</button>
               <button
-                onClick={(e) => { e.stopPropagation(); adjustFoodQty(food, 0.5); }}
+                onClick={(e) => { e.stopPropagation(); adjustFoodQty(food, 0.25); }}
                 className="w-6 h-6 rounded-full text-sm font-bold flex items-center justify-center hover:bg-muted active:scale-90 transition-transform"
                 aria-label="Increase"
               >+</button>
@@ -419,7 +420,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
                   {EXCHANGE_CATEGORIES.includes(browseTab as ExchangeCategory) && (
                     <>
                       <p className="text-xs text-muted-foreground mb-3">
-                        Tap to add. Use −/+ to adjust by half servings (e.g. ½ avocado).
+                        Tap to add. Use −/+ to adjust by ¼ servings (e.g. ½ avocado, ¼ cup rice).
                       </p>
                       <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-3">
                         {foodsByCategory[browseTab as ExchangeCategory].map(renderFoodTile)}
@@ -513,12 +514,12 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
                             <button
-                              onClick={() => updateQuantity(idx, entry.quantity - 0.5)}
+                              onClick={() => updateQuantity(idx, entry.quantity - 0.25)}
                               className="w-6 h-6 rounded-full bg-muted text-sm font-bold flex items-center justify-center"
                             >−</button>
                             <span className="text-sm font-bold w-6 text-center">{entry.quantity}</span>
                             <button
-                              onClick={() => updateQuantity(idx, entry.quantity + 0.5)}
+                              onClick={() => updateQuantity(idx, entry.quantity + 0.25)}
                               className="w-6 h-6 rounded-full bg-muted text-sm font-bold flex items-center justify-center"
                             >+</button>
                             <button
