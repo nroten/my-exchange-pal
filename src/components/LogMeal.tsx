@@ -514,12 +514,12 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
                             <button
-                              onClick={() => updateQuantity(idx, entry.quantity - 0.5)}
+                              onClick={() => updateQuantity(idx, entry.quantity - 0.25)}
                               className="w-6 h-6 rounded-full bg-muted text-sm font-bold flex items-center justify-center"
                             >−</button>
                             <span className="text-sm font-bold w-6 text-center">{entry.quantity}</span>
                             <button
-                              onClick={() => updateQuantity(idx, entry.quantity + 0.5)}
+                              onClick={() => updateQuantity(idx, entry.quantity + 0.25)}
                               className="w-6 h-6 rounded-full bg-muted text-sm font-bold flex items-center justify-center"
                             >+</button>
                             <button
