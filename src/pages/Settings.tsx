@@ -17,13 +17,17 @@ export default function Settings() {
   const [connectPin, setConnectPin] = useState('');
   const [showGuide, setShowGuide] = useState(false);
   const [showAddSupporter, setShowAddSupporter] = useState(false);
+  const [savedMeals, setSavedMeals] = useState<any[]>([]);
+  const [editingRecipeId, setEditingRecipeId] = useState<string | null>(null);
+  const [editingRecipeName, setEditingRecipeName] = useState('');
 
   useEffect(() => {
     if (!user) return;
     const fetch = async () => {
-      const [t, c] = await Promise.all([
+      const [t, c, sm] = await Promise.all([
         supabase.from('daily_targets').select('*').eq('user_id', user.id).single(),
         supabase.from('parent_connections').select('*').eq('daughter_user_id', user.id),
+        supabase.from('saved_meals').select('*').eq('user_id', user.id).order('updated_at', { ascending: false }),
       ]);
       if (t.data) {
         setTargets({
@@ -33,9 +37,33 @@ export default function Settings() {
         });
       }
       if (c.data) setConnections(c.data);
+      if (sm.data) setSavedMeals(sm.data);
     };
     fetch();
   }, [user]);
+
+  const refreshSavedMeals = async () => {
+    if (!user) return;
+    const { data } = await supabase.from('saved_meals').select('*').eq('user_id', user.id).order('updated_at', { ascending: false });
+    if (data) setSavedMeals(data);
+  };
+
+  const deleteRecipe = async (id: string) => {
+    const { error } = await supabase.from('saved_meals').delete().eq('id', id);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Recipe deleted');
+    refreshSavedMeals();
+  };
+
+  const renameRecipe = async (id: string) => {
+    if (!editingRecipeName.trim()) return;
+    const { error } = await supabase.from('saved_meals').update({ name: editingRecipeName.trim() }).eq('id', id);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Recipe renamed');
+    setEditingRecipeId(null);
+    setEditingRecipeName('');
+    refreshSavedMeals();
+  };
 
   const saveTargets = async () => {
     if (!user) return;
