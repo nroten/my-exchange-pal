@@ -227,25 +227,45 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   const renderFoodTile = (food: FoodItem) => {
     const inMeal = entries.find(e => e.foodName === food.name);
     return (
-      <button
+      <div
         key={food.id}
-        onClick={() => addFood(food)}
-        className={`relative aspect-square rounded-2xl border-2 flex flex-col items-center justify-center p-1 transition-all active:scale-95 ${
+        className={`relative aspect-square rounded-2xl border-2 flex flex-col items-center justify-center p-1 transition-all max-w-[140px] mx-auto w-full ${
           inMeal
             ? 'bg-primary/10 border-primary shadow-md'
             : 'bg-card border-border hover:border-primary/50'
         }`}
       >
-        <div className="text-3xl mb-0.5">{food.emoji}</div>
-        <div className="text-[10px] font-semibold text-center leading-tight line-clamp-2 px-0.5">
+        <button
+          onClick={() => addFood(food)}
+          className="absolute inset-0 rounded-2xl active:scale-95 transition-transform"
+          aria-label={`Add ${food.name}`}
+        />
+        <div className="text-3xl mb-0.5 pointer-events-none">{food.emoji}</div>
+        <div className="text-[10px] font-semibold text-center leading-tight line-clamp-2 px-0.5 pointer-events-none">
           {food.name.replace(/\s*\(.*?\)/, '')}
         </div>
         {inMeal && (
-          <div className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md">
-            {inMeal.quantity}
-          </div>
+          <>
+            {/* Quantity badge */}
+            <div className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground rounded-full min-w-6 h-6 px-1.5 flex items-center justify-center text-xs font-bold shadow-md pointer-events-none">
+              {inMeal.quantity}
+            </div>
+            {/* Inline −/+ stepper at bottom */}
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-card border-2 border-primary rounded-full shadow-md z-10">
+              <button
+                onClick={(e) => { e.stopPropagation(); adjustFoodQty(food, -0.5); }}
+                className="w-6 h-6 rounded-full text-sm font-bold flex items-center justify-center hover:bg-muted active:scale-90 transition-transform"
+                aria-label="Decrease"
+              >−</button>
+              <button
+                onClick={(e) => { e.stopPropagation(); adjustFoodQty(food, 0.5); }}
+                className="w-6 h-6 rounded-full text-sm font-bold flex items-center justify-center hover:bg-muted active:scale-90 transition-transform"
+                aria-label="Increase"
+              >+</button>
+            </div>
+          </>
         )}
-      </button>
+      </div>
     );
   };
 
