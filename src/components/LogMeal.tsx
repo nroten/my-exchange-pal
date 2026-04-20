@@ -163,7 +163,8 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   };
 
   const updateQuantity = (idx: number, qty: number) => {
-    const next = entries.map((e, i) => i === idx ? { ...e, quantity: Math.max(0.5, qty) } : e);
+    const rounded = Math.round(qty * 4) / 4;
+    const next = entries.map((e, i) => i === idx ? { ...e, quantity: Math.max(0.25, rounded) } : e);
     setEntries(next);
     saveDraft(mealLabel, next);
   };
