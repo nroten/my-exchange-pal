@@ -70,23 +70,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    let initialized = false;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
         if (session?.user) {
           setTimeout(async () => {
             const prof = await fetchProfile(session.user.id);
-            const isSupporter = await checkSupporterRole(session.user.id);
-            // Set initial view based on role
-            if (prof?.role === 'parent' && !prof?.setup_complete) {
-              setActiveView('supporter');
-            } else if (prof?.role === 'parent') {
-              setActiveView('supporter');
+            await checkSupporterRole(session.user.id);
+            // Only set initial view once — never override an explicit user switch
+            if (!initialized) {
+              initialized = true;
+              if (prof?.role === 'parent') {
+                setActiveView('supporter');
+              }
             }
           }, 0);
         } else {
           setProfile(null);
           setHasSupporterRole(false);
+          initialized = false;
         }
         setLoading(false);
       }
@@ -97,8 +101,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session?.user) {
         const prof = await fetchProfile(session.user.id);
         await checkSupporterRole(session.user.id);
-        if (prof?.role === 'parent') {
-          setActiveView('supporter');
+        if (!initialized) {
+          initialized = true;
+          if (prof?.role === 'parent') {
+            setActiveView('supporter');
+          }
         }
       }
       setLoading(false);
