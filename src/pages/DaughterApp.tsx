@@ -41,15 +41,6 @@ export default function DaughterApp() {
               {item.label}
             </button>
           ))}
-          {hasSupporterRole && (
-            <button
-              onClick={() => setActiveView('supporter')}
-              className="flex-1 py-3 flex flex-col items-center gap-0.5 text-xs font-medium text-muted-foreground transition-colors hover:text-secondary"
-            >
-              <span className="text-lg">💜</span>
-              Supporter
-            </button>
-          )}
         </div>
       </nav>
     </div>
