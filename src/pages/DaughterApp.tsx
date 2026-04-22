@@ -1,27 +1,20 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import RoleToggle from '@/components/RoleToggle';
 import Dashboard from './Dashboard';
 import History from './History';
 import Settings from './Settings';
 
 export default function DaughterApp() {
-  const { hasSupporterRole, setActiveView } = useAuth();
+  const { hasSupporterRole } = useAuth();
   const [tab, setTab] = useState<'today' | 'history' | 'settings'>('today');
 
   return (
     <div className="max-w-lg mx-auto pb-20">
       {/* Sticky role switcher (mirrors Supporter view) */}
       {hasSupporterRole && (
-        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b px-5 py-2 flex items-center justify-between">
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            🏠 Tracker view
-          </span>
-          <button
-            onClick={() => setActiveView('supporter')}
-            className="bg-secondary text-secondary-foreground rounded-full px-4 py-1.5 text-xs font-bold shadow-sm hover:opacity-90 transition-opacity"
-          >
-            💜 Switch to supporter →
-          </button>
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b px-3 py-2 flex items-center justify-center">
+          <RoleToggle />
         </div>
       )}
 
@@ -48,15 +41,6 @@ export default function DaughterApp() {
               {item.label}
             </button>
           ))}
-          {hasSupporterRole && (
-            <button
-              onClick={() => setActiveView('supporter')}
-              className="flex-1 py-3 flex flex-col items-center gap-0.5 text-xs font-medium text-muted-foreground transition-colors hover:text-secondary"
-            >
-              <span className="text-lg">💜</span>
-              Supporter
-            </button>
-          )}
         </div>
       </nav>
     </div>
