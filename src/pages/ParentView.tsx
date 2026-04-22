@@ -136,17 +136,9 @@ export default function ParentView() {
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Sticky role switcher */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b px-5 py-2 flex items-center justify-between">
-        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-          💜 Supporter view
-        </span>
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b px-3 py-2 flex items-center justify-center gap-2">
         {hasTrackerRole ? (
-          <button
-            onClick={() => setActiveView('tracker')}
-            className="bg-primary text-primary-foreground rounded-full px-4 py-1.5 text-xs font-bold shadow-sm hover:opacity-90 transition-opacity"
-          >
-            🏠 Switch to my tracker →
-          </button>
+          <RoleToggle />
         ) : (
           <button
             onClick={() => setActiveView('tracker')}
