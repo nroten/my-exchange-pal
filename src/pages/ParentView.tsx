@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import ProgressRing from '@/components/ProgressRing';
 import Settings from './Settings';
+import RoleToggle from '@/components/RoleToggle';
 import {
   EXCHANGE_CATEGORIES, CATEGORY_META, ExchangeValues,
   ExchangeCategory, EMPTY_EXCHANGES, MealFoodEntry,
