@@ -11,11 +11,11 @@ import {
 } from '@/types/macros';
 import { Plus, Minus, X, Pencil } from 'lucide-react';
 
-const SLOT_COLORS: Record<MealSlot, string> = {
-  breakfast: 'bg-exchange-fruits/15 border-exchange-fruits/40',
-  lunch: 'bg-exchange-vegetables/15 border-exchange-vegetables/40',
-  dinner: 'bg-exchange-proteins/15 border-exchange-proteins/40',
-  snack: 'bg-exchange-fats/15 border-exchange-fats/40',
+const SLOT_ACCENT: Record<MealSlot, string> = {
+  breakfast: 'from-macro-fats/20 to-macro-calories/10 border-macro-fats/30',
+  lunch: 'from-macro-carbs/20 to-macro-primary/10 border-macro-carbs/30',
+  dinner: 'from-macro-protein/20 to-macro-primary/10 border-macro-protein/30',
+  snack: 'from-macro-primary/20 to-macro-carbs/10 border-macro-primary/30',
 };
 
 interface FoodFormState {
