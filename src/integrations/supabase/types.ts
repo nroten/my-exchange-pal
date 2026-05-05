@@ -80,6 +80,146 @@ export type Database = {
         }
         Relationships: []
       }
+      macro_foods: {
+        Row: {
+          calories: number
+          carbs: number
+          created_at: string
+          emoji: string
+          fats: number
+          id: string
+          kind: string
+          meal_slot: string
+          name: string
+          parent_id: string | null
+          protein: number
+          sort_order: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          calories?: number
+          carbs?: number
+          created_at?: string
+          emoji?: string
+          fats?: number
+          id?: string
+          kind?: string
+          meal_slot?: string
+          name: string
+          parent_id?: string | null
+          protein?: number
+          sort_order?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          carbs?: number
+          created_at?: string
+          emoji?: string
+          fats?: number
+          id?: string
+          kind?: string
+          meal_slot?: string
+          name?: string
+          parent_id?: string | null
+          protein?: number
+          sort_order?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_foods_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "macro_foods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      macro_logs: {
+        Row: {
+          calories: number
+          carbs: number
+          created_at: string
+          emoji: string
+          fats: number
+          food_id: string | null
+          food_name: string
+          id: string
+          log_date: string
+          meal_slot: string
+          protein: number
+          quantity: number
+          user_id: string
+        }
+        Insert: {
+          calories?: number
+          carbs?: number
+          created_at?: string
+          emoji?: string
+          fats?: number
+          food_id?: string | null
+          food_name: string
+          id?: string
+          log_date?: string
+          meal_slot?: string
+          protein?: number
+          quantity?: number
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          carbs?: number
+          created_at?: string
+          emoji?: string
+          fats?: number
+          food_id?: string | null
+          food_name?: string
+          id?: string
+          log_date?: string
+          meal_slot?: string
+          protein?: number
+          quantity?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      macro_targets: {
+        Row: {
+          calories: number
+          carbs: number
+          created_at: string
+          fats: number
+          id: string
+          protein: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          calories?: number
+          carbs?: number
+          created_at?: string
+          fats?: number
+          id?: string
+          protein?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          carbs?: number
+          created_at?: string
+          fats?: number
+          id?: string
+          protein?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       meal_logs: {
         Row: {
           created_at: string
@@ -165,6 +305,7 @@ export type Database = {
           id: string
           role: string
           setup_complete: boolean
+          tracking_mode: string
           updated_at: string
           user_id: string
         }
@@ -174,6 +315,7 @@ export type Database = {
           id?: string
           role?: string
           setup_complete?: boolean
+          tracking_mode?: string
           updated_at?: string
           user_id: string
         }
@@ -183,6 +325,7 @@ export type Database = {
           id?: string
           role?: string
           setup_complete?: boolean
+          tracking_mode?: string
           updated_at?: string
           user_id?: string
         }
