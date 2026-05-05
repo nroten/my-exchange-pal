@@ -7,9 +7,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { toast } from 'sonner';
 import {
   MacroFood, MacroLog, MacroTargets, MealSlot, MEAL_SLOTS,
-  EMPTY_MACROS, sumMacros, getCurrentMealSlot,
+  sumMacros, getCurrentMealSlot, todayYMD, tomorrowYMD, yesterdayYMD,
 } from '@/types/macros';
-import { Plus, Minus, X, Pencil } from 'lucide-react';
+import { Plus, Minus, X, Pencil, Check, Copy } from 'lucide-react';
 
 const SLOT_ACCENT: Record<MealSlot, string> = {
   breakfast: 'from-macro-fats/20 to-macro-calories/10 border-macro-fats/30',
@@ -34,23 +34,29 @@ const EMPTY_FORM: FoodFormState = {
   calories: '', protein: '', carbs: '', fats: '',
 };
 
+type DayMode = 'today' | 'tomorrow';
+
 export default function MacrosTracker() {
   const { user, profile } = useAuth();
   const [targets, setTargets] = useState<MacroTargets>({ calories: 2000, protein: 100, carbs: 220, fats: 70 });
   const [foods, setFoods] = useState<MacroFood[]>([]);
   const [logs, setLogs] = useState<MacroLog[]>([]);
   const [activeSlot, setActiveSlot] = useState<MealSlot>(getCurrentMealSlot());
+  const [dayMode, setDayMode] = useState<DayMode>('today');
   const [showFoodDialog, setShowFoodDialog] = useState(false);
   const [form, setForm] = useState<FoodFormState>(EMPTY_FORM);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = todayYMD();
+  const tomorrow = tomorrowYMD();
+  const activeDate = dayMode === 'today' ? today : tomorrow;
+  const isPlanning = dayMode === 'tomorrow';
 
   const fetchAll = useCallback(async () => {
     if (!user) return;
     const [t, f, l] = await Promise.all([
       supabase.from('macro_targets').select('*').eq('user_id', user.id).maybeSingle(),
       supabase.from('macro_foods').select('*').eq('user_id', user.id).order('sort_order').order('created_at'),
-      supabase.from('macro_logs').select('*').eq('user_id', user.id).eq('log_date', today).order('created_at'),
+      supabase.from('macro_logs').select('*').eq('user_id', user.id).in('log_date', [today, tomorrow]).order('created_at'),
     ]);
     if (t.data) {
       setTargets({
@@ -58,16 +64,28 @@ export default function MacrosTracker() {
         carbs: Number(t.data.carbs), fats: Number(t.data.fats),
       });
     } else {
-      // create default row
       await supabase.from('macro_targets').insert({ user_id: user.id });
     }
     if (f.data) setFoods(f.data as MacroFood[]);
     if (l.data) setLogs(l.data as MacroLog[]);
-  }, [user, today]);
+  }, [user, today, tomorrow]);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
-  const totals = useMemo(() => sumMacros(logs), [logs]);
+  // Logs for the active day. On Today, show eaten only in totals/list.
+  // On Tomorrow, show planned only.
+  const dayLogs = useMemo(
+    () => logs.filter(l => l.log_date === activeDate && (isPlanning ? l.is_planned : !l.is_planned)),
+    [logs, activeDate, isPlanning],
+  );
+
+  // On Today, also surface planned items as "ready to confirm"
+  const plannedTodayLogs = useMemo(
+    () => logs.filter(l => l.log_date === today && l.is_planned),
+    [logs, today],
+  );
+
+  const totals = useMemo(() => sumMacros(dayLogs), [dayLogs]);
 
   const slotFoods = useMemo(
     () => foods.filter(f => f.meal_slot === activeSlot),
@@ -75,15 +93,20 @@ export default function MacrosTracker() {
   );
 
   const slotLogs = useMemo(
-    () => logs.filter(l => l.meal_slot === activeSlot),
-    [logs, activeSlot],
+    () => dayLogs.filter(l => l.meal_slot === activeSlot),
+    [dayLogs, activeSlot],
+  );
+
+  const slotPlannedToday = useMemo(
+    () => plannedTodayLogs.filter(l => l.meal_slot === activeSlot),
+    [plannedTodayLogs, activeSlot],
   );
 
   async function logFood(food: MacroFood) {
     if (!user) return;
     const { error } = await supabase.from('macro_logs').insert({
       user_id: user.id,
-      log_date: today,
+      log_date: activeDate,
       meal_slot: food.meal_slot,
       food_id: food.id,
       food_name: food.name,
@@ -93,9 +116,10 @@ export default function MacrosTracker() {
       carbs: food.carbs,
       fats: food.fats,
       quantity: 1,
+      is_planned: isPlanning,
     });
     if (error) { toast.error(error.message); return; }
-    toast.success(`Added ${food.emoji} ${food.name}`);
+    toast.success(`${isPlanning ? 'Planned' : 'Added'} ${food.emoji} ${food.name}`);
     fetchAll();
   }
 
@@ -109,6 +133,67 @@ export default function MacrosTracker() {
     const next = Math.max(0, Math.round((log.quantity + delta) * 4) / 4);
     if (next === 0) return removeLog(log.id);
     const { error } = await supabase.from('macro_logs').update({ quantity: next }).eq('id', log.id);
+    if (error) { toast.error(error.message); return; }
+    fetchAll();
+  }
+
+  async function confirmPlanned(log: MacroLog) {
+    const { error } = await supabase.from('macro_logs').update({ is_planned: false }).eq('id', log.id);
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Confirmed ${log.emoji} ${log.food_name} ✨`);
+    fetchAll();
+  }
+
+  async function confirmAllPlanned() {
+    if (plannedTodayLogs.length === 0) return;
+    const ids = plannedTodayLogs.map(l => l.id);
+    const { error } = await supabase.from('macro_logs').update({ is_planned: false }).in('id', ids);
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Confirmed ${ids.length} planned items 🎉`);
+    fetchAll();
+  }
+
+  async function copyFromDay(sourceDate: string) {
+    if (!user) return;
+    // Read source: eaten if today, else planned
+    const { data, error } = await supabase
+      .from('macro_logs').select('*')
+      .eq('user_id', user.id).eq('log_date', sourceDate);
+    if (error) { toast.error(error.message); return; }
+    const source = (data || []).filter(l =>
+      sourceDate === today ? !l.is_planned : true,
+    );
+    if (source.length === 0) {
+      toast.info('Nothing to copy from that day.');
+      return;
+    }
+    const rows = source.map(l => ({
+      user_id: user.id,
+      log_date: activeDate,
+      meal_slot: l.meal_slot,
+      food_id: l.food_id,
+      food_name: l.food_name,
+      emoji: l.emoji,
+      calories: l.calories,
+      protein: l.protein,
+      carbs: l.carbs,
+      fats: l.fats,
+      quantity: l.quantity,
+      is_planned: isPlanning,
+    }));
+    const { error: insErr } = await supabase.from('macro_logs').insert(rows);
+    if (insErr) { toast.error(insErr.message); return; }
+    toast.success(`Copied ${rows.length} items 💪`);
+    fetchAll();
+  }
+
+  async function clearDay() {
+    if (!user) return;
+    if (!confirm(`Clear all ${isPlanning ? 'planned' : 'logged'} items for this day?`)) return;
+    const { error } = await supabase.from('macro_logs').delete()
+      .eq('user_id', user.id)
+      .eq('log_date', activeDate)
+      .eq('is_planned', isPlanning);
     if (error) { toast.error(error.message); return; }
     fetchAll();
   }
@@ -157,22 +242,91 @@ export default function MacrosTracker() {
   }
 
   const name = profile?.display_name || 'friend';
-  const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const headerDate = new Date(activeDate + 'T00:00:00');
+  const dateStr = headerDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  // Forecast/remaining for planning
+  const remaining = {
+    calories: Math.max(0, targets.calories - totals.calories),
+    protein: Math.max(0, targets.protein - totals.protein),
+    carbs: Math.max(0, targets.carbs - totals.carbs),
+    fats: Math.max(0, targets.fats - totals.fats),
+  };
 
   return (
     <div className="min-h-screen bg-macro-bg text-macro-text pb-24">
       {/* Header */}
       <div className="px-5 pt-6 pb-3">
-        <p className="text-sm text-macro-muted">{todayStr}</p>
-        <h1 className="text-xl font-bold mt-1 text-macro-text">Hey {name}! 💪</h1>
+        <p className="text-sm text-macro-muted">{dateStr}</p>
+        <h1 className="text-xl font-bold mt-1 text-macro-text">
+          {isPlanning ? `Planning tomorrow 🗓️` : `Hey ${name}! 💪`}
+        </h1>
+      </div>
+
+      {/* Today / Tomorrow toggle */}
+      <div className="px-5 mb-3">
+        <div className="inline-flex bg-macro-surface border border-macro-border rounded-full p-1">
+          {(['today', 'tomorrow'] as DayMode[]).map(m => (
+            <button
+              key={m}
+              onClick={() => setDayMode(m)}
+              className={`px-4 py-1.5 rounded-full text-sm font-semibold transition ${
+                dayMode === m
+                  ? 'bg-macro-primary text-macro-primary-foreground'
+                  : 'text-macro-muted hover:text-macro-text'
+              }`}
+            >
+              {m === 'today' ? '📅 Today' : '🗓️ Tomorrow'}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Macro summary */}
-      <div className="px-5 mb-4 grid grid-cols-4 gap-2">
+      <div className="px-5 mb-2 grid grid-cols-4 gap-2">
         <MacroStat label="kcal" value={totals.calories} target={targets.calories} accentClass="bg-macro-calories" />
         <MacroStat label="P" value={totals.protein} target={targets.protein} accentClass="bg-macro-protein" suffix="g" />
         <MacroStat label="C" value={totals.carbs} target={targets.carbs} accentClass="bg-macro-carbs" suffix="g" />
         <MacroStat label="F" value={totals.fats} target={targets.fats} accentClass="bg-macro-fats" suffix="g" />
+      </div>
+
+      {/* Planning helper line */}
+      {isPlanning && (
+        <div className="px-5 mb-3 text-[11px] text-macro-muted">
+          Remaining to plan: <span className="text-macro-calories font-semibold">{Math.round(remaining.calories)} kcal</span>
+          {' · '}<span className="text-macro-protein font-semibold">P{Math.round(remaining.protein)}g</span>
+          {' · '}<span className="text-macro-carbs font-semibold">C{Math.round(remaining.carbs)}g</span>
+          {' · '}<span className="text-macro-fats font-semibold">F{Math.round(remaining.fats)}g</span>
+        </div>
+      )}
+
+      {/* Quick actions */}
+      <div className="px-5 mb-3 flex flex-wrap gap-2">
+        {isPlanning ? (
+          <>
+            <Button size="sm" variant="outline" onClick={() => copyFromDay(today)}
+              className="rounded-full bg-macro-surface border-macro-border text-macro-text hover:bg-macro-surface-2 hover:text-macro-text">
+              <Copy size={14} className="mr-1" /> Copy today
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => copyFromDay(yesterdayYMD())}
+              className="rounded-full bg-macro-surface border-macro-border text-macro-text hover:bg-macro-surface-2 hover:text-macro-text">
+              <Copy size={14} className="mr-1" /> Copy yesterday
+            </Button>
+            {dayLogs.length > 0 && (
+              <Button size="sm" variant="ghost" onClick={clearDay}
+                className="rounded-full text-macro-muted hover:text-destructive">
+                Clear plan
+              </Button>
+            )}
+          </>
+        ) : (
+          plannedTodayLogs.length > 0 && (
+            <Button size="sm" onClick={confirmAllPlanned}
+              className="rounded-full bg-macro-primary text-macro-primary-foreground">
+              <Check size={14} className="mr-1" /> Confirm all planned ({plannedTodayLogs.length})
+            </Button>
+          )
+        )}
       </div>
 
       {/* Meal slot tabs */}
@@ -252,11 +406,44 @@ export default function MacrosTracker() {
         </div>
       </div>
 
-      {/* Logged today for this slot */}
+      {/* Planned for today (only on Today view, when there are planned items in this slot) */}
+      {!isPlanning && slotPlannedToday.length > 0 && (
+        <div className="px-5 mt-5">
+          <h3 className="text-xs font-bold uppercase text-macro-muted tracking-wide mb-2">
+            🗓️ Planned for {MEAL_SLOTS.find(s => s.key === activeSlot)?.label} — tap ✓ when eaten
+          </h3>
+          <div className="space-y-2">
+            {slotPlannedToday.map(l => (
+              <div key={l.id} className="bg-macro-surface border border-dashed border-macro-primary/50 rounded-xl p-2 flex items-center gap-2">
+                <span className="text-xl opacity-80">{l.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold truncate text-macro-text">{l.food_name} <span className="text-[10px] text-macro-muted">×{l.quantity}</span></div>
+                  <div className="text-[11px] text-macro-muted">
+                    <span className="text-macro-calories">{Math.round(l.calories * l.quantity)} kcal</span>
+                    {' · '}<span className="text-macro-protein">P{Math.round(l.protein * l.quantity)}</span>
+                    {' · '}<span className="text-macro-carbs">C{Math.round(l.carbs * l.quantity)}</span>
+                    {' · '}<span className="text-macro-fats">F{Math.round(l.fats * l.quantity)}</span>
+                  </div>
+                </div>
+                <button onClick={() => confirmPlanned(l)}
+                  className="w-8 h-8 rounded-full bg-macro-primary text-macro-primary-foreground flex items-center justify-center"
+                  aria-label="Confirm eaten">
+                  <Check size={14} />
+                </button>
+                <button onClick={() => removeLog(l.id)} className="text-macro-muted hover:text-destructive ml-1">
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Day list (eaten on Today, planned on Tomorrow) */}
       {slotLogs.length > 0 && (
         <div className="px-5 mt-5">
           <h3 className="text-xs font-bold uppercase text-macro-muted tracking-wide mb-2">
-            Logged for {MEAL_SLOTS.find(s => s.key === activeSlot)?.label}
+            {isPlanning ? 'Planned' : 'Logged'} for {MEAL_SLOTS.find(s => s.key === activeSlot)?.label}
           </h3>
           <div className="space-y-2">
             {slotLogs.map(l => (
@@ -266,12 +453,9 @@ export default function MacrosTracker() {
                   <div className="text-sm font-semibold truncate text-macro-text">{l.food_name}</div>
                   <div className="text-[11px] text-macro-muted">
                     <span className="text-macro-calories">{Math.round(l.calories * l.quantity)} kcal</span>
-                    {' · '}
-                    <span className="text-macro-protein">P{Math.round(l.protein * l.quantity)}</span>
-                    {' · '}
-                    <span className="text-macro-carbs">C{Math.round(l.carbs * l.quantity)}</span>
-                    {' · '}
-                    <span className="text-macro-fats">F{Math.round(l.fats * l.quantity)}</span>
+                    {' · '}<span className="text-macro-protein">P{Math.round(l.protein * l.quantity)}</span>
+                    {' · '}<span className="text-macro-carbs">C{Math.round(l.carbs * l.quantity)}</span>
+                    {' · '}<span className="text-macro-fats">F{Math.round(l.fats * l.quantity)}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
