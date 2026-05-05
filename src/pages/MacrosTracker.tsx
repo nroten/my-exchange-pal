@@ -11,11 +11,11 @@ import {
 } from '@/types/macros';
 import { Plus, Minus, X, Pencil } from 'lucide-react';
 
-const SLOT_COLORS: Record<MealSlot, string> = {
-  breakfast: 'bg-exchange-fruits/15 border-exchange-fruits/40',
-  lunch: 'bg-exchange-vegetables/15 border-exchange-vegetables/40',
-  dinner: 'bg-exchange-proteins/15 border-exchange-proteins/40',
-  snack: 'bg-exchange-fats/15 border-exchange-fats/40',
+const SLOT_ACCENT: Record<MealSlot, string> = {
+  breakfast: 'from-macro-fats/20 to-macro-calories/10 border-macro-fats/30',
+  lunch: 'from-macro-carbs/20 to-macro-primary/10 border-macro-carbs/30',
+  dinner: 'from-macro-protein/20 to-macro-primary/10 border-macro-protein/30',
+  snack: 'from-macro-primary/20 to-macro-carbs/10 border-macro-primary/30',
 };
 
 interface FoodFormState {
@@ -160,19 +160,19 @@ export default function MacrosTracker() {
   const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-macro-bg text-macro-text pb-24">
       {/* Header */}
       <div className="px-5 pt-6 pb-3">
-        <p className="text-sm text-muted-foreground">{todayStr}</p>
-        <h1 className="text-xl font-bold mt-1">Hey {name}! 💪</h1>
+        <p className="text-sm text-macro-muted">{todayStr}</p>
+        <h1 className="text-xl font-bold mt-1 text-macro-text">Hey {name}! 💪</h1>
       </div>
 
       {/* Macro summary */}
       <div className="px-5 mb-4 grid grid-cols-4 gap-2">
-        <MacroStat label="kcal" value={totals.calories} target={targets.calories} accentClass="bg-primary" />
-        <MacroStat label="P" value={totals.protein} target={targets.protein} accentClass="bg-exchange-proteins" suffix="g" />
-        <MacroStat label="C" value={totals.carbs} target={targets.carbs} accentClass="bg-exchange-starches" suffix="g" />
-        <MacroStat label="F" value={totals.fats} target={targets.fats} accentClass="bg-exchange-fats" suffix="g" />
+        <MacroStat label="kcal" value={totals.calories} target={targets.calories} accentClass="bg-macro-calories" />
+        <MacroStat label="P" value={totals.protein} target={targets.protein} accentClass="bg-macro-protein" suffix="g" />
+        <MacroStat label="C" value={totals.carbs} target={targets.carbs} accentClass="bg-macro-carbs" suffix="g" />
+        <MacroStat label="F" value={totals.fats} target={targets.fats} accentClass="bg-macro-fats" suffix="g" />
       </div>
 
       {/* Meal slot tabs */}
@@ -183,8 +183,8 @@ export default function MacrosTracker() {
             onClick={() => setActiveSlot(s.key)}
             className={`px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap transition ${
               activeSlot === s.key
-                ? 'bg-primary text-primary-foreground border-primary'
-                : 'bg-card border-border text-muted-foreground'
+                ? 'bg-macro-primary text-macro-primary-foreground border-macro-primary'
+                : 'bg-macro-surface border-macro-border text-macro-muted'
             }`}
           >
             {s.emoji} {s.label}
@@ -194,9 +194,9 @@ export default function MacrosTracker() {
 
       {/* Tiles grid */}
       <div className="px-5">
-        <div className={`rounded-2xl border p-3 ${SLOT_COLORS[activeSlot]}`}>
+        <div className={`rounded-2xl border bg-gradient-to-br p-3 ${SLOT_ACCENT[activeSlot]}`}>
           {slotFoods.length === 0 ? (
-            <div className="text-center py-6 text-sm text-muted-foreground">
+            <div className="text-center py-6 text-sm text-macro-muted">
               <div className="text-3xl mb-1">🍽️</div>
               No tiles yet for {MEAL_SLOTS.find(s => s.key === activeSlot)?.label}.
               <br />Tap + to add your first one.
@@ -209,10 +209,10 @@ export default function MacrosTracker() {
                   <button
                     key={f.id}
                     onClick={() => logFood(f)}
-                    className="relative bg-card border rounded-xl p-3 text-left hover:bg-accent active:scale-95 transition"
+                    className="relative bg-macro-surface border border-macro-border rounded-xl p-3 text-left hover:bg-macro-surface-2 hover:border-macro-primary/50 active:scale-95 transition"
                   >
                     {count > 0 && (
-                      <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center">
+                      <span className="absolute -top-1.5 -right-1.5 bg-macro-primary text-macro-primary-foreground text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center">
                         ×{count}
                       </span>
                     )}
@@ -220,18 +220,22 @@ export default function MacrosTracker() {
                       <span className="text-2xl">{f.emoji}</span>
                       <button
                         onClick={(e) => { e.stopPropagation(); openEditFood(f); }}
-                        className="text-muted-foreground hover:text-foreground p-0.5"
+                        className="text-macro-muted hover:text-macro-text p-0.5"
                         aria-label="Edit"
                       >
                         <Pencil size={12} />
                       </button>
                     </div>
-                    <div className="font-semibold text-xs mt-1 line-clamp-2 leading-tight">{f.name}</div>
-                    <div className="text-[10px] text-muted-foreground mt-1">
+                    <div className="font-semibold text-xs mt-1 line-clamp-2 leading-tight text-macro-text">{f.name}</div>
+                    <div className="text-[10px] text-macro-calories font-semibold mt-1">
                       {Math.round(f.calories)} kcal
                     </div>
-                    <div className="text-[10px] text-muted-foreground">
-                      P{Math.round(f.protein)} · C{Math.round(f.carbs)} · F{Math.round(f.fats)}
+                    <div className="text-[10px] text-macro-muted">
+                      <span className="text-macro-protein">P{Math.round(f.protein)}</span>
+                      {' · '}
+                      <span className="text-macro-carbs">C{Math.round(f.carbs)}</span>
+                      {' · '}
+                      <span className="text-macro-fats">F{Math.round(f.fats)}</span>
                     </div>
                   </button>
                 );
@@ -241,7 +245,7 @@ export default function MacrosTracker() {
           <Button
             variant="outline"
             onClick={openNewFood}
-            className="w-full mt-3 rounded-xl"
+            className="w-full mt-3 rounded-xl bg-macro-surface border-macro-border text-macro-text hover:bg-macro-surface-2 hover:text-macro-text"
           >
             <Plus size={16} className="mr-1" /> Add a tile
           </Button>
@@ -251,24 +255,30 @@ export default function MacrosTracker() {
       {/* Logged today for this slot */}
       {slotLogs.length > 0 && (
         <div className="px-5 mt-5">
-          <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wide mb-2">
+          <h3 className="text-xs font-bold uppercase text-macro-muted tracking-wide mb-2">
             Logged for {MEAL_SLOTS.find(s => s.key === activeSlot)?.label}
           </h3>
           <div className="space-y-2">
             {slotLogs.map(l => (
-              <div key={l.id} className="bg-card border rounded-xl p-2 flex items-center gap-2">
+              <div key={l.id} className="bg-macro-surface border border-macro-border rounded-xl p-2 flex items-center gap-2">
                 <span className="text-xl">{l.emoji}</span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold truncate">{l.food_name}</div>
-                  <div className="text-[11px] text-muted-foreground">
-                    {Math.round(l.calories * l.quantity)} kcal · P{Math.round(l.protein * l.quantity)} · C{Math.round(l.carbs * l.quantity)} · F{Math.round(l.fats * l.quantity)}
+                  <div className="text-sm font-semibold truncate text-macro-text">{l.food_name}</div>
+                  <div className="text-[11px] text-macro-muted">
+                    <span className="text-macro-calories">{Math.round(l.calories * l.quantity)} kcal</span>
+                    {' · '}
+                    <span className="text-macro-protein">P{Math.round(l.protein * l.quantity)}</span>
+                    {' · '}
+                    <span className="text-macro-carbs">C{Math.round(l.carbs * l.quantity)}</span>
+                    {' · '}
+                    <span className="text-macro-fats">F{Math.round(l.fats * l.quantity)}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => adjustLogQty(l, -0.25)} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center"><Minus size={12} /></button>
-                  <span className="w-8 text-center text-sm font-bold">{l.quantity}×</span>
-                  <button onClick={() => adjustLogQty(l, 0.25)} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center"><Plus size={12} /></button>
-                  <button onClick={() => removeLog(l.id)} className="text-muted-foreground hover:text-destructive ml-1"><X size={14} /></button>
+                  <button onClick={() => adjustLogQty(l, -0.25)} className="w-7 h-7 rounded-full bg-macro-surface-2 text-macro-text flex items-center justify-center"><Minus size={12} /></button>
+                  <span className="w-8 text-center text-sm font-bold text-macro-text">{l.quantity}×</span>
+                  <button onClick={() => adjustLogQty(l, 0.25)} className="w-7 h-7 rounded-full bg-macro-surface-2 text-macro-text flex items-center justify-center"><Plus size={12} /></button>
+                  <button onClick={() => removeLog(l.id)} className="text-macro-muted hover:text-destructive ml-1"><X size={14} /></button>
                 </div>
               </div>
             ))}
@@ -337,12 +347,12 @@ export default function MacrosTracker() {
 function MacroStat({ label, value, target, accentClass, suffix = '' }: { label: string; value: number; target: number; accentClass: string; suffix?: string }) {
   const pct = target > 0 ? Math.min(100, (value / target) * 100) : 0;
   return (
-    <div className="bg-card border rounded-xl p-2">
-      <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-wide">{label}</div>
-      <div className="text-sm font-bold mt-0.5">
-        {Math.round(value)}<span className="text-[10px] text-muted-foreground">/{Math.round(target)}{suffix}</span>
+    <div className="bg-macro-surface border border-macro-border rounded-xl p-2">
+      <div className="text-[10px] uppercase font-bold text-macro-muted tracking-wide">{label}</div>
+      <div className="text-sm font-bold mt-0.5 text-macro-text">
+        {Math.round(value)}<span className="text-[10px] text-macro-muted">/{Math.round(target)}{suffix}</span>
       </div>
-      <div className="h-1 bg-muted rounded-full overflow-hidden mt-1">
+      <div className="h-1 bg-macro-surface-2 rounded-full overflow-hidden mt-1">
         <div className={`h-full ${accentClass} rounded-full transition-all`} style={{ width: `${pct}%` }} />
       </div>
     </div>

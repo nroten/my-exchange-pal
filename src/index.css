@@ -44,6 +44,20 @@
     --exchange-dairy: 270 50% 60%;
     --exchange-fats: 12 75% 60%;
 
+    /* Macro mode palette — cool, energetic, athletic */
+    --macro-bg: 222 35% 11%;
+    --macro-surface: 222 28% 16%;
+    --macro-surface-2: 222 25% 22%;
+    --macro-border: 222 20% 28%;
+    --macro-text: 210 40% 96%;
+    --macro-muted: 215 20% 70%;
+    --macro-primary: 175 85% 50%;        /* electric teal */
+    --macro-primary-foreground: 222 40% 10%;
+    --macro-calories: 14 95% 60%;        /* fiery orange */
+    --macro-protein: 340 85% 62%;        /* magenta-pink */
+    --macro-carbs: 80 75% 55%;           /* lime */
+    --macro-fats: 45 100% 60%;           /* gold */
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
