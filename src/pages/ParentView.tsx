@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 const PRESET_MESSAGES = [
-  "So proud of you! 💜",
+  "So proud of you! 🧡",
   "Great choices today! 🌟",
   "You're doing amazing! 💪",
   "Keep it up, superstar! ⭐",
@@ -108,7 +108,7 @@ export default function ParentView() {
       message: messageText.trim(),
     });
     if (error) { toast.error(error.message); return; }
-    toast.success('Message sent! 💜');
+    toast.success('Message sent! 🧡');
     setMessageText('');
     setShowComposer(false);
   };
@@ -153,7 +153,7 @@ export default function ParentView() {
 
       <div className="px-5 pt-6 pb-2">
         <p className="text-sm text-muted-foreground">{today}</p>
-        <h1 className="text-lg font-bold">Viewing {connectedName}'s day 💜</h1>
+        <h1 className="text-lg font-bold">Viewing {connectedName}'s day 🧡</h1>
       </div>
 
       {/* Tabs */}
@@ -323,7 +323,7 @@ export default function ParentView() {
         {!showComposer ? (
           <div className="flex gap-2">
             <Button onClick={() => setShowComposer(true)} className="flex-1 rounded-2xl h-12 font-bold">
-              Send Encouragement 💜
+              Send Encouragement 🧡
             </Button>
             <Button onClick={signOut} variant="outline" className="rounded-2xl h-12">
               Sign Out
@@ -349,7 +349,7 @@ export default function ParentView() {
               className="w-full border rounded-xl p-3 text-sm resize-none h-16 bg-background"
             />
             <div className="flex gap-2 mt-2">
-              <Button onClick={sendMessage} disabled={!messageText.trim()} className="flex-1 rounded-xl">Send 💜</Button>
+              <Button onClick={sendMessage} disabled={!messageText.trim()} className="flex-1 rounded-xl">Send 🧡</Button>
               <Button onClick={() => setShowComposer(false)} variant="outline" className="rounded-xl">Cancel</Button>
             </div>
           </div>

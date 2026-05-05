@@ -96,7 +96,7 @@ export default function Auth() {
                   : 'bg-muted text-muted-foreground'
               }`}
             >
-              I'm a supporter 💜
+              I'm a supporter 🧡
             </button>
           </div>
         )}
