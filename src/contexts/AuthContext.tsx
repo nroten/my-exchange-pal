@@ -8,6 +8,7 @@ interface Profile {
   display_name: string;
   role: string;
   setup_complete: boolean;
+  tracking_mode?: 'exchanges' | 'macros';
 }
 
 type ActiveView = 'tracker' | 'supporter';
