@@ -169,10 +169,10 @@ export default function MacrosTracker() {
 
       {/* Macro summary */}
       <div className="px-5 mb-4 grid grid-cols-4 gap-2">
-        <MacroStat label="kcal" value={totals.calories} target={targets.calories} accent="primary" />
-        <MacroStat label="P" value={totals.protein} target={targets.protein} accent="exchange-proteins" suffix="g" />
-        <MacroStat label="C" value={totals.carbs} target={targets.carbs} accent="exchange-starches" suffix="g" />
-        <MacroStat label="F" value={totals.fats} target={targets.fats} accent="exchange-fats" suffix="g" />
+        <MacroStat label="kcal" value={totals.calories} target={targets.calories} accentClass="bg-primary" />
+        <MacroStat label="P" value={totals.protein} target={targets.protein} accentClass="bg-exchange-proteins" suffix="g" />
+        <MacroStat label="C" value={totals.carbs} target={targets.carbs} accentClass="bg-exchange-starches" suffix="g" />
+        <MacroStat label="F" value={totals.fats} target={targets.fats} accentClass="bg-exchange-fats" suffix="g" />
       </div>
 
       {/* Meal slot tabs */}
@@ -334,7 +334,7 @@ export default function MacrosTracker() {
   );
 }
 
-function MacroStat({ label, value, target, accent, suffix = '' }: { label: string; value: number; target: number; accent: string; suffix?: string }) {
+function MacroStat({ label, value, target, accentClass, suffix = '' }: { label: string; value: number; target: number; accentClass: string; suffix?: string }) {
   const pct = target > 0 ? Math.min(100, (value / target) * 100) : 0;
   return (
     <div className="bg-card border rounded-xl p-2">
@@ -343,7 +343,7 @@ function MacroStat({ label, value, target, accent, suffix = '' }: { label: strin
         {Math.round(value)}<span className="text-[10px] text-muted-foreground">/{Math.round(target)}{suffix}</span>
       </div>
       <div className="h-1 bg-muted rounded-full overflow-hidden mt-1">
-        <div className={`h-full bg-${accent} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+        <div className={`h-full ${accentClass} rounded-full transition-all`} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
