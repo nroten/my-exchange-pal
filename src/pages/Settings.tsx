@@ -12,6 +12,10 @@ export default function Settings() {
   const [targets, setTargets] = useState<ExchangeValues>({
     starches: 6, fruits: 3, vegetables: 5, proteins: 6, dairy: 3, fats: 4,
   });
+  const [macroTargets, setMacroTargets] = useState({ calories: 2000, protein: 100, carbs: 220, fats: 70 });
+  const [trackingMode, setTrackingMode] = useState<'exchanges' | 'macros'>(
+    (profile?.tracking_mode as 'exchanges' | 'macros') || 'exchanges'
+  );
   const [connections, setConnections] = useState<any[]>([]);
   const [pin, setPin] = useState('');
   const [connectPin, setConnectPin] = useState('');
@@ -24,10 +28,11 @@ export default function Settings() {
   useEffect(() => {
     if (!user) return;
     const fetch = async () => {
-      const [t, c, sm] = await Promise.all([
+      const [t, c, sm, mt] = await Promise.all([
         supabase.from('daily_targets').select('*').eq('user_id', user.id).single(),
         supabase.from('parent_connections').select('*').eq('daughter_user_id', user.id),
         supabase.from('saved_meals').select('*').eq('user_id', user.id).order('updated_at', { ascending: false }),
+        supabase.from('macro_targets').select('*').eq('user_id', user.id).maybeSingle(),
       ]);
       if (t.data) {
         setTargets({
@@ -38,9 +43,33 @@ export default function Settings() {
       }
       if (c.data) setConnections(c.data);
       if (sm.data) setSavedMeals(sm.data);
+      if (mt.data) {
+        setMacroTargets({
+          calories: Number(mt.data.calories), protein: Number(mt.data.protein),
+          carbs: Number(mt.data.carbs), fats: Number(mt.data.fats),
+        });
+      }
     };
     fetch();
   }, [user]);
+
+  const updateTrackingMode = async (mode: 'exchanges' | 'macros') => {
+    if (!user) return;
+    setTrackingMode(mode);
+    const { error } = await supabase.from('profiles').update({ tracking_mode: mode }).eq('user_id', user.id);
+    if (error) { toast.error(error.message); return; }
+    await refreshProfile();
+    toast.success(`Switched to ${mode === 'macros' ? 'Macros' : 'Exchanges'} mode`);
+  };
+
+  const saveMacroTargets = async () => {
+    if (!user) return;
+    const { error } = await supabase
+      .from('macro_targets')
+      .upsert({ user_id: user.id, ...macroTargets }, { onConflict: 'user_id' });
+    if (error) { toast.error(error.message); return; }
+    toast.success('Macro targets updated! 🎯');
+  };
 
   const refreshSavedMeals = async () => {
     if (!user) return;
