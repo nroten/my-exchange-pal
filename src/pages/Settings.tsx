@@ -183,6 +183,74 @@ export default function Settings() {
         </div>
       </section>
 
+      {/* Tracking mode */}
+      <section className="mb-6">
+        <h2 className="font-semibold text-sm mb-2">Tracking Mode</h2>
+        <p className="text-xs text-muted-foreground mb-2">
+          Choose how you want to log food. You can switch anytime.
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => updateTrackingMode('exchanges')}
+            className={`rounded-xl p-3 text-left border transition ${
+              trackingMode === 'exchanges'
+                ? 'bg-primary/10 border-primary'
+                : 'bg-card border-border'
+            }`}
+          >
+            <div className="font-bold text-sm">🥗 Exchanges</div>
+            <div className="text-[11px] text-muted-foreground mt-0.5">Track food groups by servings.</div>
+          </button>
+          <button
+            onClick={() => updateTrackingMode('macros')}
+            className={`rounded-xl p-3 text-left border transition ${
+              trackingMode === 'macros'
+                ? 'bg-primary/10 border-primary'
+                : 'bg-card border-border'
+            }`}
+          >
+            <div className="font-bold text-sm">💪 Macros</div>
+            <div className="text-[11px] text-muted-foreground mt-0.5">Tap meal tiles to log calories + P/C/F.</div>
+          </button>
+        </div>
+      </section>
+
+      {/* Macro targets */}
+      {trackingMode === 'macros' && (
+        <section className="mb-6">
+          <h2 className="font-semibold text-sm mb-2">Daily Macro Targets</h2>
+          <div className="space-y-2">
+            {([
+              { key: 'calories', label: 'Calories', emoji: '🔥', step: 50 },
+              { key: 'protein', label: 'Protein (g)', emoji: '🍗', step: 5 },
+              { key: 'carbs', label: 'Carbs (g)', emoji: '🍞', step: 5 },
+              { key: 'fats', label: 'Fats (g)', emoji: '🥑', step: 5 },
+            ] as const).map(row => (
+              <div key={row.key} className="flex items-center justify-between bg-card border rounded-xl p-3">
+                <span className="text-sm">{row.emoji} {row.label}</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setMacroTargets(prev => ({ ...prev, [row.key]: Math.max(0, prev[row.key] - row.step) }))}
+                    className="w-7 h-7 rounded-full bg-muted flex items-center justify-center font-bold"
+                  >−</button>
+                  <Input
+                    type="number"
+                    value={macroTargets[row.key]}
+                    onChange={(e) => setMacroTargets(prev => ({ ...prev, [row.key]: Number(e.target.value) || 0 }))}
+                    className="w-20 text-center rounded-lg h-8"
+                  />
+                  <button
+                    onClick={() => setMacroTargets(prev => ({ ...prev, [row.key]: prev[row.key] + row.step }))}
+                    className="w-7 h-7 rounded-full bg-muted flex items-center justify-center font-bold"
+                  >+</button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Button onClick={saveMacroTargets} className="w-full rounded-xl mt-3">Save Macro Targets</Button>
+        </section>
+      )}
+
       {/* Daily targets */}
       <section className="mb-6">
         <h2 className="font-semibold text-sm mb-2">Daily Exchange Targets</h2>
