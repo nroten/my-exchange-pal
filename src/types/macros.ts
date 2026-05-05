@@ -43,7 +43,27 @@ export interface MacroLog {
   carbs: number;
   fats: number;
   quantity: number;
+  is_planned: boolean;
   created_at: string;
+}
+
+export function ymd(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+export function todayYMD(): string { return ymd(new Date()); }
+export function tomorrowYMD(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return ymd(d);
+}
+export function yesterdayYMD(): string {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return ymd(d);
 }
 
 export const EMPTY_MACROS: MacroTargets = { calories: 0, protein: 0, carbs: 0, fats: 0 };

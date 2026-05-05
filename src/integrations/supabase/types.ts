@@ -149,6 +149,7 @@ export type Database = {
           food_id: string | null
           food_name: string
           id: string
+          is_planned: boolean
           log_date: string
           meal_slot: string
           protein: number
@@ -164,6 +165,7 @@ export type Database = {
           food_id?: string | null
           food_name: string
           id?: string
+          is_planned?: boolean
           log_date?: string
           meal_slot?: string
           protein?: number
@@ -179,6 +181,7 @@ export type Database = {
           food_id?: string | null
           food_name?: string
           id?: string
+          is_planned?: boolean
           log_date?: string
           meal_slot?: string
           protein?: number
