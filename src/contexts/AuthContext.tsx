@@ -8,6 +8,7 @@ interface Profile {
   display_name: string;
   role: string;
   setup_complete: boolean;
+  tracking_mode?: 'exchanges' | 'macros';
 }
 
 type ActiveView = 'tracker' | 'supporter';
@@ -41,8 +42,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .select('*')
       .eq('user_id', userId)
       .single();
-    setProfile(data);
-    return data;
+    setProfile(data as Profile | null);
+    return data as Profile | null;
   };
 
   const checkSupporterRole = async (userId: string) => {

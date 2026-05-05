@@ -12,6 +12,10 @@ export default function Settings() {
   const [targets, setTargets] = useState<ExchangeValues>({
     starches: 6, fruits: 3, vegetables: 5, proteins: 6, dairy: 3, fats: 4,
   });
+  const [macroTargets, setMacroTargets] = useState({ calories: 2000, protein: 100, carbs: 220, fats: 70 });
+  const [trackingMode, setTrackingMode] = useState<'exchanges' | 'macros'>(
+    (profile?.tracking_mode as 'exchanges' | 'macros') || 'exchanges'
+  );
   const [connections, setConnections] = useState<any[]>([]);
   const [pin, setPin] = useState('');
   const [connectPin, setConnectPin] = useState('');
@@ -24,10 +28,11 @@ export default function Settings() {
   useEffect(() => {
     if (!user) return;
     const fetch = async () => {
-      const [t, c, sm] = await Promise.all([
+      const [t, c, sm, mt] = await Promise.all([
         supabase.from('daily_targets').select('*').eq('user_id', user.id).single(),
         supabase.from('parent_connections').select('*').eq('daughter_user_id', user.id),
         supabase.from('saved_meals').select('*').eq('user_id', user.id).order('updated_at', { ascending: false }),
+        supabase.from('macro_targets').select('*').eq('user_id', user.id).maybeSingle(),
       ]);
       if (t.data) {
         setTargets({
@@ -38,9 +43,33 @@ export default function Settings() {
       }
       if (c.data) setConnections(c.data);
       if (sm.data) setSavedMeals(sm.data);
+      if (mt.data) {
+        setMacroTargets({
+          calories: Number(mt.data.calories), protein: Number(mt.data.protein),
+          carbs: Number(mt.data.carbs), fats: Number(mt.data.fats),
+        });
+      }
     };
     fetch();
   }, [user]);
+
+  const updateTrackingMode = async (mode: 'exchanges' | 'macros') => {
+    if (!user) return;
+    setTrackingMode(mode);
+    const { error } = await supabase.from('profiles').update({ tracking_mode: mode }).eq('user_id', user.id);
+    if (error) { toast.error(error.message); return; }
+    await refreshProfile();
+    toast.success(`Switched to ${mode === 'macros' ? 'Macros' : 'Exchanges'} mode`);
+  };
+
+  const saveMacroTargets = async () => {
+    if (!user) return;
+    const { error } = await supabase
+      .from('macro_targets')
+      .upsert({ user_id: user.id, ...macroTargets }, { onConflict: 'user_id' });
+    if (error) { toast.error(error.message); return; }
+    toast.success('Macro targets updated! 🎯');
+  };
 
   const refreshSavedMeals = async () => {
     if (!user) return;
@@ -153,6 +182,74 @@ export default function Settings() {
           <Button onClick={saveName} variant="outline" className="rounded-xl">Save</Button>
         </div>
       </section>
+
+      {/* Tracking mode */}
+      <section className="mb-6">
+        <h2 className="font-semibold text-sm mb-2">Tracking Mode</h2>
+        <p className="text-xs text-muted-foreground mb-2">
+          Choose how you want to log food. You can switch anytime.
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => updateTrackingMode('exchanges')}
+            className={`rounded-xl p-3 text-left border transition ${
+              trackingMode === 'exchanges'
+                ? 'bg-primary/10 border-primary'
+                : 'bg-card border-border'
+            }`}
+          >
+            <div className="font-bold text-sm">🥗 Exchanges</div>
+            <div className="text-[11px] text-muted-foreground mt-0.5">Track food groups by servings.</div>
+          </button>
+          <button
+            onClick={() => updateTrackingMode('macros')}
+            className={`rounded-xl p-3 text-left border transition ${
+              trackingMode === 'macros'
+                ? 'bg-primary/10 border-primary'
+                : 'bg-card border-border'
+            }`}
+          >
+            <div className="font-bold text-sm">💪 Macros</div>
+            <div className="text-[11px] text-muted-foreground mt-0.5">Tap meal tiles to log calories + P/C/F.</div>
+          </button>
+        </div>
+      </section>
+
+      {/* Macro targets */}
+      {trackingMode === 'macros' && (
+        <section className="mb-6">
+          <h2 className="font-semibold text-sm mb-2">Daily Macro Targets</h2>
+          <div className="space-y-2">
+            {([
+              { key: 'calories', label: 'Calories', emoji: '🔥', step: 50 },
+              { key: 'protein', label: 'Protein (g)', emoji: '🍗', step: 5 },
+              { key: 'carbs', label: 'Carbs (g)', emoji: '🍞', step: 5 },
+              { key: 'fats', label: 'Fats (g)', emoji: '🥑', step: 5 },
+            ] as const).map(row => (
+              <div key={row.key} className="flex items-center justify-between bg-card border rounded-xl p-3">
+                <span className="text-sm">{row.emoji} {row.label}</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setMacroTargets(prev => ({ ...prev, [row.key]: Math.max(0, prev[row.key] - row.step) }))}
+                    className="w-7 h-7 rounded-full bg-muted flex items-center justify-center font-bold"
+                  >−</button>
+                  <Input
+                    type="number"
+                    value={macroTargets[row.key]}
+                    onChange={(e) => setMacroTargets(prev => ({ ...prev, [row.key]: Number(e.target.value) || 0 }))}
+                    className="w-20 text-center rounded-lg h-8"
+                  />
+                  <button
+                    onClick={() => setMacroTargets(prev => ({ ...prev, [row.key]: prev[row.key] + row.step }))}
+                    className="w-7 h-7 rounded-full bg-muted flex items-center justify-center font-bold"
+                  >+</button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Button onClick={saveMacroTargets} className="w-full rounded-xl mt-3">Save Macro Targets</Button>
+        </section>
+      )}
 
       {/* Daily targets */}
       <section className="mb-6">
