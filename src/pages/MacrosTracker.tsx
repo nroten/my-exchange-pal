@@ -347,12 +347,12 @@ export default function MacrosTracker() {
 function MacroStat({ label, value, target, accentClass, suffix = '' }: { label: string; value: number; target: number; accentClass: string; suffix?: string }) {
   const pct = target > 0 ? Math.min(100, (value / target) * 100) : 0;
   return (
-    <div className="bg-card border rounded-xl p-2">
-      <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-wide">{label}</div>
-      <div className="text-sm font-bold mt-0.5">
-        {Math.round(value)}<span className="text-[10px] text-muted-foreground">/{Math.round(target)}{suffix}</span>
+    <div className="bg-macro-surface border border-macro-border rounded-xl p-2">
+      <div className="text-[10px] uppercase font-bold text-macro-muted tracking-wide">{label}</div>
+      <div className="text-sm font-bold mt-0.5 text-macro-text">
+        {Math.round(value)}<span className="text-[10px] text-macro-muted">/{Math.round(target)}{suffix}</span>
       </div>
-      <div className="h-1 bg-muted rounded-full overflow-hidden mt-1">
+      <div className="h-1 bg-macro-surface-2 rounded-full overflow-hidden mt-1">
         <div className={`h-full ${accentClass} rounded-full transition-all`} style={{ width: `${pct}%` }} />
       </div>
     </div>
