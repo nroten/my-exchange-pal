@@ -155,7 +155,7 @@ export default function Settings() {
     }).eq('id', conn.id);
 
     if (error) { toast.error(error.message); return; }
-    toast.success('Connected! You can now view their progress 💜');
+    toast.success('Connected! You can now view their progress 🧡');
     setConnectPin('');
     setShowAddSupporter(false);
     await refreshRoles();
@@ -277,7 +277,7 @@ export default function Settings() {
 
       {/* My Recipes */}
       <section className="mb-6">
-        <h2 className="font-semibold text-sm mb-2">My Recipes 💜</h2>
+        <h2 className="font-semibold text-sm mb-2">My Recipes 🧡</h2>
         <p className="text-xs text-muted-foreground mb-2">
           Saved meals you can re-log with one tap from the meal logger.
         </p>
@@ -370,7 +370,7 @@ export default function Settings() {
               />
               <div className="flex gap-2">
                 <Button onClick={connectAsSupporter} disabled={connectPin.length < 6} className="flex-1 rounded-xl">
-                  Connect 💜
+                  Connect 🧡
                 </Button>
                 <Button onClick={() => setShowAddSupporter(false)} variant="outline" className="rounded-xl">
                   Cancel
@@ -379,7 +379,7 @@ export default function Settings() {
             </div>
           ) : (
             <Button onClick={() => setShowAddSupporter(true)} variant="outline" className="w-full rounded-xl">
-              Become a Supporter 💜
+              Become a Supporter 🧡
             </Button>
           )}
         </section>
@@ -388,7 +388,7 @@ export default function Settings() {
       {hasSupporterRole && (
         <section className="mb-6">
           <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-3">
-            <p className="text-sm font-medium text-secondary">💜 You're a supporter!</p>
+            <p className="text-sm font-medium text-secondary">🧡 You're a supporter!</p>
             <p className="text-xs text-muted-foreground mt-1">Switch to supporter view from the bottom navigation.</p>
           </div>
         </section>

@@ -18,7 +18,7 @@ function getGreeting(name: string, progress: number, hour: number): string {
   if (hour < 17 && progress >= 0.4) return `Keep it going, ${name} — you're right on pace! 💪`;
   if (hour < 17 && progress < 0.4) return `Heads up, ${name} — try to fit in a snack to catch up! 🍎`;
   if (hour >= 17 && progress >= 0.7) return `Almost there, ${name}! Just a little more to go! ✨`;
-  return `You've got this, ${name}! Every bite counts. 💜`;
+  return `You've got this, ${name}! Every bite counts. 🧡`;
 }
 
 export default function Dashboard() {
@@ -135,7 +135,7 @@ export default function Dashboard() {
             className="shrink-0 bg-secondary/20 border border-secondary/40 text-secondary hover:bg-secondary/30 transition-colors rounded-full px-3 py-1.5 text-xs font-bold flex items-center gap-1"
             title="Switch to supporter view"
           >
-            💜 Supporter
+            🧡 Supporter
           </button>
         )}
       </div>
@@ -144,7 +144,7 @@ export default function Dashboard() {
       {encouragement && (
         <div className="mx-5 mb-4 bg-secondary/20 border border-secondary/30 rounded-2xl p-3 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-secondary">💜 From your supporter</p>
+            <p className="text-sm font-medium text-secondary">🧡 From your supporter</p>
             <p className="text-sm mt-0.5">{encouragement.message}</p>
           </div>
           <button onClick={dismissEncouragement} className="text-xs text-muted-foreground ml-2">✕</button>

@@ -163,7 +163,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
     }
     setEntries(next);
     saveDraft(mealLabel, next);
-    toast.success(`Added "${saved.name}" 💜`);
+    toast.success(`Added "${saved.name}" 🧡`);
   };
 
   const removeEntry = (idx: number) => {
@@ -190,7 +190,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
       food_items: entries as any,
     });
     if (error) { toast.error(error.message); return; }
-    toast.success(`Recipe "${recipeName}" saved! 💜`);
+    toast.success(`Recipe "${recipeName}" saved! 🧡`);
     setRecipeName('');
     setShowSaveAsRecipe(false);
     const { data } = await supabase.from('saved_meals').select('*').eq('user_id', user.id).order('updated_at', { ascending: false });
@@ -360,7 +360,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
                       browseTab === 'saved' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
                     }`}
                   >
-                    💜 My Recipes
+                    🧡 My Recipes
                   </button>
                   {EXCHANGE_CATEGORIES.map(cat => (
                     <button
@@ -392,7 +392,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
                       <p className="text-xs text-muted-foreground mb-3">Your saved meals. Tap to load all foods at once.</p>
                       {savedMeals.length === 0 ? (
                         <div className="text-center py-8 text-sm text-muted-foreground">
-                          <div className="text-4xl mb-2">💜</div>
+                          <div className="text-4xl mb-2">🧡</div>
                           <p>No saved meals yet.</p>
                           <p className="text-xs mt-1">After adding foods, tap "Save as recipe" below.</p>
                         </div>
@@ -493,7 +493,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
                         onClick={() => setShowSaveAsRecipe(!showSaveAsRecipe)}
                         className="text-xs text-primary font-semibold"
                       >
-                        💜 Save as recipe
+                        🧡 Save as recipe
                       </button>
                     )}
                   </div>

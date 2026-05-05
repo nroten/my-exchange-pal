@@ -36,7 +36,7 @@ export default function RoleToggle() {
         onClick={() => setActiveView('supporter')}
         className={`${baseSegment} ${activeView === 'supporter' ? active : inactive}`}
       >
-        💜 Supporter
+        🧡 Supporter
       </button>
     </div>
   );
