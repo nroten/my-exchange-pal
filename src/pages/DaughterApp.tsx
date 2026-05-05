@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import RoleToggle from '@/components/RoleToggle';
 import Dashboard from './Dashboard';
+import MacrosTracker from './MacrosTracker';
 import History from './History';
 import Settings from './Settings';
 
 export default function DaughterApp() {
-  const { hasSupporterRole } = useAuth();
+  const { hasSupporterRole, profile } = useAuth();
   const [tab, setTab] = useState<'today' | 'history' | 'settings'>('today');
+  const mode = profile?.tracking_mode === 'macros' ? 'macros' : 'exchanges';
 
   return (
     <div className="max-w-lg mx-auto pb-20">
@@ -18,7 +20,7 @@ export default function DaughterApp() {
         </div>
       )}
 
-      {tab === 'today' && <Dashboard />}
+      {tab === 'today' && (mode === 'macros' ? <MacrosTracker /> : <Dashboard />)}
       {tab === 'history' && <History />}
       {tab === 'settings' && <Settings />}
 
