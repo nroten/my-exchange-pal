@@ -160,19 +160,19 @@ export default function MacrosTracker() {
   const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-macro-bg text-macro-text pb-24">
       {/* Header */}
       <div className="px-5 pt-6 pb-3">
-        <p className="text-sm text-muted-foreground">{todayStr}</p>
-        <h1 className="text-xl font-bold mt-1">Hey {name}! 💪</h1>
+        <p className="text-sm text-macro-muted">{todayStr}</p>
+        <h1 className="text-xl font-bold mt-1 text-macro-text">Hey {name}! 💪</h1>
       </div>
 
       {/* Macro summary */}
       <div className="px-5 mb-4 grid grid-cols-4 gap-2">
-        <MacroStat label="kcal" value={totals.calories} target={targets.calories} accentClass="bg-primary" />
-        <MacroStat label="P" value={totals.protein} target={targets.protein} accentClass="bg-exchange-proteins" suffix="g" />
-        <MacroStat label="C" value={totals.carbs} target={targets.carbs} accentClass="bg-exchange-starches" suffix="g" />
-        <MacroStat label="F" value={totals.fats} target={targets.fats} accentClass="bg-exchange-fats" suffix="g" />
+        <MacroStat label="kcal" value={totals.calories} target={targets.calories} accentClass="bg-macro-calories" />
+        <MacroStat label="P" value={totals.protein} target={targets.protein} accentClass="bg-macro-protein" suffix="g" />
+        <MacroStat label="C" value={totals.carbs} target={targets.carbs} accentClass="bg-macro-carbs" suffix="g" />
+        <MacroStat label="F" value={totals.fats} target={targets.fats} accentClass="bg-macro-fats" suffix="g" />
       </div>
 
       {/* Meal slot tabs */}
@@ -183,8 +183,8 @@ export default function MacrosTracker() {
             onClick={() => setActiveSlot(s.key)}
             className={`px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap transition ${
               activeSlot === s.key
-                ? 'bg-primary text-primary-foreground border-primary'
-                : 'bg-card border-border text-muted-foreground'
+                ? 'bg-macro-primary text-macro-primary-foreground border-macro-primary'
+                : 'bg-macro-surface border-macro-border text-macro-muted'
             }`}
           >
             {s.emoji} {s.label}
@@ -194,7 +194,7 @@ export default function MacrosTracker() {
 
       {/* Tiles grid */}
       <div className="px-5">
-        <div className={`rounded-2xl border p-3 ${SLOT_COLORS[activeSlot]}`}>
+        <div className={`rounded-2xl border bg-gradient-to-br p-3 ${SLOT_ACCENT[activeSlot]}`}>
           {slotFoods.length === 0 ? (
             <div className="text-center py-6 text-sm text-muted-foreground">
               <div className="text-3xl mb-1">🍽️</div>
