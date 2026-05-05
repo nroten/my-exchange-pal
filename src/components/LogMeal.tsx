@@ -151,9 +151,19 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
 
   const loadSavedMeal = (saved: any) => {
     const items = (saved.food_items as MealFoodEntry[]) || [];
-    setEntries(items);
-    saveDraft(mealLabel, items);
-    toast.success(`Loaded "${saved.name}" 💜`);
+    // Merge with existing entries: bump quantity for duplicates, append new ones
+    const next = [...entries];
+    for (const item of items) {
+      const idx = next.findIndex(e => e.foodName === item.foodName);
+      if (idx >= 0) {
+        next[idx] = { ...next[idx], quantity: next[idx].quantity + item.quantity };
+      } else {
+        next.push({ ...item });
+      }
+    }
+    setEntries(next);
+    saveDraft(mealLabel, next);
+    toast.success(`Added "${saved.name}" 💜`);
   };
 
   const removeEntry = (idx: number) => {
