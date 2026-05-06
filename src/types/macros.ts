@@ -5,7 +5,7 @@ export const MEAL_SLOTS: { key: MealSlot; label: string; emoji: string }[] = [
   { key: 'breakfast', label: 'Breakfast', emoji: '🌅' },
   { key: 'lunch', label: 'Lunch', emoji: '🥗' },
   { key: 'dinner', label: 'Dinner', emoji: '🍽️' },
-  { key: 'snack', label: 'Snack', emoji: '🍿' },
+  { key: 'snack', label: 'Snack', emoji: '🥜' },
 ];
 
 export interface MacroFood {
