@@ -237,13 +237,17 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
 
   const renderFoodTile = (food: FoodItem) => {
     const inMeal = entries.find(e => e.foodName === food.name);
+    const isCombo = food.isCombination;
+    const exchangeCount = Object.values(food.exchanges).filter(v => v && v > 0).length;
     return (
       <div
         key={food.id}
         className={`relative aspect-square rounded-2xl border-2 flex flex-col items-center justify-center p-1 transition-all max-w-[140px] mx-auto w-full ${
           inMeal
             ? 'bg-primary/10 border-primary shadow-md'
-            : 'bg-card border-border hover:border-primary/50'
+            : isCombo
+              ? 'bg-gradient-to-br from-secondary/15 to-accent/10 border-dashed border-secondary/60 hover:border-secondary'
+              : 'bg-card border-border hover:border-primary/50'
         }`}
       >
         <button
@@ -251,6 +255,14 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
           className="absolute inset-0 rounded-2xl active:scale-95 transition-transform"
           aria-label={`Add ${food.name}`}
         />
+        {isCombo && (
+          <div
+            className="absolute top-1 left-1 bg-secondary text-secondary-foreground text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none pointer-events-none shadow-sm"
+            title={`Counts as ${exchangeCount} exchange types`}
+          >
+            COMBO
+          </div>
+        )}
         <div className="text-3xl mb-0.5 pointer-events-none">{food.emoji}</div>
         <div className="text-[10px] font-semibold text-center leading-tight line-clamp-2 px-0.5 pointer-events-none">
           {food.name.replace(/\s*\(.*?\)/, '')}
