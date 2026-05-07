@@ -503,6 +503,15 @@ export default function MacrosTracker() {
         </div>
       )}
 
+      {/* Food library dialog */}
+      <FoodLibraryDialog
+        open={showLibrary}
+        onOpenChange={setShowLibrary}
+        initialSlot={activeSlot}
+        onAdd={addFromLibrary}
+        existingNames={new Set(foods.map(f => f.name.toLowerCase()))}
+      />
+
       {/* Food dialog */}
       <Dialog open={showFoodDialog} onOpenChange={setShowFoodDialog}>
         <DialogContent className="max-w-md">
