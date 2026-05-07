@@ -9,7 +9,8 @@ import {
   MacroFood, MacroLog, MacroTargets, MealSlot, MEAL_SLOTS,
   sumMacros, getCurrentMealSlot, todayYMD, tomorrowYMD, yesterdayYMD,
 } from '@/types/macros';
-import { Plus, Minus, X, Pencil, Check, Copy } from 'lucide-react';
+import { Plus, Minus, X, Pencil, Check, Copy, BookOpen } from 'lucide-react';
+import FoodLibraryDialog, { LibraryFood } from '@/components/FoodLibraryDialog';
 
 const SLOT_ACCENT: Record<MealSlot, string> = {
   breakfast: 'from-macro-fats/20 to-macro-calories/10 border-macro-fats/30',
@@ -44,6 +45,7 @@ export default function MacrosTracker() {
   const [activeSlot, setActiveSlot] = useState<MealSlot>(getCurrentMealSlot());
   const [dayMode, setDayMode] = useState<DayMode>('today');
   const [showFoodDialog, setShowFoodDialog] = useState(false);
+  const [showLibrary, setShowLibrary] = useState(false);
   const [form, setForm] = useState<FoodFormState>(EMPTY_FORM);
 
   const today = todayYMD();
@@ -234,6 +236,28 @@ export default function MacrosTracker() {
     fetchAll();
   }
 
+  async function addFromLibrary(f: LibraryFood, slot: MealSlot) {
+    if (!user) return;
+    // Avoid duplicate by name+slot
+    const exists = foods.some(
+      x => x.meal_slot === slot && x.name.toLowerCase() === f.name.toLowerCase(),
+    );
+    if (exists) { toast.info(`${f.name} is already in your tiles.`); return; }
+    const { error } = await supabase.from('macro_foods').insert({
+      user_id: user.id,
+      name: f.name,
+      emoji: f.emoji,
+      meal_slot: slot,
+      calories: f.calories,
+      protein: f.protein,
+      carbs: f.carbs,
+      fats: f.fat,
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Added ${f.emoji} ${f.name} to ${slot}`);
+    fetchAll();
+  }
+
   async function deleteFood(id: string) {
     if (!confirm('Delete this tile?')) return;
     const { error } = await supabase.from('macro_foods').delete().eq('id', id);
@@ -396,13 +420,22 @@ export default function MacrosTracker() {
               })}
             </div>
           )}
-          <Button
-            variant="outline"
-            onClick={openNewFood}
-            className="w-full mt-3 rounded-xl bg-macro-surface border-macro-border text-macro-text hover:bg-macro-surface-2 hover:text-macro-text"
-          >
-            <Plus size={16} className="mr-1" /> Add a tile
-          </Button>
+          <div className="grid grid-cols-2 gap-2 mt-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowLibrary(true)}
+              className="rounded-xl bg-macro-surface border-macro-border text-macro-text hover:bg-macro-surface-2 hover:text-macro-text"
+            >
+              <BookOpen size={16} className="mr-1" /> Library
+            </Button>
+            <Button
+              variant="outline"
+              onClick={openNewFood}
+              className="rounded-xl bg-macro-surface border-macro-border text-macro-text hover:bg-macro-surface-2 hover:text-macro-text"
+            >
+              <Plus size={16} className="mr-1" /> Custom
+            </Button>
+          </div>
         </div>
       </div>
 
