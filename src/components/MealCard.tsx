@@ -9,12 +9,12 @@ interface MealCardProps {
 }
 
 const PILL_COLORS: Record<ExchangeCategory, string> = {
-  starches: 'bg-exchange-starches/20 text-orange-800',
-  fruits: 'bg-exchange-fruits/20 text-yellow-800',
-  vegetables: 'bg-exchange-vegetables/20 text-green-800',
-  proteins: 'bg-exchange-proteins/20 text-teal-800',
-  dairy: 'bg-exchange-dairy/20 text-purple-800',
-  fats: 'bg-exchange-fats/20 text-red-800',
+  starches: 'bg-exchange-starches/15 text-exchange-starches border border-exchange-starches/30',
+  fruits: 'bg-exchange-fruits/15 text-exchange-fruits border border-exchange-fruits/30',
+  vegetables: 'bg-exchange-vegetables/15 text-exchange-vegetables border border-exchange-vegetables/30',
+  proteins: 'bg-exchange-proteins/15 text-exchange-proteins border border-exchange-proteins/30',
+  dairy: 'bg-exchange-dairy/15 text-exchange-dairy border border-exchange-dairy/30',
+  fats: 'bg-exchange-fats/15 text-exchange-fats border border-exchange-fats/30',
 };
 
 export default function MealCard({ mealLabel, totals, foodItems, onEdit, onDelete }: MealCardProps) {
