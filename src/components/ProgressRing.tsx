@@ -8,13 +8,14 @@ interface ProgressRingProps {
   colorClass: string;
 }
 
+// Aligned with --exchange-* tokens in index.css (same family as macro palette)
 const CATEGORY_COLORS: Record<string, string> = {
-  'exchange-starches': '#E8963B',
-  'exchange-fruits': '#E8C93B',
-  'exchange-vegetables': '#3BA55C',
-  'exchange-proteins': '#3BA5A0',
-  'exchange-dairy': '#8B5CF6',
-  'exchange-fats': '#E8836B',
+  'exchange-starches': 'hsl(14 90% 60%)',
+  'exchange-fruits': 'hsl(340 78% 62%)',
+  'exchange-vegetables': 'hsl(90 60% 48%)',
+  'exchange-proteins': 'hsl(175 65% 42%)',
+  'exchange-dairy': 'hsl(260 55% 62%)',
+  'exchange-fats': 'hsl(42 95% 55%)',
 };
 
 export default function ProgressRing({ value, target, label, emoji, colorClass }: ProgressRingProps) {
