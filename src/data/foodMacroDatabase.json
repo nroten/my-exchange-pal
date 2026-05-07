@@ -1,0 +1,1541 @@
+{
+  "meta": {
+    "version": "1.0",
+    "generated": "2026-05-07",
+    "totalFoods": 84,
+    "exchangeSystem": "ADA Standard Food Exchange System",
+    "description": "Food macro and exchange reference database for meal logging app"
+  },
+  "exchangeKey": [
+    {
+      "type": "Lean Protein",
+      "macros": {
+        "protein": 7,
+        "fat": "0-3",
+        "carbs": 0
+      },
+      "calories": 55,
+      "example": "1 oz cooked meat/fish, 2 egg whites, 1/4 cup cottage cheese"
+    },
+    {
+      "type": "Medium-Fat Protein",
+      "macros": {
+        "protein": 7,
+        "fat": 5,
+        "carbs": 0
+      },
+      "calories": 75,
+      "example": "1 oz salmon/dark meat, 1 whole egg, 1 oz most soft cheese"
+    },
+    {
+      "type": "High-Fat Protein",
+      "macros": {
+        "protein": 7,
+        "fat": 8,
+        "carbs": 0
+      },
+      "calories": 100,
+      "example": "1 oz fatty meat/hard cheese, 2 strips bacon"
+    },
+    {
+      "type": "Starch",
+      "macros": {
+        "protein": 3,
+        "fat": 0,
+        "carbs": 15
+      },
+      "calories": 80,
+      "example": "1/3 cup rice/pasta, 1/2 cup beans, 1 slice bread, 1/2 cup potato"
+    },
+    {
+      "type": "Fruit",
+      "macros": {
+        "protein": 0,
+        "fat": 0,
+        "carbs": 15
+      },
+      "calories": 60,
+      "example": "1 small fruit, 3/4 cup berries, 1/2 cup juice"
+    },
+    {
+      "type": "Vegetable",
+      "macros": {
+        "protein": 2,
+        "fat": 0,
+        "carbs": 5
+      },
+      "calories": 25,
+      "example": "1/2 cup cooked or 1 cup raw non-starchy vegetables"
+    },
+    {
+      "type": "Fat",
+      "macros": {
+        "protein": 0,
+        "fat": 5,
+        "carbs": 0
+      },
+      "calories": 45,
+      "example": "1 tsp oil/butter, 6 nuts, 1 tbsp seeds, 1/8 avocado"
+    },
+    {
+      "type": "Low-Fat Milk",
+      "macros": {
+        "protein": 8,
+        "fat": 3,
+        "carbs": 12
+      },
+      "calories": 100,
+      "example": "1 cup low-fat milk or plain Greek yogurt"
+    },
+    {
+      "type": "Whole Milk",
+      "macros": {
+        "protein": 8,
+        "fat": 8,
+        "carbs": 12
+      },
+      "calories": 150,
+      "example": "1 cup whole milk"
+    }
+  ],
+  "foods": [
+    {
+      "name": "Chicken Breast",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🍗",
+      "serving": "4 oz (113g)",
+      "calories": 185,
+      "protein": 35,
+      "carbs": 0,
+      "fat": 4,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "4 exchanges",
+      "exchangeNote": "1 oz cooked = 1 lean protein exchange"
+    },
+    {
+      "name": "Chicken Thighs",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🍗",
+      "serving": "4 oz (113g)",
+      "calories": 209,
+      "protein": 26,
+      "carbs": 0,
+      "fat": 11,
+      "exchangeType": "Medium-Fat Protein",
+      "exchangeAmt": "4 exchanges",
+      "exchangeNote": "1 oz cooked = 1 medium-fat protein exchange"
+    },
+    {
+      "name": "Whole Eggs",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Lunch"
+      ],
+      "emoji": "🥚",
+      "serving": "2 large eggs",
+      "calories": 143,
+      "protein": 13,
+      "carbs": 1,
+      "fat": 10,
+      "exchangeType": "Medium-Fat Protein",
+      "exchangeAmt": "2 exchanges",
+      "exchangeNote": "1 whole egg = 1 medium-fat protein exchange"
+    },
+    {
+      "name": "Egg Whites",
+      "category": "Protein",
+      "meal": [
+        "Breakfast"
+      ],
+      "emoji": "🥚",
+      "serving": "3 egg whites",
+      "calories": 51,
+      "protein": 11,
+      "carbs": 1,
+      "fat": 0,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "1½ exchanges",
+      "exchangeNote": "2 egg whites = 1 lean protein exchange"
+    },
+    {
+      "name": "Greek Yogurt",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🥛",
+      "serving": "1 cup (227g)",
+      "calories": 130,
+      "protein": 17,
+      "carbs": 9,
+      "fat": 4,
+      "exchangeType": "Low-Fat Milk",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 cup = 1 low-fat milk exchange"
+    },
+    {
+      "name": "Cottage Cheese",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🧀",
+      "serving": "1/2 cup (113g)",
+      "calories": 90,
+      "protein": 12,
+      "carbs": 5,
+      "fat": 2,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "2 exchanges",
+      "exchangeNote": "¼ cup = 1 lean protein exchange"
+    },
+    {
+      "name": "Ground Beef (90/10)",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥩",
+      "serving": "4 oz (113g)",
+      "calories": 199,
+      "protein": 22,
+      "carbs": 0,
+      "fat": 12,
+      "exchangeType": "Medium-Fat Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 oz cooked = 1 medium-fat protein exchange"
+    },
+    {
+      "name": "Ground Bison",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥩",
+      "serving": "4 oz (113g)",
+      "calories": 152,
+      "protein": 22,
+      "carbs": 0,
+      "fat": 7,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 oz cooked = 1 lean protein exchange"
+    },
+    {
+      "name": "Ground Turkey",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🦃",
+      "serving": "4 oz (113g)",
+      "calories": 170,
+      "protein": 22,
+      "carbs": 0,
+      "fat": 9,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 oz cooked = 1 lean protein exchange"
+    },
+    {
+      "name": "Lean Turkey Breast",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🦃",
+      "serving": "4 oz (113g)",
+      "calories": 135,
+      "protein": 30,
+      "carbs": 0,
+      "fat": 1,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "4 exchanges",
+      "exchangeNote": "1 oz cooked = 1 lean protein exchange"
+    },
+    {
+      "name": "Salmon",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🐟",
+      "serving": "4 oz (113g)",
+      "calories": 208,
+      "protein": 23,
+      "carbs": 0,
+      "fat": 13,
+      "exchangeType": "Medium-Fat Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 oz cooked = 1 medium-fat protein exchange"
+    },
+    {
+      "name": "Tuna (canned)",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🐟",
+      "serving": "4 oz (113g)",
+      "calories": 109,
+      "protein": 25,
+      "carbs": 0,
+      "fat": 1,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 oz = 1 lean protein exchange"
+    },
+    {
+      "name": "White Fish (Tilapia)",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🐠",
+      "serving": "4 oz (113g)",
+      "calories": 109,
+      "protein": 22,
+      "carbs": 0,
+      "fat": 2,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 oz cooked = 1 lean protein exchange"
+    },
+    {
+      "name": "Pork Tenderloin",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥩",
+      "serving": "4 oz (113g)",
+      "calories": 136,
+      "protein": 24,
+      "carbs": 0,
+      "fat": 4,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 oz cooked = 1 lean protein exchange"
+    },
+    {
+      "name": "Whey Protein",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🧴",
+      "serving": "1 scoop (30g)",
+      "calories": 120,
+      "protein": 25,
+      "carbs": 3,
+      "fat": 2,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "~10g protein = 1 lean protein exchange"
+    },
+    {
+      "name": "Ground Beef (80/20)",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥩",
+      "serving": "4 oz (113g)",
+      "calories": 287,
+      "protein": 19,
+      "carbs": 0,
+      "fat": 23,
+      "exchangeType": "High-Fat Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 oz cooked = 1 high-fat protein exchange"
+    },
+    {
+      "name": "Bacon (pork)",
+      "category": "Protein",
+      "meal": [
+        "Breakfast"
+      ],
+      "emoji": "🥓",
+      "serving": "3 slices (34g)",
+      "calories": 161,
+      "protein": 12,
+      "carbs": 0,
+      "fat": 12,
+      "exchangeType": "High-Fat Protein",
+      "exchangeAmt": "1½ exchanges",
+      "exchangeNote": "2 slices = 1 high-fat protein exchange"
+    },
+    {
+      "name": "Breakfast Sausage",
+      "category": "Protein",
+      "meal": [
+        "Breakfast"
+      ],
+      "emoji": "🌭",
+      "serving": "2 links (57g)",
+      "calories": 170,
+      "protein": 9,
+      "carbs": 1,
+      "fat": 15,
+      "exchangeType": "High-Fat Protein",
+      "exchangeAmt": "1½ exchanges",
+      "exchangeNote": "1 oz = 1 high-fat protein exchange"
+    },
+    {
+      "name": "Italian Sausage",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🌭",
+      "serving": "1 link (85g)",
+      "calories": 230,
+      "protein": 14,
+      "carbs": 2,
+      "fat": 19,
+      "exchangeType": "High-Fat Protein",
+      "exchangeAmt": "2 exchanges",
+      "exchangeNote": "1 oz cooked = 1 high-fat protein exchange"
+    },
+    {
+      "name": "Lamb (ground)",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥩",
+      "serving": "4 oz (113g)",
+      "calories": 320,
+      "protein": 19,
+      "carbs": 0,
+      "fat": 27,
+      "exchangeType": "High-Fat Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 oz cooked = 1 high-fat protein exchange"
+    },
+    {
+      "name": "Sardines (canned)",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner",
+        "Snack"
+      ],
+      "emoji": "🐟",
+      "serving": "1 can (92g)",
+      "calories": 191,
+      "protein": 23,
+      "carbs": 0,
+      "fat": 11,
+      "exchangeType": "Medium-Fat Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 oz = 1 medium-fat protein exchange"
+    },
+    {
+      "name": "Smoked Oysters (canned)",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner",
+        "Snack"
+      ],
+      "emoji": "🦪",
+      "serving": "1 can (85g)",
+      "calories": 170,
+      "protein": 17,
+      "carbs": 10,
+      "fat": 7,
+      "exchangeType": "Medium-Fat Protein",
+      "exchangeAmt": "2 exchanges + ½ starch",
+      "exchangeNote": "1 oz = 1 medium-fat protein; carbs count as ½ starch exchange"
+    },
+    {
+      "name": "Shrimp",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🍤",
+      "serving": "4 oz (113g)",
+      "calories": 112,
+      "protein": 24,
+      "carbs": 1,
+      "fat": 1,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 oz cooked = 1 lean protein exchange"
+    },
+    {
+      "name": "Deli Turkey (sliced)",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Snack"
+      ],
+      "emoji": "🦃",
+      "serving": "3 oz (85g)",
+      "calories": 90,
+      "protein": 18,
+      "carbs": 2,
+      "fat": 1,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "2½ exchanges",
+      "exchangeNote": "1 oz = 1 lean protein exchange"
+    },
+    {
+      "name": "Deli Ham (sliced)",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Snack"
+      ],
+      "emoji": "🥩",
+      "serving": "3 oz (85g)",
+      "calories": 91,
+      "protein": 14,
+      "carbs": 2,
+      "fat": 3,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "2 exchanges",
+      "exchangeNote": "1 oz = 1 lean protein exchange"
+    },
+    {
+      "name": "Steak (sirloin)",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥩",
+      "serving": "4 oz (113g)",
+      "calories": 207,
+      "protein": 26,
+      "carbs": 0,
+      "fat": 11,
+      "exchangeType": "Medium-Fat Protein",
+      "exchangeAmt": "3½ exchanges",
+      "exchangeNote": "1 oz cooked = 1 medium-fat protein exchange"
+    },
+    {
+      "name": "Ribeye Steak",
+      "category": "Protein",
+      "meal": [
+        "Dinner"
+      ],
+      "emoji": "🥩",
+      "serving": "4 oz (113g)",
+      "calories": 310,
+      "protein": 22,
+      "carbs": 0,
+      "fat": 24,
+      "exchangeType": "High-Fat Protein",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 oz cooked = 1 high-fat protein exchange"
+    },
+    {
+      "name": "Beef Jerky",
+      "category": "Protein",
+      "meal": [
+        "Snack"
+      ],
+      "emoji": "🥩",
+      "serving": "1 oz (28g)",
+      "calories": 116,
+      "protein": 9,
+      "carbs": 3,
+      "fat": 7,
+      "exchangeType": "Medium-Fat Protein",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 oz = 1 medium-fat protein exchange"
+    },
+    {
+      "name": "Turkey Jerky",
+      "category": "Protein",
+      "meal": [
+        "Snack"
+      ],
+      "emoji": "🦃",
+      "serving": "1 oz (28g)",
+      "calories": 70,
+      "protein": 11,
+      "carbs": 3,
+      "fat": 1,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 oz = 1 lean protein exchange"
+    },
+    {
+      "name": "Swiss Cheese",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Snack"
+      ],
+      "emoji": "🧀",
+      "serving": "1 oz (28g)",
+      "calories": 111,
+      "protein": 8,
+      "carbs": 2,
+      "fat": 9,
+      "exchangeType": "High-Fat Protein",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 oz = 1 high-fat protein exchange"
+    },
+    {
+      "name": "Cheddar Cheese",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🧀",
+      "serving": "1 oz (28g)",
+      "calories": 115,
+      "protein": 7,
+      "carbs": 0,
+      "fat": 9,
+      "exchangeType": "High-Fat Protein",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 oz = 1 high-fat protein exchange"
+    },
+    {
+      "name": "Mozzarella (whole milk)",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🧀",
+      "serving": "1 oz (28g)",
+      "calories": 85,
+      "protein": 6,
+      "carbs": 1,
+      "fat": 6,
+      "exchangeType": "Medium-Fat Protein",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 oz = 1 medium-fat protein exchange"
+    },
+    {
+      "name": "Mozzarella (part-skim)",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🧀",
+      "serving": "1 oz (28g)",
+      "calories": 72,
+      "protein": 7,
+      "carbs": 1,
+      "fat": 5,
+      "exchangeType": "Lean Protein",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 oz = 1 lean protein exchange"
+    },
+    {
+      "name": "Colby Jack",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner",
+        "Snack"
+      ],
+      "emoji": "🧀",
+      "serving": "1 oz (28g)",
+      "calories": 110,
+      "protein": 7,
+      "carbs": 0,
+      "fat": 9,
+      "exchangeType": "High-Fat Protein",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 oz = 1 high-fat protein exchange"
+    },
+    {
+      "name": "Parmesan (grated)",
+      "category": "Protein",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🧀",
+      "serving": "2 tbsp (10g)",
+      "calories": 43,
+      "protein": 4,
+      "carbs": 0,
+      "fat": 3,
+      "exchangeType": "Medium-Fat Protein",
+      "exchangeAmt": "½ exchange",
+      "exchangeNote": "2 tbsp = ½ medium-fat protein exchange"
+    },
+    {
+      "name": "Pepper Jack",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner",
+        "Snack"
+      ],
+      "emoji": "🧀",
+      "serving": "1 oz (28g)",
+      "calories": 110,
+      "protein": 7,
+      "carbs": 0,
+      "fat": 9,
+      "exchangeType": "High-Fat Protein",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 oz = 1 high-fat protein exchange"
+    },
+    {
+      "name": "Feta Cheese",
+      "category": "Protein",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🧀",
+      "serving": "1 oz (28g)",
+      "calories": 75,
+      "protein": 4,
+      "carbs": 1,
+      "fat": 6,
+      "exchangeType": "Medium-Fat Protein",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 oz = 1 medium-fat protein exchange"
+    },
+    {
+      "name": "Oats (Whole)",
+      "category": "Carb",
+      "meal": [
+        "Breakfast"
+      ],
+      "emoji": "🌾",
+      "serving": "1/2 cup dry (40g)",
+      "calories": 150,
+      "protein": 5,
+      "carbs": 27,
+      "fat": 3,
+      "exchangeType": "Starch",
+      "exchangeAmt": "2 exchanges",
+      "exchangeNote": "¼ cup dry = 1 starch exchange (~15g carbs)"
+    },
+    {
+      "name": "White Rice (cooked)",
+      "category": "Carb",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🍚",
+      "serving": "1 cup (186g)",
+      "calories": 242,
+      "protein": 4,
+      "carbs": 53,
+      "fat": 0,
+      "exchangeType": "Starch",
+      "exchangeAmt": "3½ exchanges",
+      "exchangeNote": "⅓ cup cooked = 1 starch exchange"
+    },
+    {
+      "name": "Brown Rice (cooked)",
+      "category": "Carb",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🍚",
+      "serving": "1 cup (195g)",
+      "calories": 215,
+      "protein": 5,
+      "carbs": 45,
+      "fat": 2,
+      "exchangeType": "Starch",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "⅓ cup cooked = 1 starch exchange"
+    },
+    {
+      "name": "White Potato",
+      "category": "Carb",
+      "meal": [
+        "Breakfast",
+        "Dinner"
+      ],
+      "emoji": "🥔",
+      "serving": "1 medium (173g)",
+      "calories": 159,
+      "protein": 4,
+      "carbs": 36,
+      "fat": 0,
+      "exchangeType": "Starch",
+      "exchangeAmt": "2½ exchanges",
+      "exchangeNote": "½ medium (85g) = 1 starch exchange"
+    },
+    {
+      "name": "Sweet Potato",
+      "category": "Carb",
+      "meal": [
+        "Breakfast",
+        "Dinner"
+      ],
+      "emoji": "🍠",
+      "serving": "1 medium (130g)",
+      "calories": 112,
+      "protein": 2,
+      "carbs": 26,
+      "fat": 0,
+      "exchangeType": "Starch",
+      "exchangeAmt": "2 exchanges",
+      "exchangeNote": "½ medium (65g) = 1 starch exchange"
+    },
+    {
+      "name": "Quinoa (cooked)",
+      "category": "Carb",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🌾",
+      "serving": "1 cup (185g)",
+      "calories": 222,
+      "protein": 8,
+      "carbs": 39,
+      "fat": 4,
+      "exchangeType": "Starch",
+      "exchangeAmt": "2½ exchanges",
+      "exchangeNote": "⅓ cup cooked = 1 starch exchange"
+    },
+    {
+      "name": "Banana",
+      "category": "Carb",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🍌",
+      "serving": "1 medium (118g)",
+      "calories": 105,
+      "protein": 1,
+      "carbs": 27,
+      "fat": 0,
+      "exchangeType": "Fruit",
+      "exchangeAmt": "2 exchanges",
+      "exchangeNote": "½ medium banana = 1 fruit exchange (~15g carbs)"
+    },
+    {
+      "name": "Blueberries",
+      "category": "Carb",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🫐",
+      "serving": "1 cup (148g)",
+      "calories": 84,
+      "protein": 1,
+      "carbs": 21,
+      "fat": 0,
+      "exchangeType": "Fruit",
+      "exchangeAmt": "1½ exchanges",
+      "exchangeNote": "¾ cup = 1 fruit exchange"
+    },
+    {
+      "name": "Strawberries",
+      "category": "Carb",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🍓",
+      "serving": "1 cup (152g)",
+      "calories": 49,
+      "protein": 1,
+      "carbs": 12,
+      "fat": 0,
+      "exchangeType": "Fruit",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1¼ cup = 1 fruit exchange; 1 cup is approx 1 exchange"
+    },
+    {
+      "name": "Apple",
+      "category": "Carb",
+      "meal": [
+        "Snack"
+      ],
+      "emoji": "🍎",
+      "serving": "1 medium (182g)",
+      "calories": 95,
+      "protein": 0,
+      "carbs": 25,
+      "fat": 0,
+      "exchangeType": "Fruit",
+      "exchangeAmt": "1½ exchanges",
+      "exchangeNote": "1 small apple = 1 fruit exchange"
+    },
+    {
+      "name": "Mixed Berries",
+      "category": "Carb",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🍓",
+      "serving": "1 cup (140g)",
+      "calories": 70,
+      "protein": 1,
+      "carbs": 17,
+      "fat": 0,
+      "exchangeType": "Fruit",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 cup = 1 fruit exchange (~15g carbs)"
+    },
+    {
+      "name": "Ezekiel Bread",
+      "category": "Carb",
+      "meal": [
+        "Breakfast",
+        "Lunch"
+      ],
+      "emoji": "🍞",
+      "serving": "2 slices (68g)",
+      "calories": 160,
+      "protein": 8,
+      "carbs": 30,
+      "fat": 2,
+      "exchangeType": "Starch",
+      "exchangeAmt": "2 exchanges",
+      "exchangeNote": "1 slice = 1 starch exchange"
+    },
+    {
+      "name": "White Pasta (cooked)",
+      "category": "Carb",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🍝",
+      "serving": "1 cup (140g)",
+      "calories": 220,
+      "protein": 8,
+      "carbs": 43,
+      "fat": 1,
+      "exchangeType": "Starch",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "⅓ cup cooked = 1 starch exchange"
+    },
+    {
+      "name": "Black Beans",
+      "category": "Carb",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🫘",
+      "serving": "1/2 cup (86g)",
+      "calories": 114,
+      "protein": 8,
+      "carbs": 20,
+      "fat": 0,
+      "exchangeType": "Starch",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "½ cup cooked = 1 starch exchange (also counts as ~1 lean protein)"
+    },
+    {
+      "name": "Chickpeas",
+      "category": "Carb",
+      "meal": [
+        "Lunch",
+        "Dinner",
+        "Snack"
+      ],
+      "emoji": "🫘",
+      "serving": "1/2 cup (82g)",
+      "calories": 134,
+      "protein": 7,
+      "carbs": 22,
+      "fat": 2,
+      "exchangeType": "Starch",
+      "exchangeAmt": "1½ exchanges",
+      "exchangeNote": "⅓ cup = 1 starch exchange (also ~1 lean protein)"
+    },
+    {
+      "name": "Lentils (cooked)",
+      "category": "Carb",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🫘",
+      "serving": "1/2 cup (99g)",
+      "calories": 115,
+      "protein": 9,
+      "carbs": 20,
+      "fat": 0,
+      "exchangeType": "Starch",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "½ cup cooked = 1 starch exchange (also ~1 lean protein)"
+    },
+    {
+      "name": "Grits (cooked)",
+      "category": "Carb",
+      "meal": [
+        "Breakfast"
+      ],
+      "emoji": "🌾",
+      "serving": "1 cup (242g)",
+      "calories": 182,
+      "protein": 4,
+      "carbs": 38,
+      "fat": 1,
+      "exchangeType": "Starch",
+      "exchangeAmt": "2½ exchanges",
+      "exchangeNote": "½ cup cooked = 1 starch exchange"
+    },
+    {
+      "name": "Orange",
+      "category": "Carb",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🍊",
+      "serving": "1 medium (131g)",
+      "calories": 62,
+      "protein": 1,
+      "carbs": 15,
+      "fat": 0,
+      "exchangeType": "Fruit",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 medium = 1 fruit exchange"
+    },
+    {
+      "name": "Grapes",
+      "category": "Carb",
+      "meal": [
+        "Snack"
+      ],
+      "emoji": "🍇",
+      "serving": "1 cup (92g)",
+      "calories": 62,
+      "protein": 1,
+      "carbs": 16,
+      "fat": 0,
+      "exchangeType": "Fruit",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "17 small grapes = 1 fruit exchange"
+    },
+    {
+      "name": "Rice Cakes",
+      "category": "Carb",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🍘",
+      "serving": "2 cakes (18g)",
+      "calories": 70,
+      "protein": 1,
+      "carbs": 15,
+      "fat": 0,
+      "exchangeType": "Starch",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "2 cakes = 1 starch exchange"
+    },
+    {
+      "name": "Tortilla (whole wheat)",
+      "category": "Carb",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🫓",
+      "serving": "1 large (45g)",
+      "calories": 130,
+      "protein": 4,
+      "carbs": 22,
+      "fat": 3,
+      "exchangeType": "Starch",
+      "exchangeAmt": "1½ exchanges",
+      "exchangeNote": "1 small 6in tortilla = 1 starch exchange"
+    },
+    {
+      "name": "Avocado",
+      "category": "Fat",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥑",
+      "serving": "1/2 avocado (75g)",
+      "calories": 120,
+      "protein": 2,
+      "carbs": 6,
+      "fat": 11,
+      "exchangeType": "Fat",
+      "exchangeAmt": "2 exchanges",
+      "exchangeNote": "1/8 avocado (~1 tbsp) = 1 fat exchange (~5g fat)"
+    },
+    {
+      "name": "Almond Butter",
+      "category": "Fat",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🥜",
+      "serving": "2 tbsp (32g)",
+      "calories": 196,
+      "protein": 7,
+      "carbs": 6,
+      "fat": 18,
+      "exchangeType": "Fat",
+      "exchangeAmt": "3½ exchanges",
+      "exchangeNote": "1 tsp = 1 fat exchange"
+    },
+    {
+      "name": "Mixed Nuts",
+      "category": "Fat",
+      "meal": [
+        "Snack"
+      ],
+      "emoji": "🥜",
+      "serving": "1 oz (28g)",
+      "calories": 173,
+      "protein": 5,
+      "carbs": 6,
+      "fat": 16,
+      "exchangeType": "Fat",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "6 mixed nuts = 1 fat exchange"
+    },
+    {
+      "name": "Olive Oil (EVOO)",
+      "category": "Fat",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🫒",
+      "serving": "1 tbsp (14g)",
+      "calories": 119,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 14,
+      "exchangeType": "Fat",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 tsp = 1 fat exchange"
+    },
+    {
+      "name": "Butter / Ghee",
+      "category": "Fat",
+      "meal": [
+        "Breakfast",
+        "Dinner"
+      ],
+      "emoji": "🧈",
+      "serving": "1 tbsp (14g)",
+      "calories": 102,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 12,
+      "exchangeType": "Fat",
+      "exchangeAmt": "2½ exchanges",
+      "exchangeNote": "1 tsp = 1 fat exchange"
+    },
+    {
+      "name": "Coconut Oil",
+      "category": "Fat",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥥",
+      "serving": "1 tbsp (14g)",
+      "calories": 121,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 14,
+      "exchangeType": "Fat",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 tsp = 1 fat exchange"
+    },
+    {
+      "name": "Peanut Butter",
+      "category": "Fat",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🥜",
+      "serving": "2 tbsp (32g)",
+      "calories": 188,
+      "protein": 8,
+      "carbs": 6,
+      "fat": 16,
+      "exchangeType": "Fat",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 tsp = 1 fat exchange"
+    },
+    {
+      "name": "Sunflower Seeds",
+      "category": "Fat",
+      "meal": [
+        "Snack"
+      ],
+      "emoji": "🌻",
+      "serving": "1 oz (28g)",
+      "calories": 165,
+      "protein": 6,
+      "carbs": 6,
+      "fat": 14,
+      "exchangeType": "Fat",
+      "exchangeAmt": "3 exchanges",
+      "exchangeNote": "1 tbsp = 1 fat exchange"
+    },
+    {
+      "name": "Flaxseeds",
+      "category": "Fat",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🌾",
+      "serving": "2 tbsp (20g)",
+      "calories": 110,
+      "protein": 4,
+      "carbs": 6,
+      "fat": 9,
+      "exchangeType": "Fat",
+      "exchangeAmt": "2 exchanges",
+      "exchangeNote": "1 tbsp = 1 fat exchange"
+    },
+    {
+      "name": "Chia Seeds",
+      "category": "Fat",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🌱",
+      "serving": "2 tbsp (20g)",
+      "calories": 97,
+      "protein": 3,
+      "carbs": 8,
+      "fat": 6,
+      "exchangeType": "Fat",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "2 tbsp = 1 fat exchange"
+    },
+    {
+      "name": "Full Fat Milk",
+      "category": "Fat",
+      "meal": [
+        "Breakfast",
+        "Snack"
+      ],
+      "emoji": "🥛",
+      "serving": "1 cup (244g)",
+      "calories": 149,
+      "protein": 8,
+      "carbs": 12,
+      "fat": 8,
+      "exchangeType": "Whole Milk",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 cup = 1 whole milk exchange (~12g carbs, 8g protein, 8g fat)"
+    },
+    {
+      "name": "Broccoli",
+      "category": "Veggie",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥦",
+      "serving": "1 cup (91g)",
+      "calories": 31,
+      "protein": 3,
+      "carbs": 6,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "½ cup cooked or 1 cup raw = 1 veggie exchange (~5g carbs)"
+    },
+    {
+      "name": "Cauliflower",
+      "category": "Veggie",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥦",
+      "serving": "1 cup (107g)",
+      "calories": 27,
+      "protein": 2,
+      "carbs": 5,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "½ cup cooked or 1 cup raw = 1 veggie exchange"
+    },
+    {
+      "name": "Green Beans",
+      "category": "Veggie",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🫛",
+      "serving": "1 cup (100g)",
+      "calories": 31,
+      "protein": 2,
+      "carbs": 7,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "½ cup cooked or 1 cup raw = 1 veggie exchange"
+    },
+    {
+      "name": "Mixed Greens",
+      "category": "Veggie",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥬",
+      "serving": "2 cups (60g)",
+      "calories": 15,
+      "protein": 1,
+      "carbs": 2,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "½ exchange",
+      "exchangeNote": "3 cups raw leafy greens = 1 veggie exchange"
+    },
+    {
+      "name": "Bell Peppers",
+      "category": "Veggie",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🫑",
+      "serving": "1 cup (149g)",
+      "calories": 46,
+      "protein": 1,
+      "carbs": 9,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "1½ exchanges",
+      "exchangeNote": "½ cup = 1 veggie exchange"
+    },
+    {
+      "name": "Brussels Sprouts",
+      "category": "Veggie",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥦",
+      "serving": "1 cup (88g)",
+      "calories": 38,
+      "protein": 3,
+      "carbs": 8,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "1½ exchanges",
+      "exchangeNote": "½ cup cooked = 1 veggie exchange"
+    },
+    {
+      "name": "Cucumber",
+      "category": "Veggie",
+      "meal": [
+        "Lunch",
+        "Snack"
+      ],
+      "emoji": "🥒",
+      "serving": "1 cup (119g)",
+      "calories": 16,
+      "protein": 1,
+      "carbs": 4,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 cup sliced = 1 veggie exchange"
+    },
+    {
+      "name": "Spinach",
+      "category": "Veggie",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥬",
+      "serving": "2 cups (60g)",
+      "calories": 14,
+      "protein": 2,
+      "carbs": 2,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "½ exchange",
+      "exchangeNote": "3 cups raw = 1 veggie exchange"
+    },
+    {
+      "name": "Carrots",
+      "category": "Veggie",
+      "meal": [
+        "Lunch",
+        "Dinner",
+        "Snack"
+      ],
+      "emoji": "🥕",
+      "serving": "1 cup (128g)",
+      "calories": 52,
+      "protein": 1,
+      "carbs": 12,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "2 exchanges",
+      "exchangeNote": "½ cup = 1 veggie exchange"
+    },
+    {
+      "name": "Onion",
+      "category": "Veggie",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🧅",
+      "serving": "1/2 cup chopped (80g)",
+      "calories": 32,
+      "protein": 1,
+      "carbs": 7,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "½ cup chopped = 1 veggie exchange"
+    },
+    {
+      "name": "Zucchini",
+      "category": "Veggie",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥒",
+      "serving": "1 cup (124g)",
+      "calories": 21,
+      "protein": 2,
+      "carbs": 4,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "½ cup cooked or 1 cup raw = 1 veggie exchange"
+    },
+    {
+      "name": "Asparagus",
+      "category": "Veggie",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🌿",
+      "serving": "1 cup (134g)",
+      "calories": 27,
+      "protein": 3,
+      "carbs": 5,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "½ cup cooked or 6 spears = 1 veggie exchange"
+    },
+    {
+      "name": "Kale",
+      "category": "Veggie",
+      "meal": [
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🥬",
+      "serving": "2 cups (67g)",
+      "calories": 34,
+      "protein": 3,
+      "carbs": 7,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 cup cooked or 2 cups raw = 1 veggie exchange"
+    },
+    {
+      "name": "Tomato",
+      "category": "Veggie",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🍅",
+      "serving": "1 medium (123g)",
+      "calories": 22,
+      "protein": 1,
+      "carbs": 5,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 medium or ½ cup = 1 veggie exchange"
+    },
+    {
+      "name": "Mushrooms",
+      "category": "Veggie",
+      "meal": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ],
+      "emoji": "🍄",
+      "serving": "1 cup (70g)",
+      "calories": 15,
+      "protein": 2,
+      "carbs": 2,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "½ exchange",
+      "exchangeNote": "½ cup cooked = 1 veggie exchange"
+    }
+  ]
+}
