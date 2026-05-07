@@ -15,16 +15,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 20 25% 20%;
 
-    --primary: 12 80% 65%;
+    --primary: 14 90% 58%;              /* aligned w/ macro-calories, lighter */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 270 45% 70%;
+    --secondary: 175 70% 45%;            /* aligned w/ macro-primary teal */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 30 30% 94%;
     --muted-foreground: 20 10% 50%;
 
-    --accent: 160 45% 50%;
+    --accent: 340 75% 60%;               /* aligned w/ macro-protein */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -32,17 +32,17 @@
 
     --border: 30 25% 88%;
     --input: 30 25% 88%;
-    --ring: 12 80% 65%;
+    --ring: 14 90% 58%;
 
     --radius: 1rem;
 
-    /* Exchange category colors */
-    --exchange-starches: 30 90% 60%;
-    --exchange-fruits: 45 95% 58%;
-    --exchange-vegetables: 142 60% 45%;
-    --exchange-proteins: 174 55% 42%;
-    --exchange-dairy: 270 50% 60%;
-    --exchange-fats: 12 75% 60%;
+    /* Exchange category colors — same family as macro palette, lighter for light theme */
+    --exchange-starches: 14 90% 60%;     /* fiery orange  (echoes macro-calories) */
+    --exchange-fruits: 340 78% 62%;      /* magenta-pink  (echoes macro-protein) */
+    --exchange-vegetables: 90 60% 48%;   /* lime green    (echoes macro-carbs) */
+    --exchange-proteins: 175 65% 42%;    /* electric teal (echoes macro-primary) */
+    --exchange-dairy: 260 55% 62%;       /* violet */
+    --exchange-fats: 42 95% 55%;         /* gold          (echoes macro-fats) */
 
     /* Macro mode palette — cool, energetic, athletic */
     --macro-bg: 222 35% 11%;
