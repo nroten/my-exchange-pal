@@ -9,8 +9,9 @@ import {
   MacroFood, MacroLog, MacroTargets, MealSlot, MEAL_SLOTS,
   sumMacros, getCurrentMealSlot, todayYMD, tomorrowYMD, yesterdayYMD,
 } from '@/types/macros';
-import { Plus, Minus, X, Pencil, Check, Copy, BookOpen } from 'lucide-react';
+import { Plus, Minus, X, Pencil, Check, Copy, BookOpen, BookMarked } from 'lucide-react';
 import FoodLibraryDialog, { LibraryFood } from '@/components/FoodLibraryDialog';
+import CheatsheetModal from '@/components/CheatsheetModal';
 
 const SLOT_ACCENT: Record<MealSlot, string> = {
   breakfast: 'from-macro-fats/20 to-macro-calories/10 border-macro-fats/30',
@@ -46,6 +47,7 @@ export default function MacrosTracker() {
   const [dayMode, setDayMode] = useState<DayMode>('today');
   const [showFoodDialog, setShowFoodDialog] = useState(false);
   const [showLibrary, setShowLibrary] = useState(false);
+  const [showCheatsheet, setShowCheatsheet] = useState(false);
   const [form, setForm] = useState<FoodFormState>(EMPTY_FORM);
 
   const today = todayYMD();
@@ -280,11 +282,19 @@ export default function MacrosTracker() {
   return (
     <div className="min-h-screen bg-macro-bg text-macro-text pb-24">
       {/* Header */}
-      <div className="px-5 pt-6 pb-3">
-        <p className="text-sm text-macro-muted">{dateStr}</p>
-        <h1 className="text-xl font-bold mt-1 text-macro-text">
-          {isPlanning ? `Planning tomorrow 🗓️` : `Hey ${name}! 💪`}
-        </h1>
+      <div className="px-5 pt-6 pb-3 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm text-macro-muted">{dateStr}</p>
+          <h1 className="text-xl font-bold mt-1 text-macro-text">
+            {isPlanning ? `Planning tomorrow 🗓️` : `Hey ${name}! 💪`}
+          </h1>
+        </div>
+        <button
+          onClick={() => setShowCheatsheet(true)}
+          className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-macro-surface border border-macro-border text-macro-text text-xs font-semibold hover:border-macro-primary/60 transition"
+        >
+          <BookMarked size={14} /> Cheatsheet
+        </button>
       </div>
 
       {/* Today / Tomorrow toggle */}
@@ -502,6 +512,9 @@ export default function MacrosTracker() {
           </div>
         </div>
       )}
+
+      {/* Cheatsheet */}
+      <CheatsheetModal open={showCheatsheet} onOpenChange={setShowCheatsheet} />
 
       {/* Food library dialog */}
       <FoodLibraryDialog
