@@ -47,9 +47,14 @@ export default function FoodLibraryDialog({ open, onOpenChange, initialSlot, onA
     const mealLabel = SLOT_TO_MEAL[slot];
     const q = query.trim().toLowerCase();
     return allFoods
-      .filter(f => f.meal.includes(mealLabel))
       .filter(f => !q || f.name.toLowerCase().includes(q) || f.category.toLowerCase().includes(q) || f.exchangeType.toLowerCase().includes(q))
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => {
+        // Foods typical for this meal float to the top
+        const aTypical = a.meal.includes(mealLabel) ? 0 : 1;
+        const bTypical = b.meal.includes(mealLabel) ? 0 : 1;
+        if (aTypical !== bTypical) return aTypical - bTypical;
+        return a.name.localeCompare(b.name);
+      });
   }, [allFoods, slot, query]);
 
   async function handleAdd(f: LibraryFood) {
