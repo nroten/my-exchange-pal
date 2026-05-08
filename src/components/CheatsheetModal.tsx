@@ -96,15 +96,18 @@ const TARGET_TOLERANCES = [
 ];
 
 type TabId = 'exchanges' | 'tips' | 'targets';
+export type CheatsheetMode = 'macros' | 'exchanges';
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  mode?: CheatsheetMode;
 }
 
-export default function CheatsheetModal({ open, onOpenChange }: Props) {
+export default function CheatsheetModal({ open, onOpenChange, mode = 'macros' }: Props) {
   const [activeTab, setActiveTab] = useState<TabId>('exchanges');
   const [expanded, setExpanded] = useState<number | null>(null);
+  const showExchanges = mode === 'exchanges';
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'exchanges', label: 'Exchange Types' },
