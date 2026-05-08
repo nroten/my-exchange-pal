@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { FOOD_DATABASE, getRecentFoodIds, pushRecentFoodId } from '@/data/foodDatabase';
+import { FOOD_DATABASE, getRecentFoodIds, pushRecentFoodId, getStarredFoodIds, toggleStarredFoodId } from '@/data/foodDatabase';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
