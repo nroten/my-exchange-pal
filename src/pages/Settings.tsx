@@ -389,9 +389,14 @@ export default function Settings() {
         <section className="mb-6">
           <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-3">
             <p className="text-sm font-medium text-secondary">🧡 You're a supporter!</p>
-            <p className="text-xs text-muted-foreground mt-1">Switch to supporter view from the bottom navigation.</p>
+            <p className="text-xs text-muted-foreground mt-1">Switch to supporter view from the top of the screen.</p>
           </div>
         </section>
+      )}
+
+      {/* Default screen on launch — only when user has both roles */}
+      <DefaultViewSection />
+
       )}
 
       {/* Exchange guide */}
