@@ -607,6 +607,21 @@ export default function MacrosTracker() {
                 </button>
               ))}
             </div>
+            <div className="flex gap-2">
+              {(['base','variation','addon'] as FoodKind[]).map(k => (
+                <button
+                  key={k}
+                  onClick={() => setForm({ ...form, kind: k })}
+                  className={`flex-1 px-2 py-1.5 rounded-lg text-[11px] font-semibold border capitalize ${
+                    form.kind === k
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-card border-border text-muted-foreground'
+                  }`}
+                >
+                  {k === 'base' ? '🧱 Base' : k === 'variation' ? '🧩 Combo' : '➕ Add-on'}
+                </button>
+              ))}
+            </div>
             <Input
               value={form.serving}
               onChange={(e) => setForm({ ...form, serving: e.target.value })}
