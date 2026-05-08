@@ -250,6 +250,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   const renderFoodTile = (food: FoodItem) => {
     const inMeal = entries.find(e => e.foodName === food.name);
     const isCombo = food.isCombination;
+    const isStarred = starredIds.includes(food.id);
     const exchangeCount = Object.values(food.exchanges).filter(v => v && v > 0).length;
     return (
       <div
@@ -275,6 +276,16 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
             COMBO
           </div>
         )}
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleStar(food); }}
+          className={`absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center text-sm z-10 transition-transform active:scale-90 ${
+            isStarred ? 'text-yellow-400 drop-shadow' : 'text-muted-foreground/50 hover:text-yellow-400'
+          }`}
+          aria-label={isStarred ? `Unfavorite ${food.name}` : `Favorite ${food.name}`}
+          title={isStarred ? 'Remove from favorites' : 'Add to favorites'}
+        >
+          {isStarred ? '★' : '☆'}
+        </button>
         <div className="text-3xl mb-0.5 pointer-events-none">{food.emoji}</div>
         <div className="text-[10px] font-semibold text-center leading-tight line-clamp-2 px-0.5 pointer-events-none">
           {food.name.replace(/\s*\(.*?\)/, '')}
