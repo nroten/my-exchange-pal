@@ -25,6 +25,7 @@ interface FoodFormState {
   name: string;
   emoji: string;
   meal_slot: MealSlot;
+  kind: FoodKind;
   serving: string;
   calories: string;
   protein: string;
@@ -33,7 +34,7 @@ interface FoodFormState {
 }
 
 const EMPTY_FORM: FoodFormState = {
-  name: '', emoji: '🍽️', meal_slot: 'breakfast', serving: '',
+  name: '', emoji: '🍽️', meal_slot: 'breakfast', kind: 'base', serving: '',
   calories: '', protein: '', carbs: '', fats: '',
 };
 
