@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import {
-  MacroFood, MacroLog, MacroTargets, MealSlot, MEAL_SLOTS,
+  MacroFood, MacroLog, MacroTargets, MealSlot, MEAL_SLOTS, FoodKind,
   sumMacros, getCurrentMealSlot, todayYMD, tomorrowYMD, yesterdayYMD,
 } from '@/types/macros';
 import { Plus, Minus, X, Pencil, Check, Copy, BookOpen, BookMarked } from 'lucide-react';
