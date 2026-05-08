@@ -73,20 +73,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let initialized = false;
 
+    const applyInitialView = (prof: Profile | null, isSupporter: boolean) => {
+      if (initialized) return;
+      initialized = true;
+      const stored = (typeof window !== 'undefined' ? localStorage.getItem('defaultView') : null) as ActiveView | null;
+      const hasTracker = prof?.role === 'daughter' || (prof?.role === 'parent' && prof?.setup_complete === true);
+      const hasSupporter = isSupporter || prof?.role === 'parent';
+      if (stored === 'tracker' && hasTracker) { setActiveView('tracker'); return; }
+      if (stored === 'supporter' && hasSupporter) { setActiveView('supporter'); return; }
+      if (prof?.role === 'parent') setActiveView('supporter');
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
         if (session?.user) {
           setTimeout(async () => {
             const prof = await fetchProfile(session.user.id);
-            await checkSupporterRole(session.user.id);
-            // Only set initial view once — never override an explicit user switch
-            if (!initialized) {
-              initialized = true;
-              if (prof?.role === 'parent') {
-                setActiveView('supporter');
-              }
-            }
+            const isSup = await checkSupporterRole(session.user.id);
+            applyInitialView(prof, isSup);
           }, 0);
         } else {
           setProfile(null);
@@ -101,13 +106,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       if (session?.user) {
         const prof = await fetchProfile(session.user.id);
-        await checkSupporterRole(session.user.id);
-        if (!initialized) {
-          initialized = true;
-          if (prof?.role === 'parent') {
-            setActiveView('supporter');
-          }
-        }
+        const isSup = await checkSupporterRole(session.user.id);
+        applyInitialView(prof, isSup);
       }
       setLoading(false);
     });
