@@ -395,9 +395,8 @@ export default function Settings() {
       )}
 
       {/* Default screen on launch — only when user has both roles */}
-      <DefaultViewSection />
+      {hasTrackerRole && hasSupporterRole && <DefaultViewSection />}
 
-      )}
 
       {/* Exchange guide */}
       <section className="mb-6">
