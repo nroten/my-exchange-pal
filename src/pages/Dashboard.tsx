@@ -132,6 +132,13 @@ export default function Dashboard() {
           <p className="text-sm text-muted-foreground">{today}</p>
           <p className="text-base font-semibold mt-1">{greeting}</p>
         </div>
+        <button
+          onClick={() => setShowCheatsheet(true)}
+          className="shrink-0 bg-card border border-border hover:bg-muted transition-colors rounded-full px-3 py-1.5 text-xs font-bold flex items-center gap-1"
+          title="Open cheatsheet"
+        >
+          <BookMarked size={12} /> Cheatsheet
+        </button>
         {hasSupporterRole && (
           <button
             onClick={() => setActiveView('supporter')}
@@ -142,6 +149,8 @@ export default function Dashboard() {
           </button>
         )}
       </div>
+
+      <CheatsheetModal open={showCheatsheet} onOpenChange={setShowCheatsheet} mode="exchanges" />
 
       {/* Encouragement banner */}
       {encouragement && (
