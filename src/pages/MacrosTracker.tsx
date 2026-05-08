@@ -397,15 +397,33 @@ export default function MacrosTracker() {
               <br />Tap + to add your first one.
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-              {slotFoods.map(f => {
+            (() => {
+              const bases = slotFoods.filter(f => (f.kind || 'base') === 'base');
+              const variations = slotFoods.filter(f => f.kind === 'variation');
+              const addons = slotFoods.filter(f => f.kind === 'addon');
+              const renderTile = (f: MacroFood) => {
                 const count = slotLogs.filter(l => l.food_id === f.id).reduce((s, l) => s + l.quantity, 0);
+                const isVariation = f.kind === 'variation';
+                const isAddon = f.kind === 'addon';
                 return (
                   <button
                     key={f.id}
                     onClick={() => logFood(f)}
-                    className="relative bg-macro-surface border border-macro-border rounded-xl p-3 text-left hover:bg-macro-surface-2 hover:border-macro-primary/50 active:scale-95 transition"
+                    className={`relative rounded-xl p-3 text-left active:scale-95 transition border ${
+                      isVariation
+                        ? 'bg-gradient-to-br from-macro-carbs/10 to-macro-fats/10 border-dashed border-macro-carbs/60 hover:border-macro-carbs'
+                        : isAddon
+                          ? 'bg-macro-surface border-macro-fats/40 border-dotted hover:border-macro-fats'
+                          : 'bg-macro-surface border-macro-border hover:bg-macro-surface-2 hover:border-macro-primary/50'
+                    }`}
                   >
+                    {(isVariation || isAddon) && (
+                      <span className={`absolute top-1 left-1 text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none shadow-sm ${
+                        isVariation ? 'bg-macro-carbs text-macro-bg' : 'bg-macro-fats text-macro-bg'
+                      }`}>
+                        {isVariation ? 'COMBO' : 'ADD-ON'}
+                      </span>
+                    )}
                     {count > 0 && (
                       <span className="absolute -top-1.5 -right-1.5 bg-macro-primary text-macro-primary-foreground text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center">
                         ×{count}
@@ -437,8 +455,26 @@ export default function MacrosTracker() {
                     </div>
                   </button>
                 );
-              })}
-            </div>
+              };
+              const sectionHeader = (label: string) => (
+                <div className="col-span-2 sm:col-span-3 md:col-span-4 flex items-center gap-2 mt-1 first:mt-0">
+                  <div className="h-px flex-1 bg-macro-border" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-macro-muted">{label}</span>
+                  <div className="h-px flex-1 bg-macro-border" />
+                </div>
+              );
+              const showHeaders = (variations.length + addons.length) > 0 && bases.length > 0;
+              return (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  {showHeaders && sectionHeader('Base')}
+                  {bases.map(renderTile)}
+                  {variations.length > 0 && sectionHeader('Variations')}
+                  {variations.map(renderTile)}
+                  {addons.length > 0 && sectionHeader('Add-ons')}
+                  {addons.map(renderTile)}
+                </div>
+              );
+            })()
           )}
           <div className="grid grid-cols-2 gap-2 mt-3">
             <Button
