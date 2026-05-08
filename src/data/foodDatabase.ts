@@ -177,3 +177,21 @@ export function pushRecentFoodId(id: string) {
   list.unshift(id);
   localStorage.setItem(FAVORITE_FOOD_NAMES_KEY, JSON.stringify(list.slice(0, 12)));
 }
+
+export const STARRED_FOOD_KEY = 'nutrition_starred_foods';
+
+export function getStarredFoodIds(): string[] {
+  try {
+    const raw = localStorage.getItem(STARRED_FOOD_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function toggleStarredFoodId(id: string): string[] {
+  const list = getStarredFoodIds();
+  const next = list.includes(id) ? list.filter(x => x !== id) : [id, ...list];
+  localStorage.setItem(STARRED_FOOD_KEY, JSON.stringify(next));
+  return next;
+}
