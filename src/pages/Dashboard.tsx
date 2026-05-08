@@ -11,6 +11,8 @@ import {
 } from '@/types/nutrition';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { BookMarked } from 'lucide-react';
+import CheatsheetModal from '@/components/CheatsheetModal';
 
 function getGreeting(name: string, progress: number, hour: number): string {
   if (progress >= 1) return `You did it, ${name}! Every goal hit today. Amazing work! 🌟`;
