@@ -176,7 +176,7 @@ export default function CheatsheetModal({ open, onOpenChange, mode = 'macros' }:
                           </div>
                           <div className="text-[11px] text-macro-muted mt-0.5">{ex.macros}</div>
                           <div className="inline-block mt-1.5 text-[11px] font-semibold text-macro-text bg-macro-surface-2 px-2 py-0.5 rounded">
-                            1 exchange = {ex.oneExchange}
+                            {showExchanges ? `1 exchange = ${ex.oneExchange}` : `Serving: ${ex.oneExchange}`}
                           </div>
                         </div>
                       </div>
@@ -184,7 +184,7 @@ export default function CheatsheetModal({ open, onOpenChange, mode = 'macros' }:
                       {isOpen && (
                         <div className="mt-3 pt-3 border-t border-macro-border">
                           <div className="text-[10px] font-bold uppercase tracking-wider text-macro-muted mb-2">
-                            Examples of 1 Exchange:
+                            {showExchanges ? 'Examples of 1 Exchange:' : 'Suggested Servings:'}
                           </div>
                           <div className="flex flex-wrap gap-1.5">
                             {ex.examples.map((eg) => (
