@@ -110,7 +110,7 @@ export default function CheatsheetModal({ open, onOpenChange, mode = 'macros' }:
   const showExchanges = mode === 'exchanges';
 
   const tabs: { id: TabId; label: string }[] = [
-    { id: 'exchanges', label: 'Exchange Types' },
+    { id: 'exchanges', label: showExchanges ? 'Exchange Types' : 'Food Groups' },
     { id: 'tips', label: 'Quick Tips' },
     { id: 'targets', label: 'Macro Targets' },
   ];
