@@ -11,6 +11,8 @@ import {
 } from '@/types/nutrition';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { BookMarked } from 'lucide-react';
+import CheatsheetModal from '@/components/CheatsheetModal';
 
 function getGreeting(name: string, progress: number, hour: number): string {
   if (progress >= 1) return `You did it, ${name}! Every goal hit today. Amazing work! 🌟`;
@@ -31,6 +33,7 @@ export default function Dashboard() {
   const [encouragement, setEncouragement] = useState<any>(null);
   const [celebration, setCelebration] = useState<ReturnType<typeof getRandomCelebration> | null>(null);
   const [prevCompletedCount, setPrevCompletedCount] = useState<number | null>(null);
+  const [showCheatsheet, setShowCheatsheet] = useState(false);
 
   const fetchData = useCallback(async () => {
     if (!user) return;
@@ -129,6 +132,13 @@ export default function Dashboard() {
           <p className="text-sm text-muted-foreground">{today}</p>
           <p className="text-base font-semibold mt-1">{greeting}</p>
         </div>
+        <button
+          onClick={() => setShowCheatsheet(true)}
+          className="shrink-0 bg-card border border-border hover:bg-muted transition-colors rounded-full px-3 py-1.5 text-xs font-bold flex items-center gap-1"
+          title="Open cheatsheet"
+        >
+          <BookMarked size={12} /> Cheatsheet
+        </button>
         {hasSupporterRole && (
           <button
             onClick={() => setActiveView('supporter')}
@@ -139,6 +149,8 @@ export default function Dashboard() {
           </button>
         )}
       </div>
+
+      <CheatsheetModal open={showCheatsheet} onOpenChange={setShowCheatsheet} mode="exchanges" />
 
       {/* Encouragement banner */}
       {encouragement && (

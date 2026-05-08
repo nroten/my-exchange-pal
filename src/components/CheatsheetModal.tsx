@@ -96,18 +96,21 @@ const TARGET_TOLERANCES = [
 ];
 
 type TabId = 'exchanges' | 'tips' | 'targets';
+export type CheatsheetMode = 'macros' | 'exchanges';
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  mode?: CheatsheetMode;
 }
 
-export default function CheatsheetModal({ open, onOpenChange }: Props) {
+export default function CheatsheetModal({ open, onOpenChange, mode = 'macros' }: Props) {
   const [activeTab, setActiveTab] = useState<TabId>('exchanges');
   const [expanded, setExpanded] = useState<number | null>(null);
+  const showExchanges = mode === 'exchanges';
 
   const tabs: { id: TabId; label: string }[] = [
-    { id: 'exchanges', label: 'Exchange Types' },
+    { id: 'exchanges', label: showExchanges ? 'Exchange Types' : 'Food Groups' },
     { id: 'tips', label: 'Quick Tips' },
     { id: 'targets', label: 'Macro Targets' },
   ];
@@ -119,7 +122,7 @@ export default function CheatsheetModal({ open, onOpenChange }: Props) {
         <div className="px-6 pt-5 pb-0 border-b border-macro-border bg-macro-bg/40 rounded-t-lg">
           <DialogHeader className="mb-3">
             <DialogTitle className="text-macro-text flex items-center gap-2 text-lg">
-              <span>📋</span> Macro Cheatsheet
+              <span>📋</span> {showExchanges ? 'Exchange Cheatsheet' : 'Macro Cheatsheet'}
             </DialogTitle>
             <p className="text-[11px] uppercase tracking-wider text-macro-muted ml-7">
               Quick reference before logging
@@ -147,7 +150,7 @@ export default function CheatsheetModal({ open, onOpenChange }: Props) {
         <div className="overflow-y-auto px-6 py-5 flex-1">
           {activeTab === 'exchanges' && (
             <div>
-              <p className="text-xs text-macro-muted mb-4">Tap any exchange type to see portion examples.</p>
+              <p className="text-xs text-macro-muted mb-4">Tap any {showExchanges ? 'exchange type' : 'food group'} to see suggested servings.</p>
               <div className="space-y-2">
                 {EXCHANGE_KEY.map((ex, i) => {
                   const isOpen = expanded === i;
@@ -173,7 +176,7 @@ export default function CheatsheetModal({ open, onOpenChange }: Props) {
                           </div>
                           <div className="text-[11px] text-macro-muted mt-0.5">{ex.macros}</div>
                           <div className="inline-block mt-1.5 text-[11px] font-semibold text-macro-text bg-macro-surface-2 px-2 py-0.5 rounded">
-                            1 exchange = {ex.oneExchange}
+                            {showExchanges ? `1 exchange = ${ex.oneExchange}` : `Serving: ${ex.oneExchange}`}
                           </div>
                         </div>
                       </div>
@@ -181,7 +184,7 @@ export default function CheatsheetModal({ open, onOpenChange }: Props) {
                       {isOpen && (
                         <div className="mt-3 pt-3 border-t border-macro-border">
                           <div className="text-[10px] font-bold uppercase tracking-wider text-macro-muted mb-2">
-                            Examples of 1 Exchange:
+                            {showExchanges ? 'Examples of 1 Exchange:' : 'Suggested Servings:'}
                           </div>
                           <div className="flex flex-wrap gap-1.5">
                             {ex.examples.map((eg) => (
