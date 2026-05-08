@@ -55,6 +55,13 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   const [showSaveAsRecipe, setShowSaveAsRecipe] = useState(false);
   const [recipeName, setRecipeName] = useState('');
   const [recentIds, setRecentIds] = useState<string[]>(getRecentFoodIds());
+  const [starredIds, setStarredIds] = useState<string[]>(getStarredFoodIds());
+
+  const toggleStar = (food: FoodItem) => {
+    const next = toggleStarredFoodId(food.id);
+    setStarredIds(next);
+    toast.success(next.includes(food.id) ? `⭐ ${food.name} favorited` : `Removed ${food.name} from favorites`);
+  };
 
   // Load saved meals
   useEffect(() => {
