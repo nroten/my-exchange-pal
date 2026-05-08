@@ -33,6 +33,7 @@ export default function Dashboard() {
   const [encouragement, setEncouragement] = useState<any>(null);
   const [celebration, setCelebration] = useState<ReturnType<typeof getRandomCelebration> | null>(null);
   const [prevCompletedCount, setPrevCompletedCount] = useState<number | null>(null);
+  const [showCheatsheet, setShowCheatsheet] = useState(false);
 
   const fetchData = useCallback(async () => {
     if (!user) return;
