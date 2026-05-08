@@ -122,7 +122,7 @@ export default function CheatsheetModal({ open, onOpenChange, mode = 'macros' }:
         <div className="px-6 pt-5 pb-0 border-b border-macro-border bg-macro-bg/40 rounded-t-lg">
           <DialogHeader className="mb-3">
             <DialogTitle className="text-macro-text flex items-center gap-2 text-lg">
-              <span>📋</span> Macro Cheatsheet
+              <span>📋</span> {showExchanges ? 'Exchange Cheatsheet' : 'Macro Cheatsheet'}
             </DialogTitle>
             <p className="text-[11px] uppercase tracking-wider text-macro-muted ml-7">
               Quick reference before logging
