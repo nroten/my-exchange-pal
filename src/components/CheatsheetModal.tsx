@@ -150,7 +150,7 @@ export default function CheatsheetModal({ open, onOpenChange, mode = 'macros' }:
         <div className="overflow-y-auto px-6 py-5 flex-1">
           {activeTab === 'exchanges' && (
             <div>
-              <p className="text-xs text-macro-muted mb-4">Tap any exchange type to see portion examples.</p>
+              <p className="text-xs text-macro-muted mb-4">Tap any {showExchanges ? 'exchange type' : 'food group'} to see suggested servings.</p>
               <div className="space-y-2">
                 {EXCHANGE_KEY.map((ex, i) => {
                   const isOpen = expanded === i;
