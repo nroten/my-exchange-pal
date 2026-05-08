@@ -25,6 +25,7 @@ interface FoodFormState {
   name: string;
   emoji: string;
   meal_slot: MealSlot;
+  serving: string;
   calories: string;
   protein: string;
   carbs: string;
@@ -32,7 +33,7 @@ interface FoodFormState {
 }
 
 const EMPTY_FORM: FoodFormState = {
-  name: '', emoji: '🍽️', meal_slot: 'breakfast',
+  name: '', emoji: '🍽️', meal_slot: 'breakfast', serving: '',
   calories: '', protein: '', carbs: '', fats: '',
 };
 
@@ -210,6 +211,7 @@ export default function MacrosTracker() {
   function openEditFood(f: MacroFood) {
     setForm({
       id: f.id, name: f.name, emoji: f.emoji, meal_slot: f.meal_slot,
+      serving: f.serving || '',
       calories: String(f.calories), protein: String(f.protein),
       carbs: String(f.carbs), fats: String(f.fats),
     });
@@ -224,6 +226,7 @@ export default function MacrosTracker() {
       name: form.name.trim(),
       emoji: form.emoji || '🍽️',
       meal_slot: form.meal_slot,
+      serving: form.serving.trim() || null,
       calories: Number(form.calories) || 0,
       protein: Number(form.protein) || 0,
       carbs: Number(form.carbs) || 0,
@@ -250,6 +253,7 @@ export default function MacrosTracker() {
       name: f.name,
       emoji: f.emoji,
       meal_slot: slot,
+      serving: f.serving || null,
       calories: f.calories,
       protein: f.protein,
       carbs: f.carbs,
@@ -415,6 +419,9 @@ export default function MacrosTracker() {
                       </button>
                     </div>
                     <div className="font-semibold text-xs mt-1 line-clamp-2 leading-tight text-macro-text">{f.name}</div>
+                    {f.serving && (
+                      <div className="text-[10px] text-macro-muted italic leading-tight">{f.serving}</div>
+                    )}
                     <div className="text-[10px] text-macro-calories font-semibold mt-1">
                       {Math.round(f.calories)} kcal
                     </div>
@@ -561,6 +568,12 @@ export default function MacrosTracker() {
                 </button>
               ))}
             </div>
+            <Input
+              value={form.serving}
+              onChange={(e) => setForm({ ...form, serving: e.target.value })}
+              placeholder="Serving size (e.g. 1 cup, 2 oz)"
+              className="rounded-xl"
+            />
             <div className="grid grid-cols-2 gap-2">
               <MacroInput label="Calories" value={form.calories} onChange={(v) => setForm({ ...form, calories: v })} />
               <MacroInput label="Protein (g)" value={form.protein} onChange={(v) => setForm({ ...form, protein: v })} />
