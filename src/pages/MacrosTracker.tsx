@@ -212,6 +212,7 @@ export default function MacrosTracker() {
   function openEditFood(f: MacroFood) {
     setForm({
       id: f.id, name: f.name, emoji: f.emoji, meal_slot: f.meal_slot,
+      kind: (f.kind as FoodKind) || 'base',
       serving: f.serving || '',
       calories: String(f.calories), protein: String(f.protein),
       carbs: String(f.carbs), fats: String(f.fats),
