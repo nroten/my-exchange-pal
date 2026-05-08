@@ -93,6 +93,7 @@ export type Database = {
           name: string
           parent_id: string | null
           protein: number
+          serving: string | null
           sort_order: number
           updated_at: string
           user_id: string
@@ -109,6 +110,7 @@ export type Database = {
           name: string
           parent_id?: string | null
           protein?: number
+          serving?: string | null
           sort_order?: number
           updated_at?: string
           user_id: string
@@ -125,6 +127,7 @@ export type Database = {
           name?: string
           parent_id?: string | null
           protein?: number
+          serving?: string | null
           sort_order?: number
           updated_at?: string
           user_id?: string

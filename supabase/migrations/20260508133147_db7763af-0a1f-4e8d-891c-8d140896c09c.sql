@@ -1,0 +1,1 @@
+ALTER TABLE public.macro_foods ADD COLUMN IF NOT EXISTS serving text;

@@ -7,7 +7,7 @@ import { EXCHANGE_CATEGORIES, CATEGORY_META, ExchangeValues, ExchangeCategory } 
 import { toast } from 'sonner';
 
 export default function Settings() {
-  const { user, profile, signOut, refreshProfile, hasSupporterRole, refreshRoles } = useAuth();
+  const { user, profile, signOut, refreshProfile, hasSupporterRole, hasTrackerRole, refreshRoles } = useAuth();
   const [displayName, setDisplayName] = useState(profile?.display_name || '');
   const [targets, setTargets] = useState<ExchangeValues>({
     starches: 6, fruits: 3, vegetables: 5, proteins: 6, dairy: 3, fats: 4,
@@ -389,10 +389,14 @@ export default function Settings() {
         <section className="mb-6">
           <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-3">
             <p className="text-sm font-medium text-secondary">🧡 You're a supporter!</p>
-            <p className="text-xs text-muted-foreground mt-1">Switch to supporter view from the bottom navigation.</p>
+            <p className="text-xs text-muted-foreground mt-1">Switch to supporter view from the top of the screen.</p>
           </div>
         </section>
       )}
+
+      {/* Default screen on launch — only when user has both roles */}
+      {hasTrackerRole && hasSupporterRole && <DefaultViewSection />}
+
 
       {/* Exchange guide */}
       <section className="mb-6">
@@ -421,5 +425,44 @@ export default function Settings() {
         Sign Out
       </Button>
     </div>
+  );
+}
+
+function DefaultViewSection() {
+  const [pref, setPref] = useState<'tracker' | 'supporter'>(
+    () => (typeof window !== 'undefined' && (localStorage.getItem('defaultView') as 'tracker' | 'supporter')) || 'tracker'
+  );
+  const update = (v: 'tracker' | 'supporter') => {
+    setPref(v);
+    localStorage.setItem('defaultView', v);
+    toast.success(`Default screen set to ${v === 'tracker' ? 'Tracker' : 'Supporter'}`);
+  };
+  return (
+    <section className="mb-6">
+      <h2 className="font-semibold text-sm mb-2">Default Screen</h2>
+      <p className="text-xs text-muted-foreground mb-2">
+        Which view should open when you launch the app?
+      </p>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={() => update('tracker')}
+          className={`rounded-xl p-3 text-left border transition ${
+            pref === 'tracker' ? 'bg-primary/10 border-primary' : 'bg-card border-border'
+          }`}
+        >
+          <div className="font-bold text-sm">🏠 Tracker</div>
+          <div className="text-[11px] text-muted-foreground mt-0.5">Open straight to logging.</div>
+        </button>
+        <button
+          onClick={() => update('supporter')}
+          className={`rounded-xl p-3 text-left border transition ${
+            pref === 'supporter' ? 'bg-primary/10 border-primary' : 'bg-card border-border'
+          }`}
+        >
+          <div className="font-bold text-sm">🧡 Supporter</div>
+          <div className="text-[11px] text-muted-foreground mt-0.5">Open to who you support.</div>
+        </button>
+      </div>
+    </section>
   );
 }

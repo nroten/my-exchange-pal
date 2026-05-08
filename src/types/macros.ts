@@ -21,6 +21,7 @@ export interface MacroFood {
   carbs: number;
   fats: number;
   sort_order: number;
+  serving?: string | null;
 }
 
 export interface MacroTargets {
