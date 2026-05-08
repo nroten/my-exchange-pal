@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { FOOD_DATABASE, getRecentFoodIds, pushRecentFoodId } from '@/data/foodDatabase';
+import { FOOD_DATABASE, getRecentFoodIds, pushRecentFoodId, getStarredFoodIds, toggleStarredFoodId } from '@/data/foodDatabase';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -55,6 +55,13 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   const [showSaveAsRecipe, setShowSaveAsRecipe] = useState(false);
   const [recipeName, setRecipeName] = useState('');
   const [recentIds, setRecentIds] = useState<string[]>(getRecentFoodIds());
+  const [starredIds, setStarredIds] = useState<string[]>(getStarredFoodIds());
+
+  const toggleStar = (food: FoodItem) => {
+    const next = toggleStarredFoodId(food.id);
+    setStarredIds(next);
+    toast.success(next.includes(food.id) ? `⭐ ${food.name} favorited` : `Removed ${food.name} from favorites`);
+  };
 
   // Load saved meals
   useEffect(() => {
@@ -77,14 +84,19 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   }, [search]);
 
   const favoriteFoods = useMemo(() => {
-    if (recentIds.length === 0) {
-      // Fallback: a curated set of common foods
-      const curated = ['Apple (small)', 'Banana (small)', 'Whole Egg', 'Milk', 'Chicken Breast',
-        'Cooked Rice', 'White/Wheat Bread', 'Greek Yogurt', 'Broccoli', 'Avocado', 'Cheese (slice/1oz)', 'Berries'];
-      return curated.map(name => FOOD_DATABASE.find(f => f.name === name)).filter(Boolean) as FoodItem[];
+    const starred = starredIds.map(id => FOOD_DATABASE.find(f => f.id === id)).filter(Boolean) as FoodItem[];
+    if (starred.length > 0 || recentIds.length > 0) {
+      const recents = recentIds
+        .filter(id => !starredIds.includes(id))
+        .map(id => FOOD_DATABASE.find(f => f.id === id))
+        .filter(Boolean) as FoodItem[];
+      return [...starred, ...recents];
     }
-    return recentIds.map(id => FOOD_DATABASE.find(f => f.id === id)).filter(Boolean) as FoodItem[];
-  }, [recentIds]);
+    // Fallback: a curated set of common foods
+    const curated = ['Apple (small)', 'Banana (small)', 'Whole Egg', 'Milk', 'Chicken Breast',
+      'Cooked Rice', 'White/Wheat Bread', 'Greek Yogurt', 'Broccoli', 'Avocado', 'Cheese (slice/1oz)', 'Berries'];
+    return curated.map(name => FOOD_DATABASE.find(f => f.name === name)).filter(Boolean) as FoodItem[];
+  }, [starredIds, recentIds]);
 
   const foodsByCategory = useMemo(() => {
     const map: Record<ExchangeCategory, FoodItem[]> = {
@@ -238,6 +250,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   const renderFoodTile = (food: FoodItem) => {
     const inMeal = entries.find(e => e.foodName === food.name);
     const isCombo = food.isCombination;
+    const isStarred = starredIds.includes(food.id);
     const exchangeCount = Object.values(food.exchanges).filter(v => v && v > 0).length;
     return (
       <div
@@ -263,6 +276,16 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
             COMBO
           </div>
         )}
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleStar(food); }}
+          className={`absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center text-sm z-10 transition-transform active:scale-90 ${
+            isStarred ? 'text-yellow-400 drop-shadow' : 'text-muted-foreground/50 hover:text-yellow-400'
+          }`}
+          aria-label={isStarred ? `Unfavorite ${food.name}` : `Favorite ${food.name}`}
+          title={isStarred ? 'Remove from favorites' : 'Add to favorites'}
+        >
+          {isStarred ? '★' : '☆'}
+        </button>
         <div className="text-3xl mb-0.5 pointer-events-none">{food.emoji}</div>
         <div className="text-[10px] font-semibold text-center leading-tight line-clamp-2 px-0.5 pointer-events-none">
           {food.name.replace(/\s*\(.*?\)/, '')}
