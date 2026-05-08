@@ -228,6 +228,7 @@ export default function MacrosTracker() {
       name: form.name.trim(),
       emoji: form.emoji || '🍽️',
       meal_slot: form.meal_slot,
+      kind: form.kind,
       serving: form.serving.trim() || null,
       calories: Number(form.calories) || 0,
       protein: Number(form.protein) || 0,
