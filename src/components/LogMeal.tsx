@@ -84,14 +84,19 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
   }, [search]);
 
   const favoriteFoods = useMemo(() => {
-    if (recentIds.length === 0) {
-      // Fallback: a curated set of common foods
-      const curated = ['Apple (small)', 'Banana (small)', 'Whole Egg', 'Milk', 'Chicken Breast',
-        'Cooked Rice', 'White/Wheat Bread', 'Greek Yogurt', 'Broccoli', 'Avocado', 'Cheese (slice/1oz)', 'Berries'];
-      return curated.map(name => FOOD_DATABASE.find(f => f.name === name)).filter(Boolean) as FoodItem[];
+    const starred = starredIds.map(id => FOOD_DATABASE.find(f => f.id === id)).filter(Boolean) as FoodItem[];
+    if (starred.length > 0 || recentIds.length > 0) {
+      const recents = recentIds
+        .filter(id => !starredIds.includes(id))
+        .map(id => FOOD_DATABASE.find(f => f.id === id))
+        .filter(Boolean) as FoodItem[];
+      return [...starred, ...recents];
     }
-    return recentIds.map(id => FOOD_DATABASE.find(f => f.id === id)).filter(Boolean) as FoodItem[];
-  }, [recentIds]);
+    // Fallback: a curated set of common foods
+    const curated = ['Apple (small)', 'Banana (small)', 'Whole Egg', 'Milk', 'Chicken Breast',
+      'Cooked Rice', 'White/Wheat Bread', 'Greek Yogurt', 'Broccoli', 'Avocado', 'Cheese (slice/1oz)', 'Berries'];
+    return curated.map(name => FOOD_DATABASE.find(f => f.name === name)).filter(Boolean) as FoodItem[];
+  }, [starredIds, recentIds]);
 
   const foodsByCategory = useMemo(() => {
     const map: Record<ExchangeCategory, FoodItem[]> = {
