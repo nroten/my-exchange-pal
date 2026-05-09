@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { EXCHANGE_CATEGORIES, CATEGORY_META, ExchangeValues, ExchangeCategory } from '@/types/nutrition';
 import { toast } from 'sonner';
+import MacroCalculator from '@/components/MacroCalculator';
 
 export default function Settings() {
   const { user, profile, signOut, refreshProfile, hasSupporterRole, hasTrackerRole, refreshRoles } = useAuth();
@@ -217,38 +218,53 @@ export default function Settings() {
 
       {/* Macro targets */}
       {trackingMode === 'macros' && (
-        <section className="mb-6">
-          <h2 className="font-semibold text-sm mb-2">Daily Macro Targets</h2>
-          <div className="space-y-2">
-            {([
-              { key: 'calories', label: 'Calories', emoji: '🔥', step: 50 },
-              { key: 'protein', label: 'Protein (g)', emoji: '🍗', step: 5 },
-              { key: 'carbs', label: 'Carbs (g)', emoji: '🍞', step: 5 },
-              { key: 'fats', label: 'Fats (g)', emoji: '🥑', step: 5 },
-            ] as const).map(row => (
-              <div key={row.key} className="flex items-center justify-between bg-card border rounded-xl p-3">
-                <span className="text-sm">{row.emoji} {row.label}</span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setMacroTargets(prev => ({ ...prev, [row.key]: Math.max(0, prev[row.key] - row.step) }))}
-                    className="w-7 h-7 rounded-full bg-muted flex items-center justify-center font-bold"
-                  >−</button>
-                  <Input
-                    type="number"
-                    value={macroTargets[row.key]}
-                    onChange={(e) => setMacroTargets(prev => ({ ...prev, [row.key]: Number(e.target.value) || 0 }))}
-                    className="w-20 text-center rounded-lg h-8"
-                  />
-                  <button
-                    onClick={() => setMacroTargets(prev => ({ ...prev, [row.key]: prev[row.key] + row.step }))}
-                    className="w-7 h-7 rounded-full bg-muted flex items-center justify-center font-bold"
-                  >+</button>
+        <>
+          <section className="mb-6">
+            <h2 className="font-semibold text-sm mb-2">Macro Target Calculator 🧮</h2>
+            <p className="text-xs text-muted-foreground mb-2">
+              Not sure where to start? Estimate your daily calorie & macro targets, then apply them below.
+            </p>
+            <MacroCalculator
+              onApply={(t) => {
+                setMacroTargets(t);
+                toast.success('Targets applied — review and Save below 💛');
+              }}
+            />
+          </section>
+
+          <section className="mb-6">
+            <h2 className="font-semibold text-sm mb-2">Daily Macro Targets</h2>
+            <div className="space-y-2">
+              {([
+                { key: 'calories', label: 'Calories', emoji: '🔥', step: 50 },
+                { key: 'protein', label: 'Protein (g)', emoji: '🍗', step: 5 },
+                { key: 'carbs', label: 'Carbs (g)', emoji: '🍞', step: 5 },
+                { key: 'fats', label: 'Fats (g)', emoji: '🥑', step: 5 },
+              ] as const).map(row => (
+                <div key={row.key} className="flex items-center justify-between bg-card border rounded-xl p-3">
+                  <span className="text-sm">{row.emoji} {row.label}</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setMacroTargets(prev => ({ ...prev, [row.key]: Math.max(0, prev[row.key] - row.step) }))}
+                      className="w-7 h-7 rounded-full bg-muted flex items-center justify-center font-bold"
+                    >−</button>
+                    <Input
+                      type="number"
+                      value={macroTargets[row.key]}
+                      onChange={(e) => setMacroTargets(prev => ({ ...prev, [row.key]: Number(e.target.value) || 0 }))}
+                      className="w-20 text-center rounded-lg h-8"
+                    />
+                    <button
+                      onClick={() => setMacroTargets(prev => ({ ...prev, [row.key]: prev[row.key] + row.step }))}
+                      className="w-7 h-7 rounded-full bg-muted flex items-center justify-center font-bold"
+                    >+</button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <Button onClick={saveMacroTargets} className="w-full rounded-xl mt-3">Save Macro Targets</Button>
-        </section>
+              ))}
+            </div>
+            <Button onClick={saveMacroTargets} className="w-full rounded-xl mt-3">Save Macro Targets</Button>
+          </section>
+        </>
       )}
 
       {/* Daily targets */}
