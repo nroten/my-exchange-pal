@@ -11,8 +11,9 @@ import {
 } from '@/types/nutrition';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { BookMarked } from 'lucide-react';
+import { BookMarked, ChevronLeft, ChevronRight } from 'lucide-react';
 import CheatsheetModal from '@/components/CheatsheetModal';
+import { getESTDateString, addDaysToDateString, formatDateLabel } from '@/lib/dateUtils';
 
 function getGreeting(name: string, progress: number, hour: number): string {
   if (progress >= 1) return `You did it, ${name}! Every goal hit today. Amazing work! 🌟`;
