@@ -96,7 +96,7 @@ export default function History() {
           const dateObj = new Date(day + 'T12:00:00');
           const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
           const dateNum = dateObj.getDate();
-          const isToday = day === new Date().toISOString().split('T')[0];
+          const isToday = day === getESTDateString();
 
           return (
             <div key={day}>
