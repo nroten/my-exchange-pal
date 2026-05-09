@@ -35,10 +35,13 @@ export default function Dashboard() {
   const [celebration, setCelebration] = useState<ReturnType<typeof getRandomCelebration> | null>(null);
   const [prevCompletedCount, setPrevCompletedCount] = useState<number | null>(null);
   const [showCheatsheet, setShowCheatsheet] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string>(getESTDateString());
+  const todayStr = getESTDateString();
+  const isToday = selectedDate === todayStr;
 
   const fetchData = useCallback(async () => {
     if (!user) return;
-    const today = new Date().toISOString().split('T')[0];
+    const today = selectedDate;
 
     const [targetsRes, mealsRes, msgRes] = await Promise.all([
       supabase.from('daily_targets').select('*').eq('user_id', user.id).single(),
