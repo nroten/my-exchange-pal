@@ -35,7 +35,7 @@ function loadDraft(): { mealLabel: MealLabel; entries: MealFoodEntry[] } | null 
 
 type BrowseTab = 'favorites' | ExchangeCategory | 'saved';
 
-export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps) {
+export default function LogMeal({ onClose, onSaved, editingMeal, logDate }: LogMealProps) {
   const { user } = useAuth();
   const draft = !editingMeal ? loadDraft() : null;
 
