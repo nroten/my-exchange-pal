@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { EXCHANGE_CATEGORIES, CATEGORY_META, ExchangeValues, ExchangeCategory } from '@/types/nutrition';
 import { toast } from 'sonner';
+import MacroCalculator from '@/components/MacroCalculator';
 
 export default function Settings() {
   const { user, profile, signOut, refreshProfile, hasSupporterRole, hasTrackerRole, refreshRoles } = useAuth();
