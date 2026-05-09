@@ -157,6 +157,36 @@ export default function Dashboard() {
 
       <CheatsheetModal open={showCheatsheet} onOpenChange={setShowCheatsheet} mode="exchanges" />
 
+      {/* Day selector */}
+      <div className="px-5 mb-3 flex items-center justify-between gap-2 bg-card border rounded-2xl mx-5 p-2">
+        <button
+          onClick={() => setSelectedDate(d => addDaysToDateString(d, -1))}
+          className="p-2 rounded-full hover:bg-muted active:scale-90 transition"
+          aria-label="Previous day"
+        >
+          <ChevronLeft size={18} />
+        </button>
+        <div className="text-center flex-1">
+          <div className="text-sm font-bold">{formatDateLabel(selectedDate)}</div>
+          {!isToday && (
+            <button
+              onClick={() => setSelectedDate(todayStr)}
+              className="text-[10px] text-primary font-semibold uppercase tracking-wide"
+            >
+              Jump to today
+            </button>
+          )}
+        </div>
+        <button
+          onClick={() => setSelectedDate(d => addDaysToDateString(d, 1))}
+          disabled={isToday}
+          className="p-2 rounded-full hover:bg-muted active:scale-90 transition disabled:opacity-30 disabled:cursor-not-allowed"
+          aria-label="Next day"
+        >
+          <ChevronRight size={18} />
+        </button>
+      </div>
+
       {/* Encouragement banner */}
       {encouragement && (
         <div className="mx-5 mb-4 bg-secondary/20 border border-secondary/30 rounded-2xl p-3 flex items-center justify-between">
