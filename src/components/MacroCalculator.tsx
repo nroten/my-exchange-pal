@@ -22,6 +22,7 @@ export interface CalcResult {
   calMin: number; calMax: number; calTarget: number;
   protein: number; carbs: number; fat: number;
   hydration: number;
+  proteinEx: number; starchEx: number; fruitEx: number; vegEx: number; fatEx: number; dairyEx: number;
 }
 
 function calcTargets(goalWeight: number, goal: GoalKey, activity: ActivityKey): CalcResult | null {
@@ -38,14 +39,27 @@ function calcTargets(goalWeight: number, goal: GoalKey, activity: ActivityKey): 
   const carbs = Math.max(0, Math.round((calTarget - protein * 4 - fat * 9) / 4));
   const hydration = Math.round(goalWeight * 0.5 + 12);
 
-  return { calMin, calMax, calTarget, protein, carbs, fat, hydration };
+  // Exchange budget — rounded to nearest whole exchange
+  const round = (n: number) => Math.max(0, Math.round(n));
+  const dairyEx = 2; // standard dairy allowance, dairy carbs subtracted from carb pool
+  const dairyCarbs = dairyEx * 12;
+  const remainingCarbs = Math.max(0, carbs - dairyCarbs);
+  const starchEx = round((remainingCarbs * 0.7) / 15);
+  const fruitEx = round((remainingCarbs * 0.2) / 15);
+  const vegEx = round((remainingCarbs * 0.1) / 5);
+  const proteinEx = round((protein - dairyEx * 8) / 7);
+  const fatEx = round((fat - dairyEx * 3) / 5);
+
+  return { calMin, calMax, calTarget, protein, carbs, fat, hydration, proteinEx, starchEx, fruitEx, vegEx, fatEx, dairyEx };
 }
 
 interface Props {
+  mode?: 'macros' | 'exchanges';
   onApply?: (targets: { calories: number; protein: number; carbs: number; fats: number }) => void;
+  onApplyExchanges?: (targets: { starches: number; fruits: number; vegetables: number; proteins: number; dairy: number; fats: number }) => void;
 }
 
-export default function MacroCalculator({ onApply }: Props) {
+export default function MacroCalculator({ mode = 'macros', onApply, onApplyExchanges }: Props) {
   const [goalWeight, setGoalWeight] = useState('');
   const [goal, setGoal] = useState<GoalKey>('maintain');
   const [activity, setActivity] = useState<ActivityKey>('moderate');
@@ -55,13 +69,15 @@ export default function MacroCalculator({ onApply }: Props) {
   const valid = wNum >= 80 && wNum <= 400;
   const t = calculated && valid ? calcTargets(wNum, goal, activity) : null;
   const goalData = GOAL_MULTIPLIERS[goal];
+  const showMacros = mode === 'macros';
+  const showExchanges = mode === 'exchanges';
 
   const reset = () => { setCalculated(false); setGoalWeight(''); };
 
   return (
     <div className="bg-card border rounded-xl p-4">
       <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-        Enter your <strong className="text-foreground">goal weight</strong> and we'll estimate your daily calorie & macro targets.
+        Enter your <strong className="text-foreground">goal weight</strong> and we'll estimate your daily {showExchanges ? 'exchange budget' : 'calorie & macro targets'}.
       </p>
 
       {/* Goal weight */}
@@ -155,47 +171,81 @@ export default function MacroCalculator({ onApply }: Props) {
           </div>
 
           {/* Calorie range */}
-          <div className="bg-background border rounded-xl px-3 py-2.5">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  🔥 Daily Calories
+          {showMacros && (
+            <div className="bg-background border rounded-xl px-3 py-2.5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    🔥 Daily Calories
+                  </div>
+                  <div className="text-xl font-extrabold text-foreground mt-0.5">
+                    {t.calMin.toLocaleString()}–{t.calMax.toLocaleString()}
+                    <span className="text-[11px] text-muted-foreground font-normal"> kcal</span>
+                  </div>
                 </div>
-                <div className="text-xl font-extrabold text-foreground mt-0.5">
-                  {t.calMin.toLocaleString()}–{t.calMax.toLocaleString()}
-                  <span className="text-[11px] text-muted-foreground font-normal"> kcal</span>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-[10px] text-muted-foreground">target</div>
-                <div className="text-base font-extrabold text-primary">
-                  {t.calTarget.toLocaleString()}
+                <div className="text-right">
+                  <div className="text-[10px] text-muted-foreground">target</div>
+                  <div className="text-base font-extrabold text-primary">
+                    {t.calTarget.toLocaleString()}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Macro grid */}
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { label: 'Protein', value: t.protein, icon: '🥩', cal: t.protein * 4 },
-              { label: 'Carbs',   value: t.carbs,   icon: '🍞', cal: t.carbs * 4 },
-              { label: 'Fat',     value: t.fat,     icon: '🥑', cal: t.fat * 9 },
-            ].map(({ label, value, icon, cal }) => {
-              const pct = Math.round((cal / t.calTarget) * 100);
-              return (
-                <div key={label} className="bg-background border rounded-xl p-2.5">
-                  <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                    {icon} {label}
+          {showMacros && (
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { label: 'Protein', value: t.protein, icon: '🥩', cal: t.protein * 4 },
+                { label: 'Carbs',   value: t.carbs,   icon: '🍞', cal: t.carbs * 4 },
+                { label: 'Fat',     value: t.fat,     icon: '🥑', cal: t.fat * 9 },
+              ].map(({ label, value, icon, cal }) => {
+                const pct = Math.round((cal / t.calTarget) * 100);
+                return (
+                  <div key={label} className="bg-background border rounded-xl p-2.5">
+                    <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                      {icon} {label}
+                    </div>
+                    <div className="text-lg font-extrabold text-foreground">
+                      {value}<span className="text-[10px] text-muted-foreground font-normal">g</span>
+                    </div>
+                    <div className="text-[9px] text-muted-foreground mt-0.5">{pct}% · {cal} cal</div>
                   </div>
-                  <div className="text-lg font-extrabold text-foreground">
-                    {value}<span className="text-[10px] text-muted-foreground font-normal">g</span>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Exchange budget */}
+          {showExchanges && (
+            <div className="space-y-1.5">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                🔄 Daily Exchange Budget
+              </div>
+              {[
+                { label: 'Proteins', value: t.proteinEx, icon: '🍗', sub: '~7g protein each' },
+                { label: 'Starches', value: t.starchEx,  icon: '🍞', sub: '~15g carbs each' },
+                { label: 'Fruits',   value: t.fruitEx,   icon: '🍎', sub: '~15g carbs each' },
+                { label: 'Veggies',  value: t.vegEx,     icon: '🥦', sub: '~5g carbs each' },
+                { label: 'Dairy',    value: t.dairyEx,   icon: '🥛', sub: '~12g carbs · 8g protein' },
+                { label: 'Fats',     value: t.fatEx,     icon: '🥑', sub: '~5g fat each' },
+              ].map(({ label, value, icon, sub }) => (
+                <div key={label} className="flex items-center justify-between bg-background border rounded-xl px-3 py-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="text-base">{icon}</span>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-foreground">{label}</div>
+                      <div className="text-[10px] text-muted-foreground truncate">{sub}</div>
+                    </div>
                   </div>
-                  <div className="text-[9px] text-muted-foreground mt-0.5">{pct}% · {cal} cal</div>
+                  <div className="text-base font-extrabold text-primary bg-primary/10 px-3 py-0.5 rounded-lg min-w-[44px] text-center">
+                    {value}
+                  </div>
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* Hydration */}
           <div className="bg-background border rounded-xl px-3 py-2.5">
@@ -210,13 +260,26 @@ export default function MacroCalculator({ onApply }: Props) {
             </div>
           </div>
 
-          {onApply && (
+          {showMacros && onApply && (
             <Button
               onClick={() => onApply({ calories: t.calTarget, protein: t.protein, carbs: t.carbs, fats: t.fat })}
               variant="outline"
               className="w-full rounded-xl"
             >
               Apply to My Macro Targets ✨
+            </Button>
+          )}
+
+          {showExchanges && onApplyExchanges && (
+            <Button
+              onClick={() => onApplyExchanges({
+                starches: t.starchEx, fruits: t.fruitEx, vegetables: t.vegEx,
+                proteins: t.proteinEx, dairy: t.dairyEx, fats: t.fatEx,
+              })}
+              variant="outline"
+              className="w-full rounded-xl"
+            >
+              Apply to My Exchange Targets ✨
             </Button>
           )}
 

@@ -267,6 +267,23 @@ export default function Settings() {
         </>
       )}
 
+      {/* Exchange calculator */}
+      {trackingMode === 'exchanges' && (
+        <section className="mb-6">
+          <h2 className="font-semibold text-sm mb-2">Exchange Target Calculator 🧮</h2>
+          <p className="text-xs text-muted-foreground mb-2">
+            Estimate a starting daily exchange budget based on your goal weight.
+          </p>
+          <MacroCalculator
+            mode="exchanges"
+            onApplyExchanges={(t) => {
+              setTargets(t);
+              toast.success('Exchange targets applied — review and Save below 💛');
+            }}
+          />
+        </section>
+      )}
+
       {/* Daily targets */}
       <section className="mb-6">
         <h2 className="font-semibold text-sm mb-2">Daily Exchange Targets</h2>
