@@ -11,8 +11,9 @@ import {
 } from '@/types/nutrition';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { BookMarked } from 'lucide-react';
+import { BookMarked, ChevronLeft, ChevronRight } from 'lucide-react';
 import CheatsheetModal from '@/components/CheatsheetModal';
+import { getESTDateString, addDaysToDateString, formatDateLabel } from '@/lib/dateUtils';
 
 function getGreeting(name: string, progress: number, hour: number): string {
   if (progress >= 1) return `You did it, ${name}! Every goal hit today. Amazing work! 🌟`;
@@ -34,10 +35,13 @@ export default function Dashboard() {
   const [celebration, setCelebration] = useState<ReturnType<typeof getRandomCelebration> | null>(null);
   const [prevCompletedCount, setPrevCompletedCount] = useState<number | null>(null);
   const [showCheatsheet, setShowCheatsheet] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string>(getESTDateString());
+  const todayStr = getESTDateString();
+  const isToday = selectedDate === todayStr;
 
   const fetchData = useCallback(async () => {
     if (!user) return;
-    const today = new Date().toISOString().split('T')[0];
+    const today = selectedDate;
 
     const [targetsRes, mealsRes, msgRes] = await Promise.all([
       supabase.from('daily_targets').select('*').eq('user_id', user.id).single(),
@@ -83,7 +87,7 @@ export default function Dashboard() {
     if (msgRes.data && msgRes.data.length > 0) {
       setEncouragement(msgRes.data[0]);
     }
-  }, [user, prevCompletedCount]);
+  }, [user, prevCompletedCount, selectedDate]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -122,6 +126,7 @@ export default function Dashboard() {
           onClose={() => { setShowLogMeal(false); setEditingMeal(null); }}
           onSaved={fetchData}
           editingMeal={editingMeal}
+          logDate={selectedDate}
         />
       )}
 
@@ -151,6 +156,36 @@ export default function Dashboard() {
       </div>
 
       <CheatsheetModal open={showCheatsheet} onOpenChange={setShowCheatsheet} mode="exchanges" />
+
+      {/* Day selector */}
+      <div className="px-5 mb-3 flex items-center justify-between gap-2 bg-card border rounded-2xl mx-5 p-2">
+        <button
+          onClick={() => setSelectedDate(d => addDaysToDateString(d, -1))}
+          className="p-2 rounded-full hover:bg-muted active:scale-90 transition"
+          aria-label="Previous day"
+        >
+          <ChevronLeft size={18} />
+        </button>
+        <div className="text-center flex-1">
+          <div className="text-sm font-bold">{formatDateLabel(selectedDate)}</div>
+          {!isToday && (
+            <button
+              onClick={() => setSelectedDate(todayStr)}
+              className="text-[10px] text-primary font-semibold uppercase tracking-wide"
+            >
+              Jump to today
+            </button>
+          )}
+        </div>
+        <button
+          onClick={() => setSelectedDate(d => addDaysToDateString(d, 1))}
+          disabled={isToday}
+          className="p-2 rounded-full hover:bg-muted active:scale-90 transition disabled:opacity-30 disabled:cursor-not-allowed"
+          aria-label="Next day"
+        >
+          <ChevronRight size={18} />
+        </button>
+      </div>
 
       {/* Encouragement banner */}
       {encouragement && (

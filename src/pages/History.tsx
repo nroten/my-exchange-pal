@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { EXCHANGE_CATEGORIES, CATEGORY_META, ExchangeCategory, MealFoodEntry } from '@/types/nutrition';
+import { getESTDateString } from '@/lib/dateUtils';
 
 const CATEGORY_BAR_COLORS: Record<ExchangeCategory, string> = {
   starches: 'bg-exchange-starches',
@@ -95,7 +96,7 @@ export default function History() {
           const dateObj = new Date(day + 'T12:00:00');
           const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
           const dateNum = dateObj.getDate();
-          const isToday = day === new Date().toISOString().split('T')[0];
+          const isToday = day === getESTDateString();
 
           return (
             <div key={day}>

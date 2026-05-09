@@ -20,6 +20,8 @@ interface LogMealProps {
     meal_label: string;
     food_items: MealFoodEntry[];
   };
+  /** YYYY-MM-DD date this meal should be logged under (defaults to EST today). */
+  logDate?: string;
 }
 
 const DRAFT_KEY = 'nutrition_meal_draft';
@@ -33,7 +35,7 @@ function loadDraft(): { mealLabel: MealLabel; entries: MealFoodEntry[] } | null 
 
 type BrowseTab = 'favorites' | ExchangeCategory | 'saved';
 
-export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps) {
+export default function LogMeal({ onClose, onSaved, editingMeal, logDate }: LogMealProps) {
   const { user } = useAuth();
   const draft = !editingMeal ? loadDraft() : null;
 
@@ -213,7 +215,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
     if (!user) return;
     setSaving(true);
     try {
-      const payload = {
+      const payload: any = {
         user_id: user.id,
         meal_label: mealLabel,
         food_items: entries as any,
@@ -224,6 +226,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal }: LogMealProps)
         total_dairy: totals.dairy,
         total_fats: totals.fats,
       };
+      if (logDate && !editingMeal) payload.log_date = logDate;
 
       if (editingMeal) {
         const { error } = await supabase.from('meal_logs').update(payload).eq('id', editingMeal.id);
