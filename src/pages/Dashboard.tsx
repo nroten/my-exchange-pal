@@ -87,7 +87,7 @@ export default function Dashboard() {
     if (msgRes.data && msgRes.data.length > 0) {
       setEncouragement(msgRes.data[0]);
     }
-  }, [user, prevCompletedCount]);
+  }, [user, prevCompletedCount, selectedDate]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
