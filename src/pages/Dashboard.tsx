@@ -126,6 +126,7 @@ export default function Dashboard() {
           onClose={() => { setShowLogMeal(false); setEditingMeal(null); }}
           onSaved={fetchData}
           editingMeal={editingMeal}
+          logDate={selectedDate}
         />
       )}
 
