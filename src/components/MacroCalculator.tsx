@@ -22,6 +22,7 @@ export interface CalcResult {
   calMin: number; calMax: number; calTarget: number;
   protein: number; carbs: number; fat: number;
   hydration: number;
+  proteinEx: number; starchEx: number; fruitEx: number; vegEx: number; fatEx: number; dairyEx: number;
 }
 
 function calcTargets(goalWeight: number, goal: GoalKey, activity: ActivityKey): CalcResult | null {
@@ -38,11 +39,24 @@ function calcTargets(goalWeight: number, goal: GoalKey, activity: ActivityKey): 
   const carbs = Math.max(0, Math.round((calTarget - protein * 4 - fat * 9) / 4));
   const hydration = Math.round(goalWeight * 0.5 + 12);
 
-  return { calMin, calMax, calTarget, protein, carbs, fat, hydration };
+  // Exchange budget — rounded to nearest whole exchange
+  const round = (n: number) => Math.max(0, Math.round(n));
+  const dairyEx = 2; // standard dairy allowance, dairy carbs subtracted from carb pool
+  const dairyCarbs = dairyEx * 12;
+  const remainingCarbs = Math.max(0, carbs - dairyCarbs);
+  const starchEx = round((remainingCarbs * 0.7) / 15);
+  const fruitEx = round((remainingCarbs * 0.2) / 15);
+  const vegEx = round((remainingCarbs * 0.1) / 5);
+  const proteinEx = round((protein - dairyEx * 8) / 7);
+  const fatEx = round((fat - dairyEx * 3) / 5);
+
+  return { calMin, calMax, calTarget, protein, carbs, fat, hydration, proteinEx, starchEx, fruitEx, vegEx, fatEx, dairyEx };
 }
 
 interface Props {
+  mode?: 'macros' | 'exchanges';
   onApply?: (targets: { calories: number; protein: number; carbs: number; fats: number }) => void;
+  onApplyExchanges?: (targets: { starches: number; fruits: number; vegetables: number; proteins: number; dairy: number; fats: number }) => void;
 }
 
 export default function MacroCalculator({ onApply }: Props) {
