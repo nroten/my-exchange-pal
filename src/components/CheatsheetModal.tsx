@@ -11,6 +11,7 @@ const EXCHANGE_KEY = [
     icon: '🥩',
     macros: '7g protein · 0–3g fat · ~55 cal',
     oneExchange: '1 oz cooked meat or fish',
+    suggestedServing: '4 oz cooked (palm-sized)',
     examples: ['1 oz chicken breast', '1 oz tuna/tilapia', '2 egg whites', '¼ cup cottage cheese', '1 oz turkey breast'],
   },
   {
@@ -19,6 +20,7 @@ const EXCHANGE_KEY = [
     icon: '🍳',
     macros: '7g protein · 5g fat · ~75 cal',
     oneExchange: '1 oz cooked meat or 1 egg',
+    suggestedServing: '4 oz cooked or 2 whole eggs',
     examples: ['1 oz salmon', '1 oz chicken thigh', '1 whole egg', '1 oz mozzarella', '1 oz ground beef 90/10'],
   },
   {
@@ -27,6 +29,7 @@ const EXCHANGE_KEY = [
     icon: '🥓',
     macros: '7g protein · 8g fat · ~100 cal',
     oneExchange: '1 oz fatty meat or hard cheese',
+    suggestedServing: '3 oz cooked',
     examples: ['1 oz ribeye', '2 strips bacon', '1 oz cheddar/colby jack', '1 oz ground beef 80/20', '1 oz sausage'],
   },
   {
@@ -35,6 +38,7 @@ const EXCHANGE_KEY = [
     icon: '🍚',
     macros: '15g carbs · 3g protein · ~80 cal',
     oneExchange: '⅓ cup cooked grains / ½ cup potato',
+    suggestedServing: '1 cup cooked grains or 1 medium potato',
     examples: ['⅓ cup rice or pasta', '¼ cup dry oats', '½ cup potato/sweet potato', '1 slice Ezekiel bread', '½ cup beans or lentils'],
   },
   {
@@ -43,6 +47,7 @@ const EXCHANGE_KEY = [
     icon: '🍎',
     macros: '15g carbs · ~60 cal',
     oneExchange: '1 small fruit or ¾ cup berries',
+    suggestedServing: '1 medium fruit or 1 cup berries',
     examples: ['1 small apple or orange', '½ medium banana', '¾ cup blueberries', '1¼ cup strawberries', '17 grapes'],
   },
   {
@@ -51,6 +56,7 @@ const EXCHANGE_KEY = [
     icon: '🥦',
     macros: '5g carbs · 2g protein · ~25 cal',
     oneExchange: '½ cup cooked or 1 cup raw',
+    suggestedServing: '1–2 cups cooked or 2+ cups raw',
     examples: ['1 cup broccoli/cauliflower', '1 cup spinach or greens', '½ cup bell peppers', '½ cup onion', '6 asparagus spears'],
   },
   {
@@ -59,6 +65,7 @@ const EXCHANGE_KEY = [
     icon: '🥑',
     macros: '5g fat · ~45 cal',
     oneExchange: '1 tsp oil / 6 nuts / ⅛ avocado',
+    suggestedServing: '1 tbsp oil / 2 tbsp nut butter / ¼ avocado',
     examples: ['1 tsp olive oil or butter', '1 tbsp nut butter', '6 mixed nuts', '⅛ avocado', '1 tbsp seeds'],
   },
   {
@@ -67,6 +74,7 @@ const EXCHANGE_KEY = [
     icon: '🥛',
     macros: '12g carbs · 8g protein · 3g fat · ~100 cal',
     oneExchange: '1 cup low-fat milk or Greek yogurt',
+    suggestedServing: '1 cup (8 oz)',
     examples: ['1 cup Greek yogurt', '1 cup low-fat milk', '¾ cup plain kefir'],
   },
   {
@@ -75,6 +83,7 @@ const EXCHANGE_KEY = [
     icon: '🍼',
     macros: '12g carbs · 8g protein · 8g fat · ~150 cal',
     oneExchange: '1 cup whole milk',
+    suggestedServing: '1 cup (8 oz)',
     examples: ['1 cup whole milk', '1 cup full-fat kefir'],
   },
 ];
