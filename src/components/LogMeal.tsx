@@ -215,7 +215,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal, logDate }: LogM
     if (!user) return;
     setSaving(true);
     try {
-      const payload = {
+      const payload: any = {
         user_id: user.id,
         meal_label: mealLabel,
         food_items: entries as any,
@@ -226,6 +226,7 @@ export default function LogMeal({ onClose, onSaved, editingMeal, logDate }: LogM
         total_dairy: totals.dairy,
         total_fats: totals.fats,
       };
+      if (logDate && !editingMeal) payload.log_date = logDate;
 
       if (editingMeal) {
         const { error } = await supabase.from('meal_logs').update(payload).eq('id', editingMeal.id);
