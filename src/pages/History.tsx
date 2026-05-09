@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { EXCHANGE_CATEGORIES, CATEGORY_META, ExchangeCategory, MealFoodEntry } from '@/types/nutrition';
+import { getESTDateString } from '@/lib/dateUtils';
 
 const CATEGORY_BAR_COLORS: Record<ExchangeCategory, string> = {
   starches: 'bg-exchange-starches',
