@@ -59,7 +59,7 @@ interface Props {
   onApplyExchanges?: (targets: { starches: number; fruits: number; vegetables: number; proteins: number; dairy: number; fats: number }) => void;
 }
 
-export default function MacroCalculator({ onApply }: Props) {
+export default function MacroCalculator({ mode = 'macros', onApply, onApplyExchanges }: Props) {
   const [goalWeight, setGoalWeight] = useState('');
   const [goal, setGoal] = useState<GoalKey>('maintain');
   const [activity, setActivity] = useState<ActivityKey>('moderate');
@@ -69,13 +69,15 @@ export default function MacroCalculator({ onApply }: Props) {
   const valid = wNum >= 80 && wNum <= 400;
   const t = calculated && valid ? calcTargets(wNum, goal, activity) : null;
   const goalData = GOAL_MULTIPLIERS[goal];
+  const showMacros = mode === 'macros';
+  const showExchanges = mode === 'exchanges';
 
   const reset = () => { setCalculated(false); setGoalWeight(''); };
 
   return (
     <div className="bg-card border rounded-xl p-4">
       <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-        Enter your <strong className="text-foreground">goal weight</strong> and we'll estimate your daily calorie & macro targets.
+        Enter your <strong className="text-foreground">goal weight</strong> and we'll estimate your daily {showExchanges ? 'exchange budget' : 'calorie & macro targets'}.
       </p>
 
       {/* Goal weight */}
