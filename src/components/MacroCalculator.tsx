@@ -171,47 +171,81 @@ export default function MacroCalculator({ mode = 'macros', onApply, onApplyExcha
           </div>
 
           {/* Calorie range */}
-          <div className="bg-background border rounded-xl px-3 py-2.5">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  🔥 Daily Calories
+          {showMacros && (
+            <div className="bg-background border rounded-xl px-3 py-2.5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    🔥 Daily Calories
+                  </div>
+                  <div className="text-xl font-extrabold text-foreground mt-0.5">
+                    {t.calMin.toLocaleString()}–{t.calMax.toLocaleString()}
+                    <span className="text-[11px] text-muted-foreground font-normal"> kcal</span>
+                  </div>
                 </div>
-                <div className="text-xl font-extrabold text-foreground mt-0.5">
-                  {t.calMin.toLocaleString()}–{t.calMax.toLocaleString()}
-                  <span className="text-[11px] text-muted-foreground font-normal"> kcal</span>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-[10px] text-muted-foreground">target</div>
-                <div className="text-base font-extrabold text-primary">
-                  {t.calTarget.toLocaleString()}
+                <div className="text-right">
+                  <div className="text-[10px] text-muted-foreground">target</div>
+                  <div className="text-base font-extrabold text-primary">
+                    {t.calTarget.toLocaleString()}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Macro grid */}
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { label: 'Protein', value: t.protein, icon: '🥩', cal: t.protein * 4 },
-              { label: 'Carbs',   value: t.carbs,   icon: '🍞', cal: t.carbs * 4 },
-              { label: 'Fat',     value: t.fat,     icon: '🥑', cal: t.fat * 9 },
-            ].map(({ label, value, icon, cal }) => {
-              const pct = Math.round((cal / t.calTarget) * 100);
-              return (
-                <div key={label} className="bg-background border rounded-xl p-2.5">
-                  <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                    {icon} {label}
+          {showMacros && (
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { label: 'Protein', value: t.protein, icon: '🥩', cal: t.protein * 4 },
+                { label: 'Carbs',   value: t.carbs,   icon: '🍞', cal: t.carbs * 4 },
+                { label: 'Fat',     value: t.fat,     icon: '🥑', cal: t.fat * 9 },
+              ].map(({ label, value, icon, cal }) => {
+                const pct = Math.round((cal / t.calTarget) * 100);
+                return (
+                  <div key={label} className="bg-background border rounded-xl p-2.5">
+                    <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                      {icon} {label}
+                    </div>
+                    <div className="text-lg font-extrabold text-foreground">
+                      {value}<span className="text-[10px] text-muted-foreground font-normal">g</span>
+                    </div>
+                    <div className="text-[9px] text-muted-foreground mt-0.5">{pct}% · {cal} cal</div>
                   </div>
-                  <div className="text-lg font-extrabold text-foreground">
-                    {value}<span className="text-[10px] text-muted-foreground font-normal">g</span>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Exchange budget */}
+          {showExchanges && (
+            <div className="space-y-1.5">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                🔄 Daily Exchange Budget
+              </div>
+              {[
+                { label: 'Proteins', value: t.proteinEx, icon: '🍗', sub: '~7g protein each' },
+                { label: 'Starches', value: t.starchEx,  icon: '🍞', sub: '~15g carbs each' },
+                { label: 'Fruits',   value: t.fruitEx,   icon: '🍎', sub: '~15g carbs each' },
+                { label: 'Veggies',  value: t.vegEx,     icon: '🥦', sub: '~5g carbs each' },
+                { label: 'Dairy',    value: t.dairyEx,   icon: '🥛', sub: '~12g carbs · 8g protein' },
+                { label: 'Fats',     value: t.fatEx,     icon: '🥑', sub: '~5g fat each' },
+              ].map(({ label, value, icon, sub }) => (
+                <div key={label} className="flex items-center justify-between bg-background border rounded-xl px-3 py-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="text-base">{icon}</span>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-foreground">{label}</div>
+                      <div className="text-[10px] text-muted-foreground truncate">{sub}</div>
+                    </div>
                   </div>
-                  <div className="text-[9px] text-muted-foreground mt-0.5">{pct}% · {cal} cal</div>
+                  <div className="text-base font-extrabold text-primary bg-primary/10 px-3 py-0.5 rounded-lg min-w-[44px] text-center">
+                    {value}
+                  </div>
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* Hydration */}
           <div className="bg-background border rounded-xl px-3 py-2.5">
@@ -226,13 +260,26 @@ export default function MacroCalculator({ mode = 'macros', onApply, onApplyExcha
             </div>
           </div>
 
-          {onApply && (
+          {showMacros && onApply && (
             <Button
               onClick={() => onApply({ calories: t.calTarget, protein: t.protein, carbs: t.carbs, fats: t.fat })}
               variant="outline"
               className="w-full rounded-xl"
             >
               Apply to My Macro Targets ✨
+            </Button>
+          )}
+
+          {showExchanges && onApplyExchanges && (
+            <Button
+              onClick={() => onApplyExchanges({
+                starches: t.starchEx, fruits: t.fruitEx, vegetables: t.vegEx,
+                proteins: t.proteinEx, dairy: t.dairyEx, fats: t.fatEx,
+              })}
+              variant="outline"
+              className="w-full rounded-xl"
+            >
+              Apply to My Exchange Targets ✨
             </Button>
           )}
 
