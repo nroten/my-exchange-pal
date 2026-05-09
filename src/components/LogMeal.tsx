@@ -20,6 +20,8 @@ interface LogMealProps {
     meal_label: string;
     food_items: MealFoodEntry[];
   };
+  /** YYYY-MM-DD date this meal should be logged under (defaults to EST today). */
+  logDate?: string;
 }
 
 const DRAFT_KEY = 'nutrition_meal_draft';
