@@ -183,9 +183,24 @@ export default function CheatsheetModal({ open, onOpenChange, mode = 'macros' }:
                               <ChevronDown size={14} className="text-macro-muted" />
                             )}
                           </div>
-                          <div className="text-[11px] text-macro-muted mt-0.5">{ex.macros}</div>
-                          <div className="inline-block mt-1.5 text-[11px] font-semibold text-macro-text bg-macro-surface-2 px-2 py-0.5 rounded">
-                            {showExchanges ? `1 exchange = ${ex.oneExchange}` : `Serving: ${ex.oneExchange}`}
+                          <div className="text-[11px] text-macro-muted mt-0.5">
+                            {showExchanges ? ex.macros : `Per 1 exchange: ${ex.macros}`}
+                          </div>
+                          <div
+                            className="inline-block mt-1.5 text-[11px] font-bold px-2.5 py-1 rounded"
+                            style={
+                              showExchanges
+                                ? undefined
+                                : {
+                                    background: `hsl(var(--${ex.token}) / 0.15)`,
+                                    color: `hsl(var(--${ex.token}))`,
+                                    border: `1px solid hsl(var(--${ex.token}) / 0.35)`,
+                                  }
+                            }
+                          >
+                            {showExchanges
+                              ? `1 exchange = ${ex.oneExchange}`
+                              : `Suggested serving: ${(ex as any).suggestedServing ?? ex.oneExchange}`}
                           </div>
                         </div>
                       </div>
