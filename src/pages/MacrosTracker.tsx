@@ -399,8 +399,26 @@ export default function MacrosTracker() {
           ) : (
             (() => {
               const bases = slotFoods.filter(f => (f.kind || 'base') === 'base');
-              const variations = slotFoods.filter(f => f.kind === 'variation');
-              const addons = slotFoods.filter(f => f.kind === 'addon');
+              const variations = slotFoods.filter(f => f.kind === 'variation' || f.kind === 'addon');
+              const onDragStartTile = (e: React.DragEvent, f: MacroFood) => {
+                e.dataTransfer.setData('text/plain', f.id);
+                e.dataTransfer.effectAllowed = 'move';
+              };
+              const onDropZone = async (e: React.DragEvent, target: 'base' | 'variation') => {
+                e.preventDefault();
+                const id = e.dataTransfer.getData('text/plain');
+                if (!id) return;
+                const food = foods.find(x => x.id === id);
+                if (!food) return;
+                const currentKind = (food.kind || 'base') as FoodKind;
+                const wantKind: FoodKind = target;
+                const isAlready = target === 'base' ? currentKind === 'base' : currentKind !== 'base';
+                if (isAlready) return;
+                setFoods(prev => prev.map(x => x.id === id ? { ...x, kind: wantKind } : x));
+                const { error } = await supabase.from('macro_foods').update({ kind: wantKind }).eq('id', id);
+                if (error) { toast.error(error.message); fetchAll(); return; }
+                toast.success(`Moved to ${target === 'base' ? 'Meal Base' : 'Variations'}`);
+              };
               const renderTile = (f: MacroFood) => {
                 const count = slotLogs.filter(l => l.food_id === f.id).reduce((s, l) => s + l.quantity, 0);
                 const isVariation = f.kind === 'variation';
@@ -408,8 +426,10 @@ export default function MacrosTracker() {
                 return (
                   <button
                     key={f.id}
+                    draggable
+                    onDragStart={(e) => onDragStartTile(e, f)}
                     onClick={() => logFood(f)}
-                    className={`relative rounded-xl p-3 text-left active:scale-95 transition border ${
+                    className={`relative rounded-xl p-3 text-left active:scale-95 transition border cursor-grab active:cursor-grabbing ${
                       isVariation
                         ? 'bg-gradient-to-br from-macro-carbs/10 to-macro-fats/10 border-dashed border-macro-carbs/60 hover:border-macro-carbs'
                         : isAddon
@@ -456,22 +476,32 @@ export default function MacrosTracker() {
                   </button>
                 );
               };
-              const sectionHeader = (label: string) => (
-                <div className="col-span-2 sm:col-span-3 md:col-span-4 flex items-center gap-2 mt-1 first:mt-0">
-                  <div className="h-px flex-1 bg-macro-border" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-macro-muted">{label}</span>
-                  <div className="h-px flex-1 bg-macro-border" />
+              const DropZone = ({ label, target, items }: { label: string; target: 'base' | 'variation'; items: MacroFood[] }) => (
+                <div
+                  onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
+                  onDrop={(e) => onDropZone(e, target)}
+                  className="rounded-xl border border-dashed border-macro-border/60 p-2"
+                >
+                  <div className="flex items-center gap-2 mb-2 px-1">
+                    <div className="h-px flex-1 bg-macro-border" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-macro-muted">{label}</span>
+                    <div className="h-px flex-1 bg-macro-border" />
+                  </div>
+                  {items.length === 0 ? (
+                    <div className="text-[11px] text-macro-muted italic text-center py-4">
+                      Drop items here
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                      {items.map(renderTile)}
+                    </div>
+                  )}
                 </div>
               );
-              const showHeaders = (variations.length + addons.length) > 0 && bases.length > 0;
               return (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {showHeaders && sectionHeader('Base')}
-                  {bases.map(renderTile)}
-                  {variations.length > 0 && sectionHeader('Variations')}
-                  {variations.map(renderTile)}
-                  {addons.length > 0 && sectionHeader('Add-ons')}
-                  {addons.map(renderTile)}
+                <div className="space-y-3">
+                  <DropZone label="Meal Base" target="base" items={bases} />
+                  <DropZone label="Variations" target="variation" items={variations} />
                 </div>
               );
             })()
