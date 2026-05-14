@@ -398,11 +398,57 @@ export default function MacrosTracker() {
             </div>
           ) : (
             (() => {
-              const bases = slotFoods.filter(f => (f.kind || 'base') === 'base');
-              const variations = slotFoods.filter(f => f.kind === 'variation' || f.kind === 'addon');
+              const bases = slotFoods
+                .filter(f => (f.kind || 'base') === 'base')
+                .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+              const variations = slotFoods
+                .filter(f => f.kind === 'variation' || f.kind === 'addon')
+                .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
               const onDragStartTile = (e: React.DragEvent, f: MacroFood) => {
                 e.dataTransfer.setData('text/plain', f.id);
                 e.dataTransfer.effectAllowed = 'move';
+              };
+              const persistOrder = async (items: MacroFood[]) => {
+                await Promise.all(
+                  items.map((it, idx) =>
+                    supabase.from('macro_foods').update({ sort_order: idx }).eq('id', it.id)
+                  )
+                );
+              };
+              const onDropOnTile = async (e: React.DragEvent, targetFood: MacroFood) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = e.dataTransfer.getData('text/plain');
+                if (!id || id === targetFood.id) return;
+                const dragged = foods.find(x => x.id === id);
+                if (!dragged) return;
+                const targetSection: 'base' | 'variation' =
+                  (targetFood.kind || 'base') === 'base' ? 'base' : 'variation';
+                const wantKind: FoodKind = targetSection;
+                const sectionItems = (targetSection === 'base' ? bases : variations).filter(x => x.id !== id);
+                const targetIdx = sectionItems.findIndex(x => x.id === targetFood.id);
+                const insertIdx = targetIdx < 0 ? sectionItems.length : targetIdx;
+                const movedItem: MacroFood = { ...dragged, kind: wantKind };
+                const newOrder = [
+                  ...sectionItems.slice(0, insertIdx),
+                  movedItem,
+                  ...sectionItems.slice(insertIdx),
+                ];
+                setFoods(prev => {
+                  const others = prev.filter(
+                    x => !(x.meal_slot === activeSlot && (
+                      targetSection === 'base'
+                        ? (x.kind || 'base') === 'base'
+                        : (x.kind === 'variation' || x.kind === 'addon')
+                    )) && x.id !== id
+                  );
+                  const updatedSection = newOrder.map((it, idx) => ({ ...it, sort_order: idx }));
+                  return [...others, ...updatedSection];
+                });
+                if ((dragged.kind || 'base') !== wantKind) {
+                  await supabase.from('macro_foods').update({ kind: wantKind }).eq('id', id);
+                }
+                await persistOrder(newOrder);
               };
               const onDropZone = async (e: React.DragEvent, target: 'base' | 'variation') => {
                 e.preventDefault();
@@ -412,12 +458,16 @@ export default function MacrosTracker() {
                 if (!food) return;
                 const currentKind = (food.kind || 'base') as FoodKind;
                 const wantKind: FoodKind = target;
-                const isAlready = target === 'base' ? currentKind === 'base' : currentKind !== 'base';
-                if (isAlready) return;
+                const sectionItems = (target === 'base' ? bases : variations).filter(x => x.id !== id);
+                const movedItem: MacroFood = { ...food, kind: wantKind };
+                const newOrder = [...sectionItems, movedItem];
                 setFoods(prev => prev.map(x => x.id === id ? { ...x, kind: wantKind } : x));
-                const { error } = await supabase.from('macro_foods').update({ kind: wantKind }).eq('id', id);
-                if (error) { toast.error(error.message); fetchAll(); return; }
-                toast.success(`Moved to ${target === 'base' ? 'Meal Base' : 'Variations'}`);
+                if (currentKind !== wantKind) {
+                  const { error } = await supabase.from('macro_foods').update({ kind: wantKind }).eq('id', id);
+                  if (error) { toast.error(error.message); fetchAll(); return; }
+                  toast.success(`Moved to ${target === 'base' ? 'Meal Base' : 'Variations'}`);
+                }
+                await persistOrder(newOrder);
               };
               const renderTile = (f: MacroFood) => {
                 const count = slotLogs.filter(l => l.food_id === f.id).reduce((s, l) => s + l.quantity, 0);
