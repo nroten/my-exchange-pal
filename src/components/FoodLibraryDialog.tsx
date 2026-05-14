@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -40,6 +40,11 @@ export default function FoodLibraryDialog({ open, onOpenChange, initialSlot, onA
   const [slot, setSlot] = useState<MealSlot>(initialSlot);
   const [query, setQuery] = useState('');
   const [adding, setAdding] = useState<string | null>(null);
+
+  // Sync internal slot when dialog opens or the parent's active slot changes
+  useEffect(() => {
+    if (open) setSlot(initialSlot);
+  }, [open, initialSlot]);
 
   const allFoods = (foodDb as { foods: LibraryFood[] }).foods;
 
