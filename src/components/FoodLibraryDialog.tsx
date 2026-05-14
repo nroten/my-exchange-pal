@@ -41,6 +41,11 @@ export default function FoodLibraryDialog({ open, onOpenChange, initialSlot, onA
   const [query, setQuery] = useState('');
   const [adding, setAdding] = useState<string | null>(null);
 
+  // Sync internal slot when dialog opens or the parent's active slot changes
+  useEffect(() => {
+    if (open) setSlot(initialSlot);
+  }, [open, initialSlot]);
+
   const allFoods = (foodDb as { foods: LibraryFood[] }).foods;
 
   const filtered = useMemo(() => {
