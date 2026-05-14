@@ -478,6 +478,8 @@ export default function MacrosTracker() {
                     key={f.id}
                     draggable
                     onDragStart={(e) => onDragStartTile(e, f)}
+                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'move'; }}
+                    onDrop={(e) => onDropOnTile(e, f)}
                     onClick={() => logFood(f)}
                     className={`relative rounded-xl p-3 text-left active:scale-95 transition border cursor-grab active:cursor-grabbing ${
                       isVariation
