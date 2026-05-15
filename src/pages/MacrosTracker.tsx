@@ -489,11 +489,9 @@ export default function MacrosTracker() {
                           : 'bg-macro-surface border-macro-border hover:bg-macro-surface-2 hover:border-macro-primary/50'
                     }`}
                   >
-                    {(isVariation || isAddon) && (
-                      <span className={`absolute top-1 left-1 text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none shadow-sm ${
-                        isVariation ? 'bg-macro-carbs text-macro-bg' : 'bg-macro-fats text-macro-bg'
-                      }`}>
-                        {isVariation ? 'COMBO' : 'ADD-ON'}
+                    {isAddon && (
+                      <span className="absolute top-1 left-1 text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none shadow-sm bg-macro-fats text-macro-bg">
+                        ADD-ON
                       </span>
                     )}
                     {count > 0 && (
