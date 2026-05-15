@@ -650,7 +650,10 @@ export default function MacrosTracker() {
         onOpenChange={setShowLibrary}
         initialSlot={activeSlot}
         onAdd={addFromLibrary}
-        existingNames={new Set(foods.map(f => f.name.toLowerCase()))}
+        existingBySlot={foods.reduce((acc, f) => {
+          (acc[f.meal_slot] ||= new Set()).add(f.name.toLowerCase());
+          return acc;
+        }, {} as Record<string, Set<string>>)}
       />
 
       {/* Food dialog */}
