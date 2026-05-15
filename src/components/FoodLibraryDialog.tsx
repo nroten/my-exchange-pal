@@ -33,10 +33,10 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   initialSlot: MealSlot;
   onAdd: (food: LibraryFood, slot: MealSlot) => Promise<void> | void;
-  existingNames: Set<string>;
+  existingBySlot: Record<string, Set<string>>;
 }
 
-export default function FoodLibraryDialog({ open, onOpenChange, initialSlot, onAdd, existingNames }: Props) {
+export default function FoodLibraryDialog({ open, onOpenChange, initialSlot, onAdd, existingBySlot }: Props) {
   const [slot, setSlot] = useState<MealSlot>(initialSlot);
   const [query, setQuery] = useState('');
   const [adding, setAdding] = useState<string | null>(null);
