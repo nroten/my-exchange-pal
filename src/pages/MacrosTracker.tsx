@@ -110,6 +110,21 @@ export default function MacrosTracker() {
 
   async function logFood(food: MacroFood) {
     if (!user) return;
+    // Remember the last quantity the user logged for this tile (excluding today/tomorrow's current entries)
+    let quantity = 1;
+    const { data: prior } = await supabase
+      .from('macro_logs')
+      .select('quantity, log_date, created_at')
+      .eq('user_id', user.id)
+      .eq('food_id', food.id)
+      .eq('is_planned', false)
+      .lt('log_date', activeDate)
+      .order('log_date', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(1);
+    if (prior && prior.length > 0 && Number(prior[0].quantity) > 0) {
+      quantity = Number(prior[0].quantity);
+    }
     const { error } = await supabase.from('macro_logs').insert({
       user_id: user.id,
       log_date: activeDate,
@@ -121,11 +136,13 @@ export default function MacrosTracker() {
       protein: food.protein,
       carbs: food.carbs,
       fats: food.fats,
-      quantity: 1,
+      quantity,
       is_planned: isPlanning,
     });
     if (error) { toast.error(error.message); return; }
-    toast.success(`${isPlanning ? 'Planned' : 'Added'} ${food.emoji} ${food.name}`);
+    toast.success(
+      `${isPlanning ? 'Planned' : 'Added'} ${food.emoji} ${food.name}${quantity !== 1 ? ` ×${quantity}` : ''}`
+    );
     fetchAll();
   }
 
