@@ -107,7 +107,7 @@ export default function FoodLibraryDialog({ open, onOpenChange, initialSlot, onA
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {filtered.map(f => {
-                const already = existingNames.has(f.name.toLowerCase());
+                const already = (existingBySlot[slot] ?? new Set()).has(f.name.toLowerCase());
                 return (
                   <div
                     key={f.name}
