@@ -153,10 +153,21 @@ export default function ParentView() {
         )}
       </div>
 
-      <div className="px-5 pt-6 pb-2">
-        <p className="text-sm text-muted-foreground">{today}</p>
-        <h1 className="text-lg font-bold">Viewing {connectedName}'s day 🧡</h1>
+      <div className="px-5 pt-6 pb-2 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm text-muted-foreground">{today}</p>
+          <h1 className="text-lg font-bold">Viewing {connectedName}'s day 🧡</h1>
+        </div>
+        <button
+          onClick={() => setShowCheatsheet(true)}
+          className="shrink-0 text-xs font-bold px-3 py-2 rounded-xl bg-muted hover:bg-muted/70 border"
+          title="Exchange cheatsheet"
+        >
+          📋 Cheatsheet
+        </button>
       </div>
+
+      <CheatsheetModal open={showCheatsheet} onOpenChange={setShowCheatsheet} mode="exchanges" />
 
       {/* Tabs */}
       <div className="flex gap-2 px-5 mb-4">
