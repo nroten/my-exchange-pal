@@ -32,6 +32,7 @@ export default function ParentView() {
   const [weekData, setWeekData] = useState<Record<string, any[]>>({});
   const [activeTab, setActiveTab] = useState<'today' | 'history' | 'settings'>('today');
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
+  const [showCheatsheet, setShowCheatsheet] = useState(false);
 
   const fetchData = useCallback(async () => {
     if (!user) return;
