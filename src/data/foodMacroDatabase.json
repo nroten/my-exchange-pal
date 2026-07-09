@@ -888,6 +888,23 @@
       "exchangeNote": "1¼ cup = 1 fruit exchange; 1 cup is approx 1 exchange"
     },
     {
+      "name": "Cherries",
+      "category": "Carb",
+      "meal": [
+        "Snack",
+        "Breakfast"
+      ],
+      "emoji": "🍒",
+      "serving": "12 pieces (~85g)",
+      "calories": 54,
+      "protein": 1,
+      "carbs": 14,
+      "fat": 0,
+      "exchangeType": "Fruit",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "12 cherries = 1 fruit exchange"
+    },
+    {
       "name": "Apple",
       "category": "Carb",
       "meal": [
@@ -1518,6 +1535,24 @@
       "exchangeType": "Vegetable",
       "exchangeAmt": "1 exchange",
       "exchangeNote": "1 medium or ½ cup = 1 veggie exchange"
+    },
+    {
+      "name": "Cherry Tomatoes",
+      "category": "Veggie",
+      "meal": [
+        "Lunch",
+        "Dinner",
+        "Snack"
+      ],
+      "emoji": "🍅",
+      "serving": "1 cup (149g)",
+      "calories": 27,
+      "protein": 1,
+      "carbs": 6,
+      "fat": 0,
+      "exchangeType": "Vegetable",
+      "exchangeAmt": "1 exchange",
+      "exchangeNote": "1 cup raw = 1 veggie exchange"
     },
     {
       "name": "Mushrooms",
