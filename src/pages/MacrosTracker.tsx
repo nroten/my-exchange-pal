@@ -62,6 +62,9 @@ export default function MacrosTracker() {
     });
   };
 
+  const [qtyStep, setQtyStep] = useState<0.25 | 0.1>(0.25);
+  const fmtQty = (q: number) => Number(q.toFixed(2)).toString();
+
   const today = todayYMD();
   const tomorrow = tomorrowYMD();
   const activeDate = dayMode === 'today' ? today : tomorrow;
@@ -151,7 +154,7 @@ export default function MacrosTracker() {
     });
     if (error) { toast.error(error.message); return; }
     toast.success(
-      `${isPlanning ? 'Planned' : 'Added'} ${food.emoji} ${food.name}${quantity !== 1 ? ` ×${quantity}` : ''}`
+      `${isPlanning ? 'Planned' : 'Added'} ${food.emoji} ${food.name}${quantity !== 1 ? ` ×${fmtQty(quantity)}` : ''}`
     );
     fetchAll();
   }
@@ -163,7 +166,7 @@ export default function MacrosTracker() {
   }
 
   async function adjustLogQty(log: MacroLog, delta: number) {
-    const next = Math.max(0, Math.round((log.quantity + delta) * 4) / 4);
+    const next = Math.max(0, Math.round((log.quantity + delta) * 20) / 20);
     if (next === 0) return removeLog(log.id);
     const { error } = await supabase.from('macro_logs').update({ quantity: next }).eq('id', log.id);
     if (error) { toast.error(error.message); return; }
@@ -540,7 +543,7 @@ export default function MacrosTracker() {
                     )}
                     {count > 0 && (
                       <span className="absolute -top-1.5 -right-1.5 bg-macro-primary text-macro-primary-foreground text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center">
-                        ×{count}
+                        ×{fmtQty(count)}
                       </span>
                     )}
                     <div className="flex items-start justify-between gap-1">
@@ -647,7 +650,7 @@ export default function MacrosTracker() {
               <div key={l.id} className="bg-macro-surface border border-dashed border-macro-primary/50 rounded-xl p-2 flex items-center gap-2">
                 <span className="text-xl opacity-80">{l.emoji}</span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold truncate text-macro-text">{l.food_name} <span className="text-[10px] text-macro-muted">×{l.quantity}</span></div>
+                  <div className="text-sm font-semibold truncate text-macro-text">{l.food_name} <span className="text-[10px] text-macro-muted">×{fmtQty(l.quantity)}</span></div>
                   <div className="text-[11px] text-macro-muted">
                     <span className="text-macro-calories">{Math.round(l.calories * l.quantity)} kcal</span>
                     {' · '}<span className="text-macro-protein">P{Math.round(l.protein * l.quantity)}</span>
@@ -672,9 +675,26 @@ export default function MacrosTracker() {
       {/* Day list (eaten on Today, planned on Tomorrow) */}
       {slotLogs.length > 0 && (
         <div className="px-5 mt-5">
-          <h3 className="text-xs font-bold uppercase text-macro-muted tracking-wide mb-2">
-            {isPlanning ? 'Planned' : 'Logged'} for {MEAL_SLOTS.find(s => s.key === activeSlot)?.label}
-          </h3>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-bold uppercase text-macro-muted tracking-wide">
+              {isPlanning ? 'Planned' : 'Logged'} for {MEAL_SLOTS.find(s => s.key === activeSlot)?.label}
+            </h3>
+            <div className="inline-flex bg-macro-surface border border-macro-border rounded-full p-0.5">
+              {[0.25, 0.1].map(step => (
+                <button
+                  key={step}
+                  onClick={() => setQtyStep(step as 0.25 | 0.1)}
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold transition ${
+                    qtyStep === step
+                      ? 'bg-macro-primary text-macro-primary-foreground'
+                      : 'text-macro-muted hover:text-macro-text'
+                  }`}
+                >
+                  {step === 0.25 ? '¼' : '10%'}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="space-y-2">
             {slotLogs.map(l => (
               <div key={l.id} className="bg-macro-surface border border-macro-border rounded-xl p-2 flex items-center gap-2">
@@ -689,9 +709,9 @@ export default function MacrosTracker() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => adjustLogQty(l, -0.25)} className="w-7 h-7 rounded-full bg-macro-surface-2 text-macro-text flex items-center justify-center"><Minus size={12} /></button>
-                  <span className="w-8 text-center text-sm font-bold text-macro-text">{l.quantity}×</span>
-                  <button onClick={() => adjustLogQty(l, 0.25)} className="w-7 h-7 rounded-full bg-macro-surface-2 text-macro-text flex items-center justify-center"><Plus size={12} /></button>
+                  <button onClick={() => adjustLogQty(l, -qtyStep)} className="w-7 h-7 rounded-full bg-macro-surface-2 text-macro-text flex items-center justify-center"><Minus size={12} /></button>
+                  <span className="w-8 text-center text-sm font-bold text-macro-text">{fmtQty(l.quantity)}×</span>
+                  <button onClick={() => adjustLogQty(l, qtyStep)} className="w-7 h-7 rounded-full bg-macro-surface-2 text-macro-text flex items-center justify-center"><Plus size={12} /></button>
                   <button onClick={() => removeLog(l.id)} className="text-macro-muted hover:text-destructive ml-1"><X size={14} /></button>
                 </div>
               </div>
