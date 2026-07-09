@@ -543,7 +543,7 @@ export default function MacrosTracker() {
                     )}
                     {count > 0 && (
                       <span className="absolute -top-1.5 -right-1.5 bg-macro-primary text-macro-primary-foreground text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center">
-                        ×{count}
+                        ×{fmtQty(count)}
                       </span>
                     )}
                     <div className="flex items-start justify-between gap-1">
