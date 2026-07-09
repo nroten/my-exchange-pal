@@ -166,7 +166,7 @@ export default function MacrosTracker() {
   }
 
   async function adjustLogQty(log: MacroLog, delta: number) {
-    const next = Math.max(0, Math.round((log.quantity + delta) * 4) / 4);
+    const next = Math.max(0, Math.round((log.quantity + delta) * 20) / 20);
     if (next === 0) return removeLog(log.id);
     const { error } = await supabase.from('macro_logs').update({ quantity: next }).eq('id', log.id);
     if (error) { toast.error(error.message); return; }
