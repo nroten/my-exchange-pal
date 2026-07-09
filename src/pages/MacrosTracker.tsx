@@ -650,7 +650,7 @@ export default function MacrosTracker() {
               <div key={l.id} className="bg-macro-surface border border-dashed border-macro-primary/50 rounded-xl p-2 flex items-center gap-2">
                 <span className="text-xl opacity-80">{l.emoji}</span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold truncate text-macro-text">{l.food_name} <span className="text-[10px] text-macro-muted">×{l.quantity}</span></div>
+                  <div className="text-sm font-semibold truncate text-macro-text">{l.food_name} <span className="text-[10px] text-macro-muted">×{fmtQty(l.quantity)}</span></div>
                   <div className="text-[11px] text-macro-muted">
                     <span className="text-macro-calories">{Math.round(l.calories * l.quantity)} kcal</span>
                     {' · '}<span className="text-macro-protein">P{Math.round(l.protein * l.quantity)}</span>
