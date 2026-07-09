@@ -425,12 +425,30 @@ export default function MacrosTracker() {
             </div>
           ) : (
             (() => {
+              type Section = 'base' | 'variation' | 'infrequent';
+              const sectionOf = (k?: string | null): Section =>
+                k === 'infrequent' ? 'infrequent'
+                  : (k === 'variation' || k === 'addon') ? 'variation'
+                  : 'base';
+              const kindForSection = (s: Section, existingKind?: string | null): FoodKind =>
+                s === 'infrequent' ? 'infrequent'
+                  : s === 'variation'
+                    ? (existingKind === 'addon' ? 'addon' : 'variation')
+                    : 'base';
+
               const bases = slotFoods
-                .filter(f => (f.kind || 'base') === 'base')
+                .filter(f => sectionOf(f.kind) === 'base')
                 .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
               const variations = slotFoods
-                .filter(f => f.kind === 'variation' || f.kind === 'addon')
+                .filter(f => sectionOf(f.kind) === 'variation')
                 .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+              const infrequent = slotFoods
+                .filter(f => sectionOf(f.kind) === 'infrequent')
+                .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+
+              const itemsForSection = (s: Section) =>
+                s === 'base' ? bases : s === 'variation' ? variations : infrequent;
+
               const onDragStartTile = (e: React.DragEvent, f: MacroFood) => {
                 e.dataTransfer.setData('text/plain', f.id);
                 e.dataTransfer.effectAllowed = 'move';
@@ -449,10 +467,9 @@ export default function MacrosTracker() {
                 if (!id || id === targetFood.id) return;
                 const dragged = foods.find(x => x.id === id);
                 if (!dragged) return;
-                const targetSection: 'base' | 'variation' =
-                  (targetFood.kind || 'base') === 'base' ? 'base' : 'variation';
-                const wantKind: FoodKind = targetSection;
-                const sectionItems = (targetSection === 'base' ? bases : variations).filter(x => x.id !== id);
+                const targetSection: Section = sectionOf(targetFood.kind);
+                const wantKind: FoodKind = kindForSection(targetSection, dragged.kind);
+                const sectionItems = itemsForSection(targetSection).filter(x => x.id !== id);
                 const targetIdx = sectionItems.findIndex(x => x.id === targetFood.id);
                 const insertIdx = targetIdx < 0 ? sectionItems.length : targetIdx;
                 const movedItem: MacroFood = { ...dragged, kind: wantKind };
@@ -463,11 +480,7 @@ export default function MacrosTracker() {
                 ];
                 setFoods(prev => {
                   const others = prev.filter(
-                    x => !(x.meal_slot === activeSlot && (
-                      targetSection === 'base'
-                        ? (x.kind || 'base') === 'base'
-                        : (x.kind === 'variation' || x.kind === 'addon')
-                    )) && x.id !== id
+                    x => !(x.meal_slot === activeSlot && sectionOf(x.kind) === targetSection) && x.id !== id
                   );
                   const updatedSection = newOrder.map((it, idx) => ({ ...it, sort_order: idx }));
                   return [...others, ...updatedSection];
@@ -477,22 +490,23 @@ export default function MacrosTracker() {
                 }
                 await persistOrder(newOrder);
               };
-              const onDropZone = async (e: React.DragEvent, target: 'base' | 'variation') => {
+              const onDropZone = async (e: React.DragEvent, target: Section) => {
                 e.preventDefault();
                 const id = e.dataTransfer.getData('text/plain');
                 if (!id) return;
                 const food = foods.find(x => x.id === id);
                 if (!food) return;
                 const currentKind = (food.kind || 'base') as FoodKind;
-                const wantKind: FoodKind = target;
-                const sectionItems = (target === 'base' ? bases : variations).filter(x => x.id !== id);
+                const wantKind: FoodKind = kindForSection(target, food.kind);
+                const sectionItems = itemsForSection(target).filter(x => x.id !== id);
                 const movedItem: MacroFood = { ...food, kind: wantKind };
                 const newOrder = [...sectionItems, movedItem];
                 setFoods(prev => prev.map(x => x.id === id ? { ...x, kind: wantKind } : x));
                 if (currentKind !== wantKind) {
                   const { error } = await supabase.from('macro_foods').update({ kind: wantKind }).eq('id', id);
                   if (error) { toast.error(error.message); fetchAll(); return; }
-                  toast.success(`Moved to ${target === 'base' ? 'Meal Base' : 'Variations'}`);
+                  const labels: Record<Section, string> = { base: 'Meal Base', variation: 'Variations', infrequent: 'Infrequent' };
+                  toast.success(`Moved to ${labels[target]}`);
                 }
                 await persistOrder(newOrder);
               };
@@ -500,6 +514,7 @@ export default function MacrosTracker() {
                 const count = slotLogs.filter(l => l.food_id === f.id).reduce((s, l) => s + l.quantity, 0);
                 const isVariation = f.kind === 'variation';
                 const isAddon = f.kind === 'addon';
+                const isInfrequent = f.kind === 'infrequent';
                 return (
                   <button
                     key={f.id}
@@ -513,7 +528,9 @@ export default function MacrosTracker() {
                         ? 'bg-gradient-to-br from-macro-carbs/10 to-macro-fats/10 border-dashed border-macro-carbs/60 hover:border-macro-carbs'
                         : isAddon
                           ? 'bg-macro-surface border-macro-fats/40 border-dotted hover:border-macro-fats'
-                          : 'bg-macro-surface border-macro-border hover:bg-macro-surface-2 hover:border-macro-primary/50'
+                          : isInfrequent
+                            ? 'bg-macro-surface/60 border-macro-border/60 hover:border-macro-primary/40 opacity-90'
+                            : 'bg-macro-surface border-macro-border hover:bg-macro-surface-2 hover:border-macro-primary/50'
                     }`}
                   >
                     {isAddon && (
@@ -553,32 +570,49 @@ export default function MacrosTracker() {
                   </button>
                 );
               };
-              const DropZone = ({ label, target, items }: { label: string; target: 'base' | 'variation'; items: MacroFood[] }) => (
-                <div
-                  onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
-                  onDrop={(e) => onDropZone(e, target)}
-                  className="rounded-xl border border-dashed border-macro-border/60 p-2"
-                >
-                  <div className="flex items-center gap-2 mb-2 px-1">
-                    <div className="h-px flex-1 bg-macro-border" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-macro-muted">{label}</span>
-                    <div className="h-px flex-1 bg-macro-border" />
+              const DropZone = ({ label, target, items }: { label: string; target: Section; items: MacroFood[] }) => {
+                const key = `${activeSlot}:${target}`;
+                const isCollapsed = !!collapsed[key];
+                return (
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
+                    onDrop={(e) => onDropZone(e, target)}
+                    className="rounded-xl border border-dashed border-macro-border/60 p-2"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleCollapsed(key)}
+                      className="w-full flex items-center gap-2 mb-2 px-1 group"
+                      aria-expanded={!isCollapsed}
+                    >
+                      <span className="text-macro-muted group-hover:text-macro-text transition">
+                        {isCollapsed ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
+                      </span>
+                      <div className="h-px flex-1 bg-macro-border" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-macro-muted group-hover:text-macro-text">
+                        {label}{items.length > 0 && ` (${items.length})`}
+                      </span>
+                      <div className="h-px flex-1 bg-macro-border" />
+                    </button>
+                    {!isCollapsed && (
+                      items.length === 0 ? (
+                        <div className="text-[11px] text-macro-muted italic text-center py-4">
+                          Drop items here
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                          {items.map(renderTile)}
+                        </div>
+                      )
+                    )}
                   </div>
-                  {items.length === 0 ? (
-                    <div className="text-[11px] text-macro-muted italic text-center py-4">
-                      Drop items here
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                      {items.map(renderTile)}
-                    </div>
-                  )}
-                </div>
-              );
+                );
+              };
               return (
                 <div className="space-y-3">
                   <DropZone label="Meal Base" target="base" items={bases} />
                   <DropZone label="Variations" target="variation" items={variations} />
+                  <DropZone label="Infrequent" target="infrequent" items={infrequent} />
                 </div>
               );
             })()
