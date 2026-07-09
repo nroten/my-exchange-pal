@@ -1,5 +1,5 @@
 export type MealSlot = 'breakfast' | 'lunch' | 'dinner' | 'snack';
-export type FoodKind = 'base' | 'variation' | 'addon';
+export type FoodKind = 'base' | 'variation' | 'addon' | 'infrequent';
 
 export const MEAL_SLOTS: { key: MealSlot; label: string; emoji: string }[] = [
   { key: 'breakfast', label: 'Breakfast', emoji: '🌅' },
