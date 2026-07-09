@@ -9,7 +9,7 @@ import {
   MacroFood, MacroLog, MacroTargets, MealSlot, MEAL_SLOTS, FoodKind,
   sumMacros, getCurrentMealSlot, todayYMD, tomorrowYMD, yesterdayYMD,
 } from '@/types/macros';
-import { Plus, Minus, X, Pencil, Check, Copy, BookOpen, BookMarked } from 'lucide-react';
+import { Plus, Minus, X, Pencil, Check, Copy, BookOpen, BookMarked, ChevronDown, ChevronRight } from 'lucide-react';
 import FoodLibraryDialog, { LibraryFood } from '@/components/FoodLibraryDialog';
 import CheatsheetModal from '@/components/CheatsheetModal';
 
@@ -51,6 +51,16 @@ export default function MacrosTracker() {
   const [showLibrary, setShowLibrary] = useState(false);
   const [showCheatsheet, setShowCheatsheet] = useState(false);
   const [form, setForm] = useState<FoodFormState>(EMPTY_FORM);
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
+    try { return JSON.parse(localStorage.getItem('macro_section_collapsed') || '{}'); } catch { return {}; }
+  });
+  const toggleCollapsed = (key: string) => {
+    setCollapsed(prev => {
+      const next = { ...prev, [key]: !prev[key] };
+      try { localStorage.setItem('macro_section_collapsed', JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
 
   const today = todayYMD();
   const tomorrow = tomorrowYMD();
