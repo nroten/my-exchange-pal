@@ -752,7 +752,7 @@ export default function MacrosTracker() {
               ))}
             </div>
             <div className="flex gap-2">
-              {(['base','variation','addon'] as FoodKind[]).map(k => (
+              {(['base','variation','addon','infrequent'] as FoodKind[]).map(k => (
                 <button
                   key={k}
                   onClick={() => setForm({ ...form, kind: k })}
@@ -762,7 +762,7 @@ export default function MacrosTracker() {
                       : 'bg-card border-border text-muted-foreground'
                   }`}
                 >
-                  {k === 'base' ? '🧱 Base' : k === 'variation' ? '🧩 Combo' : '➕ Add-on'}
+                  {k === 'base' ? '🧱 Base' : k === 'variation' ? '🧩 Combo' : k === 'addon' ? '➕ Add-on' : '🌙 Rare'}
                 </button>
               ))}
             </div>
