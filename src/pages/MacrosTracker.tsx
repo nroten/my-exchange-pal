@@ -709,9 +709,9 @@ export default function MacrosTracker() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => adjustLogQty(l, -0.25)} className="w-7 h-7 rounded-full bg-macro-surface-2 text-macro-text flex items-center justify-center"><Minus size={12} /></button>
-                  <span className="w-8 text-center text-sm font-bold text-macro-text">{l.quantity}×</span>
-                  <button onClick={() => adjustLogQty(l, 0.25)} className="w-7 h-7 rounded-full bg-macro-surface-2 text-macro-text flex items-center justify-center"><Plus size={12} /></button>
+                  <button onClick={() => adjustLogQty(l, -qtyStep)} className="w-7 h-7 rounded-full bg-macro-surface-2 text-macro-text flex items-center justify-center"><Minus size={12} /></button>
+                  <span className="w-8 text-center text-sm font-bold text-macro-text">{fmtQty(l.quantity)}×</span>
+                  <button onClick={() => adjustLogQty(l, qtyStep)} className="w-7 h-7 rounded-full bg-macro-surface-2 text-macro-text flex items-center justify-center"><Plus size={12} /></button>
                   <button onClick={() => removeLog(l.id)} className="text-macro-muted hover:text-destructive ml-1"><X size={14} /></button>
                 </div>
               </div>
