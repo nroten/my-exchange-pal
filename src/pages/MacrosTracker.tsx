@@ -154,7 +154,7 @@ export default function MacrosTracker() {
     });
     if (error) { toast.error(error.message); return; }
     toast.success(
-      `${isPlanning ? 'Planned' : 'Added'} ${food.emoji} ${food.name}${quantity !== 1 ? ` ×${quantity}` : ''}`
+      `${isPlanning ? 'Planned' : 'Added'} ${food.emoji} ${food.name}${quantity !== 1 ? ` ×${fmtQty(quantity)}` : ''}`
     );
     fetchAll();
   }
