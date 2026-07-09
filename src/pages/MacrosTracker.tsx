@@ -62,6 +62,9 @@ export default function MacrosTracker() {
     });
   };
 
+  const [qtyStep, setQtyStep] = useState<0.25 | 0.1>(0.25);
+  const fmtQty = (q: number) => Number(q.toFixed(2)).toString();
+
   const today = todayYMD();
   const tomorrow = tomorrowYMD();
   const activeDate = dayMode === 'today' ? today : tomorrow;
